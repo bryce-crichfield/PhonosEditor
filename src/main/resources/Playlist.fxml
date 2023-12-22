@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.*?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:id="root"
+            fx:controller="piano.NoteEditorRoot">
+    <BorderPane>
+        <top>
+            <VBox fx:id="toolBarRoot">
+                <ToolBar>
+                    <ToggleButton fx:id="toggleToolSelect" onAction="#changeToSelect">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-selection"/>
+                        </graphic>
+                    </ToggleButton>
+
+                    <ToggleButton fx:id="toggleToolPencil" onAction="#changeToPencil">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-pencil"/>
+                        </graphic>
+                    </ToggleButton>
+                    <ToggleButton fx:id="toggleSlice">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-box-cutter"/>
+                        </graphic>
+                    </ToggleButton>
+
+                    <Button onAction="#scaleDownX">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-arrow-left-bold-circle"/>
+                        </graphic>
+                    </Button>
+
+                    <Button onAction="#scaleUpX">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-arrow-right-bold-circle"/>
+                        </graphic>
+                    </Button>
+
+
+                    <Button onAction="#scaleUpY">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-arrow-up-bold-circle"/>
+                        </graphic>
+                    </Button>
+
+                    <Button onAction="#scaleDownY">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-arrow-down-bold-circle"/>
+                        </graphic>
+                    </Button>
+                </ToolBar>
+            </VBox>
+        </top>
+        <center>
+                <SplitPane fx:id="bodyRoot" orientation="VERTICAL" >
+                    <BorderPane fx:id="bodyBorderPane">
+                        <!-- Top, Left, and Right set to ScrollBar, Piano, and ScrollBar in the controller respectively -->
+                        <center>
+                            <AnchorPane fx:id="editorRoot"/>
+                        </center>
+                    </BorderPane>
+                    <AnchorPane fx:id="notePropsEditor" minWidth="15" prefHeight="200" maxHeight="400" />
+                </SplitPane>
+        </center>
+    </BorderPane>
+</AnchorPane>
