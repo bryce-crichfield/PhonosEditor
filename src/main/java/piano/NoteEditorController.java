@@ -122,8 +122,6 @@ public class NoteEditorController {
             ToggleGroup tools = new ToggleGroup();
             tools.getToggles().add(toggleToolSelect);
             tools.getToggles().add(toggleToolPencil);
-            toggleToolSelect.setSelected(true);
-            toggleToolSelect.setOnAction(this::changeToSelect);
         }
 
         // Ensure that the split pane fills the entire window ----------------------------------------------------------
@@ -142,7 +140,7 @@ public class NoteEditorController {
     }
 
     public void changeToSelect(ActionEvent actionEvent) {
-        noteMidiEditor.setTool(new SelectTool());
+        noteMidiEditor.setTool(new SelectTool(noteMidiEditor, noteMidiEditor.getWorld()));
     }
 
     public void changeToPencil(ActionEvent actionEvent) {

@@ -92,8 +92,6 @@ class NoteParameterView extends Rectangle {
         });
 
         // Sheet Metal gradient
-
-
         this.setFill(Color.DARKGREEN.darker());
 
         this.setArcHeight(10);

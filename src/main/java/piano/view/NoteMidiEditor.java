@@ -13,13 +13,15 @@ import piano.model.NoteRegistry;
 import piano.tool.EditorTool;
 import piano.tool.SelectTool;
 
+import java.util.Optional;
+
 
 public class NoteMidiEditor extends AnchorPane {
     private final ObjectProperty<GridInfo> gridInfo;
     private final Rectangle background;
     private final Group world;
     private final NoteRegistry notes;
-    private EditorTool currentTool = new SelectTool();
+    private Optional<EditorTool> currentTool = Optional.empty();
 
     public NoteMidiEditor(ObjectProperty<GridInfo> gridInfo, NoteRegistry noteRegistry) {
         this.gridInfo = gridInfo;
@@ -54,9 +56,10 @@ public class NoteMidiEditor extends AnchorPane {
         getChildren().add(subScene);
 
         // Delegate mouse events to EditorTool -------------------------------------------------------------------------
-        subScene.setOnMousePressed(mouseEvent -> currentTool.onMouseEvent(mouseEvent));
-        subScene.setOnMouseReleased(mouseEvent -> currentTool.onMouseEvent(mouseEvent));
-        subScene.setOnMouseDragged(mouseEvent -> currentTool.onMouseEvent(mouseEvent));
+        subScene.setOnMousePressed(mouseEvent -> currentTool.ifPresent(tool -> tool.onMouseEvent(mouseEvent)));
+        subScene.setOnMouseMoved(mouseEvent -> currentTool.ifPresent(tool -> tool.onMouseEvent(mouseEvent)));
+        subScene.setOnMouseDragged(mouseEvent -> currentTool.ifPresent(tool -> tool.onMouseEvent(mouseEvent)));
+        subScene.setOnMouseReleased(mouseEvent -> currentTool.ifPresent(tool -> tool.onMouseEvent(mouseEvent)));
 
         // Bind view to model ------------------------------------------------------------------------------------------
         notes.onAdded(entry -> {
@@ -146,7 +149,7 @@ public class NoteMidiEditor extends AnchorPane {
     }
 
     public void setTool(EditorTool tool) {
-        currentTool = tool;
+        currentTool = Optional.of(tool);
     }
 
     public void scrollX(double deltaX) {
@@ -161,4 +164,7 @@ public class NoteMidiEditor extends AnchorPane {
         return gridInfo;
     }
 
+    public Group getWorld() {
+        return world;
+    }
 }
