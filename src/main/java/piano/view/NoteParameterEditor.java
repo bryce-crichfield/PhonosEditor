@@ -53,6 +53,8 @@ public class NoteParameterEditor extends AnchorPane {
         scene.setManaged(false);
         scene.setRoot(world);
 
+        scene.setFill(Color.DARKGRAY.darker().darker().darker().darker().darker());
+
         this.getChildren().add(scene);
 
         // Spawn a NoteParameterView for each note in the registry
@@ -65,6 +67,7 @@ public class NoteParameterEditor extends AnchorPane {
             world.getChildren().removeIf(
                     node -> node instanceof NoteParameterView view && view.getNoteEntry().equals(entry));
         });
+
     }
 
     public static javafx.scene.paint.Paint createGridLineFill() {

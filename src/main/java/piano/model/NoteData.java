@@ -2,6 +2,7 @@ package piano.model;
 
 import lombok.Getter;
 import lombok.With;
+import piano.util.GridMath;
 
 @With
 @Getter
@@ -40,12 +41,22 @@ public class NoteData {
         return noteData;
     }
 
-    public int calculateX(GridInfo gridInfo) {
-        return (int) (start * gridInfo.getCellWidth());
+    public double calcXPosOnGrid(GridInfo gridInfo) {
+        double x = start * gridInfo.getCellWidth();
+        return GridMath.snapToGridX(gridInfo, x);
     }
 
-    public int calculateY(GridInfo gridInfo) {
-        return (int) (note * gridInfo.getCellHeight());
+    public double calcYPosOnGrid(GridInfo gridInfo) {
+        double y = note * gridInfo.getCellHeight();
+        return GridMath.snapToGridY(gridInfo, y);
+    }
+
+    public double getVelocityAsPercentage() {
+        return velocity / 100.0d;
+    }
+
+    public NoteData setVelocityAsPercentage(double velocity) {
+        return this.withVelocity((int) (velocity * 100));
     }
 
     public static String noteToString(int note) {

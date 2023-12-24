@@ -6,11 +6,16 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class NoteRegistry {
     public static class Entry extends SimpleObjectProperty<NoteData> {
         public Entry(NoteData note) {
             super(note);
+        }
+
+        public void modify(Function<NoteData, NoteData> modifier) {
+            set(modifier.apply(get()));
         }
     }
 
@@ -29,7 +34,6 @@ public class NoteRegistry {
     public void unregister(Entry note) {
         notes.remove(note);
     }
-
     public void onAdded(Consumer<Entry> callback) {
         notes.addListener((ListChangeListener<Entry>) change -> {
             while (change.next()) {

@@ -147,16 +147,16 @@ public class NoteMidiView extends StackPane {
 
             // Move the note to the new position
             NoteData data = noteEntry.get();
-            double x = data.calculateX(newValue);
-            double y = data.calculateY(newValue);
+            double x = data.calcXPosOnGrid(newValue);
+            double y = data.calcYPosOnGrid(newValue);
             moveNote(x, y);
 
         });
 
         // Initially position the note on the grid =====================================================================
         NoteData data = noteEntry.get();
-        double x = data.calculateX(gridInfo.get());
-        double y = data.calculateY(gridInfo.get());
+        double x = data.calcXPosOnGrid(gridInfo.get());
+        double y = data.calcYPosOnGrid(gridInfo.get());
         moveNote(x, y);
     }
 
