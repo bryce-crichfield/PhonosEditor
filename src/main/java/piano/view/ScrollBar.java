@@ -1,4 +1,4 @@
-package piano;
+package piano.view;
 
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Orientation;
@@ -7,18 +7,22 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.*;
 import javafx.scene.shape.Rectangle;
 import org.kordamp.ikonli.javafx.FontIcon;
+import piano.Util;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class ScrollBar extends AnchorPane {
+    public static final int SIZE = 25;
     private Pane container;
     private Button negativeButton;
     private AnchorPane track;
     private Button positiveButton;
     private Handle handle;
     float handleVelocity = 0;
-//    private Rectangle handle;
+    private Consumer<Double> onScrollIn;
+    public void scroll(double delta) {
+        onScrollIn.accept(delta);
+    }
     private Consumer<Double> onScroll = (percentage) -> {
     };
 
@@ -46,11 +50,15 @@ public class ScrollBar extends AnchorPane {
         // Initialize the scroll bar buttons
         {
             negativeButton = new Button();
+            negativeButton.setPrefWidth(SIZE);
+            negativeButton.setPrefHeight(SIZE);
             negativeButton.setGraphic(new FontIcon("mdi-arrow-left"));
             negativeButton.setFocusTraversable(false);
             negativeButton.setStyle("-fx-background-radius: 0;");
 
             positiveButton = new Button();
+            positiveButton.setPrefWidth(SIZE);
+            positiveButton.setPrefHeight(SIZE);
             positiveButton.setGraphic(new FontIcon("mdi-arrow-right"));
             positiveButton.setFocusTraversable(false);
             positiveButton.setStyle("-fx-background-radius: 0;");
@@ -62,7 +70,7 @@ public class ScrollBar extends AnchorPane {
             track.setPrefHeight(25);
             HBox.setHgrow(track, Priority.ALWAYS);
 
-            handle = new Handle(50, 25, Color.GRAY);
+            handle = new Handle(SIZE * 2, SIZE, Color.GRAY);
 
             track.getChildren().add(handle);
 
@@ -92,6 +100,11 @@ public class ScrollBar extends AnchorPane {
 
                 newX = Util.clamp(newX, 0, track.getWidth() - handle.getWidth());
                 handleVelocity = (float) (newX - handle.getX());
+            };
+
+            onScrollIn = (delta) -> {
+                double newX = handle.getX() + delta;
+                applyHorizontalScroll.accept(newX);
             };
 
             handle.setOnMouseDragged(event -> {
@@ -170,13 +183,13 @@ public class ScrollBar extends AnchorPane {
 
                 double percentage = handle.getY() / (oldHeight - handle.getHeight());
                 double newY = percentage * (newHeight - handle.getHeight());
-
                 handleVelocity = (float) (newY - handle.getY());
             });
         }
 
         // Add the listeners to the scroll bar buttons and handle
         {
+
             Consumer<Double> applyVerticalScroll = (newY) -> {
                 // NOTE: The GRE proved to be important to solve a bug where the handle would go past the track
                 if (newY >= track.getHeight() - handle.getHeight()) {
@@ -185,7 +198,13 @@ public class ScrollBar extends AnchorPane {
 
 
                 newY = Util.clamp(newY, 0, track.getHeight() - handle.getHeight());
+                handle.setTargetVal(newY.floatValue());
                 handleVelocity = (float) (newY - handle.getY());
+            };
+
+            onScrollIn = (delta) -> {
+                double newY = handle.getY() + delta;
+                applyVerticalScroll.accept(newY);
             };
 
             negativeButton.setOnMouseClicked(event -> {
@@ -234,6 +253,8 @@ public class ScrollBar extends AnchorPane {
     private static class Handle extends Rectangle {
         private final Color color;
         boolean isPressed = false;
+        float currentVal = 0;
+        float targetVal = 0;
 
         public Handle(double width, double height, Color color) {
             super(width, height, getFill(color));
@@ -266,6 +287,12 @@ public class ScrollBar extends AnchorPane {
             setArcWidth(10);
             setStroke(Color.BLACK);
             setStrokeWidth(1);
+        }
+
+
+
+        public void setTargetVal(float targetVal) {
+            this.targetVal = targetVal;
         }
 
         private static Paint getFill(Color color) {

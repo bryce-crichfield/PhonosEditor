@@ -1,72 +1,78 @@
-package piano;
+package piano.view;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+import piano.model.GridInfo;
+import piano.model.NoteRegistry;
+import piano.tool.EditorTool;
+import piano.tool.SelectTool;
 
-import java.util.ArrayList;
-import java.util.List;
 
-
-public class NoteEditor {
+public class NoteMidiEditor extends AnchorPane {
     private final ObjectProperty<GridInfo> gridInfo;
     private final Rectangle background;
     private final Group world;
-    private final List<Note> notes;
+    private final NoteRegistry notes;
     private EditorTool currentTool = new SelectTool();
 
-    public NoteEditor(Pane parent, ObjectProperty<GridInfo> gridInfo) {
+    public NoteMidiEditor(ObjectProperty<GridInfo> gridInfo, NoteRegistry noteRegistry) {
         this.gridInfo = gridInfo;
+        this.notes = noteRegistry;
 
-        notes = new ArrayList<>();
-
-        // Create a camera to view the 3D shapes
-        Camera camera = new ParallelCamera();
-        camera.setFarClip(10000.0);
-        camera.setTranslateZ(-100);
-
-        // Configure the background of the editor
-        var gi = gridInfo.get();
-        background = new Rectangle(gi.getColumns() * gi.getCellWidth(),
-                                   gi.getRows() * gi.getCellHeight()
-        );
+        // Create the background grid surface --------------------------------------------------------------------------
+        background = gridInfo.get().createRectangle();
         background.setFill(createGridLineFill());
         gridInfo.addListener((observable, oldValue, newValue) -> {
-            background.setWidth(newValue.getColumns() * newValue.getCellWidth());
-            background.setHeight(newValue.getRows() * newValue.getCellHeight());
+            var newRect = newValue.createRectangle();
+            background.setWidth(newRect.getWidth());
+            background.setHeight(newRect.getHeight());
             background.setFill(createGridLineFill());
         });
         background.setTranslateZ(0);
 
-        // Configure the world and the scene
+        // Add the surface to the world and configure the scene --------------------------------------------------------
         world = new Group(background);
 
-        SubScene scene = new SubScene(world, 0, 0, true, SceneAntialiasing.BALANCED);
-        scene.widthProperty().bind(parent.widthProperty());
-        scene.heightProperty().bind(parent.heightProperty());
+        Camera camera = new ParallelCamera();
+        camera.setFarClip(10000.0);
+        camera.setTranslateZ(-100);
 
-        scene.setFill(Color.BLACK.brighter());
-        scene.setCamera(camera);
+        SubScene subScene = new SubScene(world, 0, 0, true, SceneAntialiasing.BALANCED);
+        subScene.widthProperty().bind(widthProperty());
+        subScene.heightProperty().bind(heightProperty());
 
-        scene.setManaged(false);
-        scene.setRoot(world);
+        subScene.setCamera(camera);
+        subScene.setManaged(false);
+        subScene.setRoot(world);
 
-        // Delegate mouse events to the current tool
-        scene.setOnMousePressed(mouseEvent -> currentTool.onMouseEvent(mouseEvent));
-        scene.setOnMouseReleased(mouseEvent -> currentTool.onMouseEvent(mouseEvent));
-        scene.setOnMouseDragged(mouseEvent -> currentTool.onMouseEvent(mouseEvent));
+        getChildren().add(subScene);
 
-        // Add the subscene to the parent
-        parent.getChildren().add(scene);
+        // Delegate mouse events to EditorTool -------------------------------------------------------------------------
+        subScene.setOnMousePressed(mouseEvent -> currentTool.onMouseEvent(mouseEvent));
+        subScene.setOnMouseReleased(mouseEvent -> currentTool.onMouseEvent(mouseEvent));
+        subScene.setOnMouseDragged(mouseEvent -> currentTool.onMouseEvent(mouseEvent));
+
+        // Bind view to model ------------------------------------------------------------------------------------------
+        notes.onAdded(entry -> {
+            var noteMidiView = new NoteMidiView(entry, notes, gridInfo);
+            world.getChildren().add(noteMidiView);
+        });
+
+        notes.onRemoved(entry -> {
+            world.getChildren().removeIf(
+                    node -> node instanceof NoteMidiView view && view.getNoteEntry().equals(entry));
+        });
     }
 
     public ImagePattern createGridLineFill() {
         // TODO: Doesn't support large grid sizes
+        // TODO: Please rewrite me before I am lost forever :((((
         GridInfo gridInfo = this.gridInfo.get();
         double width = gridInfo.getColumns() * gridInfo.getCellWidth();
         double height = gridInfo.getRows() * gridInfo.getCellHeight();
@@ -74,7 +80,6 @@ public class NoteEditor {
         double gridHeight = gridInfo.getCellHeight();
         double rows = gridInfo.getRows();
         double columns = gridInfo.getColumns();
-
 
         Canvas canvas = new Canvas(width, height);
         var gc = canvas.getGraphicsContext2D();
@@ -132,11 +137,11 @@ public class NoteEditor {
         return new ImagePattern(image, 0, 0, width, height, false);
     }
 
-    public Rectangle getBackground() {
+    public Rectangle getBackgroundSurface() {
         return background;
     }
 
-    public List<Note> getNotes() {
+    public NoteRegistry getNoteRegistry() {
         return notes;
     }
 
@@ -156,8 +161,4 @@ public class NoteEditor {
         return gridInfo;
     }
 
-    public void addNote(Note note) {
-        notes.add(note);
-        world.getChildren().add(note);
-    }
 }

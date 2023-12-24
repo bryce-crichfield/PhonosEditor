@@ -6,8 +6,8 @@
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:id="root"
-            fx:controller="piano.NoteEditorRoot">
-    <BorderPane>
+            fx:controller="piano.NoteEditorController">
+    <BorderPane fx:id="rootBorderPane">
         <top>
             <VBox fx:id="toolBarRoot">
                 <ToolBar>
@@ -28,6 +28,10 @@
                         </graphic>
                     </ToggleButton>
 
+                    <Separator orientation="VERTICAL"/>
+
+                    <Label text="X: "/>
+
                     <Button onAction="#scaleDownX">
                         <graphic>
                             <FontIcon iconLiteral="mdi-arrow-left-bold-circle"/>
@@ -40,6 +44,9 @@
                         </graphic>
                     </Button>
 
+                    <Separator orientation="VERTICAL"/>
+
+                    <Label text="Y: "/>
 
                     <Button onAction="#scaleUpY">
                         <graphic>
@@ -55,16 +62,5 @@
                 </ToolBar>
             </VBox>
         </top>
-        <center>
-                <SplitPane fx:id="bodyRoot" orientation="VERTICAL" >
-                    <BorderPane fx:id="bodyBorderPane">
-                        <!-- Top, Left, and Right set to ScrollBar, Piano, and ScrollBar in the controller respectively -->
-                        <center>
-                            <AnchorPane fx:id="editorRoot"/>
-                        </center>
-                    </BorderPane>
-                    <AnchorPane fx:id="notePropsEditor" minWidth="15" prefHeight="200" maxHeight="400" />
-                </SplitPane>
-        </center>
     </BorderPane>
 </AnchorPane>

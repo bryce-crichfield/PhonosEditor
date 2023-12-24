@@ -1,50 +1,47 @@
-package piano;
+package piano.view;
 
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.Rectangle;
+import piano.model.GridInfo;
 
 public class PianoRoll extends AnchorPane {
     public static final int ROWS = 88;
+    public static final double DEFAULT_WIDTH = 125;
     private Image fill;
-    private Rectangle background;
     private ObjectProperty<GridInfo> gridInfo;
     private final double canvasHeight;
     private double scrollY;
     public PianoRoll(double canvasHeight, ObjectProperty<GridInfo> gridInfo) {
         super();
 
-        setWidth(125);
+        setMinWidth(125);
+        setStyle("-fx-background-color: #000ff0");
 
         this.gridInfo = gridInfo;
 
         fill = generateFillImage(125, canvasHeight);
 
-        background = new Rectangle();
-        background.setWidth(125);
-        background.heightProperty().bind(heightProperty());
-
         gridInfo.addListener((observable, oldValue, newValue) -> {
             fill = generateFillImage(125, canvasHeight);
-            scroll(scrollY);
+            scrollY(scrollY);
         });
 
         this.canvasHeight = canvasHeight;
-        getChildren().add(background);
 
-        scroll(0);
+        scrollY(0);
     }
 
-    public void scroll(double deltaY) {
+    public void scrollY(double deltaY) {
         scrollY = deltaY / canvasHeight;
         ImagePattern subImage = new ImagePattern(fill, 0, deltaY, getWidth(), canvasHeight, false);
-        background.setFill(subImage);
+        var background = new Background(new javafx.scene.layout.BackgroundFill(subImage, null, null));
+        setBackground(background);
     }
 
     private final static boolean[] keyMask = {true, false, true, false, true, true, false, true, false, true, false, true, true};

@@ -1,12 +1,13 @@
-package piano;
+package piano.tool;
 
 import javafx.geometry.Point3D;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.shape.Box;
+import piano.tool.EditorTool;
 
-class SelectTool implements EditorTool {
+public class SelectTool implements EditorTool {
     Box selectedBox = null;
 
     @Override

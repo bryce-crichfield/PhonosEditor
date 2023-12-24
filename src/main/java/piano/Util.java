@@ -2,6 +2,8 @@ package piano;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.Node;
+import javafx.scene.layout.AnchorPane;
 
 public class Util {
 
@@ -32,5 +34,15 @@ public class Util {
         }
 
         return result;
+    }
+
+    public static AnchorPane createAnchorPane(Node child) {
+        AnchorPane pane = new AnchorPane();
+        AnchorPane.setTopAnchor(child, 0.0);
+        AnchorPane.setBottomAnchor(child, 0.0);
+        AnchorPane.setLeftAnchor(child, 0.0);
+        AnchorPane.setRightAnchor(child, 0.0);
+        pane.getChildren().add(child);
+        return pane;
     }
 }
