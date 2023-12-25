@@ -1,29 +1,30 @@
 package piano.view;
 
 import javafx.beans.property.ObjectProperty;
-import javafx.scene.layout.BackgroundFill;
+import javafx.collections.ListChangeListener;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 import piano.Util;
+import piano.control.ModifyNoteAction;
+import piano.control.MemoNoteController;
+import piano.control.NoteController;
+import piano.model.NoteData;
+import piano.model.NoteEntry;
 import piano.model.GridInfo;
-import piano.model.NoteRegistry;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 class NoteParameterView extends Rectangle {
     private final Pane parent;
-    public NoteRegistry.Entry getNoteEntry() {
+    public NoteEntry getNoteEntry() {
         return noteEntry;
     }
 
-    private NoteRegistry.Entry noteEntry;
+    private NoteEntry noteEntry;
     private ObjectProperty<GridInfo> gridInfo;
 
-    public NoteParameterView(Pane parent, NoteRegistry.Entry note, ObjectProperty<GridInfo> gridInfo) {
+    public NoteParameterView(Pane parent, NoteEntry note, ObjectProperty<GridInfo> gridInfo) {
         super();
 
         this.parent = parent;
@@ -85,10 +86,9 @@ class NoteParameterView extends Rectangle {
             double dy = event.getY() - startY.get();
             double ty = this.getTranslateY() + dy;
             double velocity = Util.clamp(1 - (ty / parent.getHeight()), 0, 1);
-            noteEntry.modify(data -> data.setVelocityAsPercentage(velocity));
 
-            // Because we are modifying the noteEntry, the noteEntry will fire an event which will
-            // cause the view to be recalculated. We don't need to do it here.
+            NoteController controller = MemoNoteController.getInstance();
+            controller.modify(noteEntry, data -> data.withVelocity((int) (velocity * 100)));
         });
 
         // Sheet Metal gradient
@@ -96,6 +96,16 @@ class NoteParameterView extends Rectangle {
 
         this.setArcHeight(10);
         this.setArcWidth(10);
+
+
+        NoteController controller = MemoNoteController.getInstance();
+        controller.getSelectedEntries().addListener((ListChangeListener<? super NoteEntry>) c -> {
+            if (controller.getSelectedEntries().contains(noteEntry)) {
+                this.setFill(Color.BLUE);
+            } else {
+                this.setFill(Color.DARKGREEN.darker());
+            }
+        });
     }
 
     private void recalculateViewFromModel() {

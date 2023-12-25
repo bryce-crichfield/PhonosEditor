@@ -1,18 +1,22 @@
 package piano.view;
 
 import javafx.beans.property.ObjectProperty;
+import javafx.collections.ListChangeListener;
 import javafx.scene.Cursor;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import piano.control.MemoNoteController;
+import piano.control.NoteController;
+import piano.model.NoteEntry;
 import piano.model.GridInfo;
 import piano.model.NoteData;
 import piano.model.NoteRegistry;
 import piano.util.GridMath;
 
 public class NoteMidiView extends StackPane {
-    private final NoteRegistry.Entry noteEntry;
+    private final NoteEntry noteEntry;
     private final NoteRegistry noteRegistry;
 
     // The dimensions of the note are controlled by the rectangle, which is the background of the note
@@ -20,9 +24,9 @@ public class NoteMidiView extends StackPane {
     ObjectProperty<GridInfo> gridInfo;
     private Handle selectedHandle = null;
 
-    public NoteMidiView(NoteRegistry.Entry entry, NoteRegistry noteRegistry, ObjectProperty<GridInfo> gridInfo) {
+    public NoteMidiView(NoteEntry noteEntry, NoteRegistry noteRegistry, ObjectProperty<GridInfo> gridInfo) {
         super();
-        this.noteEntry = entry;
+        this.noteEntry = noteEntry;
         this.noteRegistry = noteRegistry;
         this.gridInfo = gridInfo;
 
@@ -126,7 +130,7 @@ public class NoteMidiView extends StackPane {
             label.setY(newValue.doubleValue() + rectangle.getHeight() / 2 + label.getLayoutBounds().getHeight() / 2);
             this.setLayoutY(newValue.doubleValue());
 
-            NoteData noteData = noteEntry.get();
+            NoteData noteData = this.noteEntry.get();
             String noteString = NoteData.noteToString(88 - noteData.getNote());
             label.setText(noteString);
         });
@@ -146,7 +150,7 @@ public class NoteMidiView extends StackPane {
             rectangle.setHeight(newHeight);
 
             // Move the note to the new position
-            NoteData data = noteEntry.get();
+            NoteData data = this.noteEntry.get();
             double x = data.calcXPosOnGrid(newValue);
             double y = data.calcYPosOnGrid(newValue);
             moveNote(x, y);
@@ -154,10 +158,20 @@ public class NoteMidiView extends StackPane {
         });
 
         // Initially position the note on the grid =====================================================================
-        NoteData data = noteEntry.get();
+        NoteData data = this.noteEntry.get();
         double x = data.calcXPosOnGrid(gridInfo.get());
         double y = data.calcYPosOnGrid(gridInfo.get());
         moveNote(x, y);
+
+
+        NoteController controller = MemoNoteController.getInstance();
+        controller.getSelectedEntries().addListener((ListChangeListener<? super NoteEntry>) c -> {
+            if (controller.getSelectedEntries().contains(noteEntry)) {
+                rectangle.setFill(Color.BLUE);
+            } else {
+                rectangle.setFill(Color.DARKGREEN);
+            }
+        });
     }
 
     private void updateNoteProperty() {
@@ -191,7 +205,7 @@ public class NoteMidiView extends StackPane {
         return false;
     }
 
-    public NoteRegistry.Entry getNoteEntry() {
+    public NoteEntry getNoteEntry() {
         return noteEntry;
     }
 

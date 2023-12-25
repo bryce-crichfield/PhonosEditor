@@ -8,10 +8,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+import piano.control.MemoNoteController;
 import piano.model.GridInfo;
 import piano.model.NoteRegistry;
 import piano.tool.EditorTool;
-import piano.tool.SelectTool;
 
 import java.util.Optional;
 
@@ -22,10 +22,13 @@ public class NoteMidiEditor extends AnchorPane {
     private final Group world;
     private final NoteRegistry notes;
     private Optional<EditorTool> currentTool = Optional.empty();
+    private final MemoNoteController controller;
 
     public NoteMidiEditor(ObjectProperty<GridInfo> gridInfo, NoteRegistry noteRegistry) {
         this.gridInfo = gridInfo;
         this.notes = noteRegistry;
+        this.controller = MemoNoteController.createInstance(noteRegistry);
+
 
         // Create the background grid surface --------------------------------------------------------------------------
         background = gridInfo.get().createRectangle();
@@ -138,6 +141,10 @@ public class NoteMidiEditor extends AnchorPane {
 
         Image image = canvas.snapshot(new SnapshotParameters(), null);
         return new ImagePattern(image, 0, 0, width, height, false);
+    }
+
+    public MemoNoteController getController() {
+        return controller;
     }
 
     public Rectangle getBackgroundSurface() {

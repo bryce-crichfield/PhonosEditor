@@ -5,17 +5,22 @@ import javafx.geometry.Point3D;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
+import piano.control.CreateNoteAction;
+import piano.control.DeleteNoteAction;
+import piano.control.MemoNoteController;
 import piano.model.GridInfo;
 import piano.model.NoteData;
 import piano.view.NoteMidiView;
 import piano.view.NoteMidiEditor;
 
 public class PencilTool implements EditorTool {
-    private final NoteMidiEditor editor;
+    private final NoteMidiEditor view;
+    private final MemoNoteController controller;
 
-    public PencilTool(NoteMidiEditor editor) {
+    public PencilTool(NoteMidiEditor view) {
         super();
-        this.editor = editor;
+        this.view = view;
+        this.controller = view.getController();
     }
 
     @Override
@@ -24,11 +29,12 @@ public class PencilTool implements EditorTool {
             PickResult pickResult = event.getPickResult();
             Point3D point = pickResult.getIntersectedPoint();
             Node node = pickResult.getIntersectedNode();
-            if (node.equals(editor.getBackgroundSurface())) {
-                ObjectProperty<GridInfo> gridInfo = editor.getGridInfo();
+            if (node.equals(view.getBackgroundSurface())) {
+                ObjectProperty<GridInfo> gridInfo = view.getGridInfo();
                 var gi = gridInfo.get();
                 NoteData data = NoteData.from(point.getX(), point.getY(), gi.getCellWidth(), gi.getCellHeight(), gi);
-                editor.getNoteRegistry().register(data);
+
+                controller.create(data);
             }
         }
 
@@ -55,7 +61,7 @@ public class PencilTool implements EditorTool {
             }
 
             if (noteMidiView != null) {
-                editor.getNoteRegistry().unregister(noteMidiView.getNoteEntry());
+                controller.delete(noteMidiView.getNoteEntry());
             }
         }
     }

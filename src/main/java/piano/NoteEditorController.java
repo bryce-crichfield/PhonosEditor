@@ -108,6 +108,17 @@ public class NoteEditorController {
             }
         });
 
+        // on control + z, undo the last action using noteMidiEditor.getNoteController().undo()
+        root.setOnKeyPressed(event -> {
+            if (event.isControlDown() && event.getCode().toString().equals("Z")) {
+                noteMidiEditor.getController().undo();
+            }
+
+            if (event.isControlDown() && event.getCode().toString().equals("Y")) {
+                noteMidiEditor.getController().redo();
+            }
+        });
+
         // Initialize piano roll ---------------------------------------------------------------------------------------
         {
             pianoRoll = new PianoRoll(noteMidiEditor.getBackgroundSurface().getHeight(), gridInfo);

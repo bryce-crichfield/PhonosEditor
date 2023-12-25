@@ -9,8 +9,11 @@ import javafx.scene.input.PickResult;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Rectangle;
+import piano.model.NoteEntry;
 import piano.tool.EditorTool;
 import piano.view.NoteMidiEditor;
+
+import java.util.Collection;
 
 public class SelectTool implements EditorTool {
     private final Group world;
@@ -50,6 +53,19 @@ public class SelectTool implements EditorTool {
         selectionBox.setTranslateY(y);
         selectionBox.setWidth(width);
         selectionBox.setHeight(height);
+
+        Collection<NoteEntry> hoveredNotes = editor.getController().query(entry -> {
+            double entryX = entry.get().calcXPosOnGrid(editor.getGridInfo().get());
+            double entryY = entry.get().calcYPosOnGrid(editor.getGridInfo().get());
+            double entryWidth = entry.get().getEnd() - entry.get().getStart();
+            double entryHeight = 1;
+            return entryX < x + width && entryX + entryWidth > x && entryY < y + height && entryY + entryHeight > y;
+        });
+
+        editor.getController().clearSelection();
+        for (NoteEntry entry : hoveredNotes) {
+            editor.getController().select(entry);
+        }
     }
 
     public void onSelectionEnd(Point3D point) {
