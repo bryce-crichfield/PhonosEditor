@@ -1,6 +1,7 @@
 package piano.view;
 
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
@@ -21,7 +22,7 @@ public class NoteMidiEditor extends AnchorPane {
     private final Rectangle background;
     private final Group world;
     private final NoteRegistry notes;
-    private Optional<EditorTool> currentTool = Optional.empty();
+    private final ObjectProperty<Optional<EditorTool>> currentTool = new SimpleObjectProperty<>(Optional.empty());
     private final MemoNoteController controller;
 
     public NoteMidiEditor(ObjectProperty<GridInfo> gridInfo, NoteRegistry noteRegistry) {
@@ -59,20 +60,20 @@ public class NoteMidiEditor extends AnchorPane {
         getChildren().add(subScene);
 
         // Delegate mouse events to EditorTool -------------------------------------------------------------------------
-        subScene.setOnMousePressed(mouseEvent -> currentTool.ifPresent(tool -> tool.onMouseEvent(mouseEvent)));
-        subScene.setOnMouseMoved(mouseEvent -> currentTool.ifPresent(tool -> tool.onMouseEvent(mouseEvent)));
-        subScene.setOnMouseDragged(mouseEvent -> currentTool.ifPresent(tool -> tool.onMouseEvent(mouseEvent)));
-        subScene.setOnMouseReleased(mouseEvent -> currentTool.ifPresent(tool -> tool.onMouseEvent(mouseEvent)));
+        subScene.setOnMousePressed(mouseEvent -> currentTool.get().ifPresent(tool -> tool.onMouseEvent(mouseEvent)));
+        subScene.setOnMouseMoved(mouseEvent -> currentTool.get().ifPresent(tool -> tool.onMouseEvent(mouseEvent)));
+        subScene.setOnMouseDragged(mouseEvent -> currentTool.get().ifPresent(tool -> tool.onMouseEvent(mouseEvent)));
+        subScene.setOnMouseReleased(mouseEvent -> currentTool.get().ifPresent(tool -> tool.onMouseEvent(mouseEvent)));
 
         // Bind view to model ------------------------------------------------------------------------------------------
         notes.onAdded(entry -> {
-            var noteMidiView = new NoteMidiView(entry, notes, gridInfo);
+            var noteMidiView = new NoteMidiView(entry, gridInfo, currentTool);
             world.getChildren().add(noteMidiView);
         });
 
         notes.onRemoved(entry -> {
             world.getChildren().removeIf(
-                    node -> node instanceof NoteMidiView view && view.getNoteEntry().equals(entry));
+                node -> node instanceof NoteMidiView view && view.getNoteEntry().equals(entry));
         });
     }
 
@@ -138,7 +139,6 @@ public class NoteMidiEditor extends AnchorPane {
             gc.strokeLine(0, row * gridHeight, width, row * gridHeight);
         }
 
-
         Image image = canvas.snapshot(new SnapshotParameters(), null);
         return new ImagePattern(image, 0, 0, width, height, false);
     }
@@ -156,7 +156,8 @@ public class NoteMidiEditor extends AnchorPane {
     }
 
     public void setTool(EditorTool tool) {
-        currentTool = Optional.of(tool);
+        currentTool.set(Optional.of(tool));
+        currentTool.get().ifPresent(EditorTool::onEnter);
     }
 
     public void scrollX(double deltaX) {

@@ -1,6 +1,5 @@
 package piano;
 
-import javafx.animation.AnimationTimer;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
@@ -14,6 +13,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import piano.model.GridInfo;
+import piano.model.NoteData;
+import piano.model.NoteEntry;
 import piano.model.NoteRegistry;
 import piano.tool.PencilTool;
 import piano.tool.SelectTool;
@@ -22,6 +23,8 @@ import piano.view.NoteParameterEditor;
 import piano.view.PianoRoll;
 import piano.view.ScrollBar;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.function.Consumer;
 
 public class NoteEditorController {
@@ -38,7 +41,7 @@ public class NoteEditorController {
     private NoteParameterEditor noteParameterEditor;
     private PianoRoll pianoRoll;
     private ObjectProperty<GridInfo> gridInfo;
-    private double zoomVelocity = 0;
+    private final double zoomVelocity = 0;
 
     public NoteEditorController() {
         super();
@@ -103,7 +106,7 @@ public class NoteEditorController {
                 scaleGrid(event.getDeltaX(), event.getDeltaY());
             } else if (!event.isAltDown() && event.isControlDown()) {
                 horizontalScrollBar.scroll(-event.getDeltaY());
-            } else  {
+            } else {
                 verticalScrollBar.scroll(-event.getDeltaY());
             }
         });
@@ -116,6 +119,32 @@ public class NoteEditorController {
 
             if (event.isControlDown() && event.getCode().toString().equals("Y")) {
                 noteMidiEditor.getController().redo();
+            }
+
+            if (event.isControlDown() && event.getCode().toString().equals("B")) {
+                Collection<NoteEntry> selected = noteMidiEditor.getController().getSelectedEntries();
+
+                // Find the lowest start and highest end to determine the length of the pattern to create
+                int lowestStart = Integer.MAX_VALUE;
+                int highestEnd = Integer.MIN_VALUE;
+                for (NoteEntry entry : selected) {
+                    lowestStart = Math.min(lowestStart, entry.get().getStart());
+                    highestEnd = Math.max(highestEnd, entry.get().getEnd());
+                }
+
+                // Create a new pattern with the same length as the selected pattern
+                int length = highestEnd - lowestStart;
+                Collection<NoteData> newNotes = new ArrayList<>();
+                for (NoteEntry entry : selected) {
+                    NoteData data = entry.get();
+
+                    int newStart = data.getStart() + length;
+                    int newEnd = data.getEnd() + length;
+                    NoteData newData = new NoteData(data.getNote(), newStart, newEnd, data.getVelocity());
+                    newNotes.add(newData);
+                }
+
+                noteMidiEditor.getController().createMany(newNotes);
             }
         });
 
@@ -150,22 +179,22 @@ public class NoteEditorController {
         }
     }
 
+    public void scaleGrid(double deltaX, double deltaY) {
+        var gi = gridInfo.get();
+        double newCellWidth = gi.getCellWidth() + deltaX;
+        newCellWidth = Util.clamp(newCellWidth, 10, 48);
+        double newCellHeight = gi.getCellHeight() + deltaY;
+        newCellHeight = Util.clamp(newCellHeight, 10, 48);
+
+        gridInfo.set(gi.withCellWidth(newCellWidth).withCellHeight(newCellHeight));
+    }
+
     public void changeToSelect(ActionEvent actionEvent) {
         noteMidiEditor.setTool(new SelectTool(noteMidiEditor, noteMidiEditor.getWorld()));
     }
 
     public void changeToPencil(ActionEvent actionEvent) {
         noteMidiEditor.setTool(new PencilTool(noteMidiEditor));
-    }
-
-    public void scaleGrid(double deltaX, double deltaY) {
-        var gi = gridInfo.get();
-        double newCellWidth = gi.getCellWidth() + deltaX;
-        newCellWidth =Util.clamp(newCellWidth, 10, 48);
-        double newCellHeight = gi.getCellHeight() + deltaY;
-        newCellHeight = Util.clamp(newCellHeight, 10, 48);
-
-        gridInfo.set(gi.withCellWidth(newCellWidth).withCellHeight(newCellHeight));
     }
 
     public void scaleUpX() {

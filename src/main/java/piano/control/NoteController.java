@@ -14,6 +14,10 @@ public interface NoteController {
     default void create(NoteData data) {
         execute(new CreateNoteAction(data));
     }
+    default void createMany(Collection<NoteData> data) {
+        System.out.println("createMany");
+        execute(new CreateNoteAction(data));
+    }
 
     default void modify(NoteEntry entry, Function<NoteData, NoteData> update) {
         if (!getSelectedEntries().isEmpty()) {
@@ -34,6 +38,7 @@ public interface NoteController {
     void undo();
     void select(NoteEntry entry);
     void clearSelection();
+
     ObservableList<NoteEntry> getSelectedEntries();
 
     Collection<NoteEntry> query(Predicate<NoteEntry> predicate);

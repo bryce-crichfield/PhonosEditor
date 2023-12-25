@@ -3,5 +3,6 @@ package piano.tool;
 import javafx.scene.input.MouseEvent;
 
 public interface EditorTool {
-    void onMouseEvent(MouseEvent event);
+    void onEnter();
+    EditorTool onMouseEvent(MouseEvent event);
 }

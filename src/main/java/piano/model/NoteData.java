@@ -80,4 +80,8 @@ public class NoteData {
         }
         return octave * 12 + noteIndex;
     }
+
+    public int getLength() {
+        return end - start;
+    }
 }

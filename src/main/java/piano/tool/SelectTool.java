@@ -9,6 +9,7 @@ import javafx.scene.input.PickResult;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Rectangle;
+import piano.control.NoteController;
 import piano.model.NoteEntry;
 import piano.tool.EditorTool;
 import piano.view.NoteMidiEditor;
@@ -74,7 +75,13 @@ public class SelectTool implements EditorTool {
     }
 
     @Override
-    public void onMouseEvent(MouseEvent event) {
+    public void onEnter() {
+        NoteController controller = editor.getController();
+        controller.clearSelection();
+    }
+
+    @Override
+    public EditorTool onMouseEvent(MouseEvent event) {
         if (event.getEventType() == MouseEvent.MOUSE_PRESSED && event.isPrimaryButtonDown()) {
             PickResult pickResult = event.getPickResult();
             Node node = pickResult.getIntersectedNode();
@@ -93,6 +100,9 @@ public class SelectTool implements EditorTool {
 
         if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
             onSelectionEnd(null);
+            return new PencilTool(editor);
         }
+
+        return this;
     }
 }

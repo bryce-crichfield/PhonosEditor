@@ -25,7 +25,12 @@ public class PencilTool implements EditorTool {
     }
 
     @Override
-    public void onMouseEvent(MouseEvent event) {
+    public void onEnter() {
+
+    }
+
+    @Override
+    public EditorTool onMouseEvent(MouseEvent event) {
         if (event.getEventType() == MouseEvent.MOUSE_PRESSED && event.isPrimaryButtonDown()) {
             PickResult pickResult = event.getPickResult();
             Point3D point = pickResult.getIntersectedPoint();
@@ -38,6 +43,7 @@ public class PencilTool implements EditorTool {
                 int cellY = (int) (GridMath.snapToGridY(gi, point.getY()) / gi.getCellHeight());
                 NoteData data = new NoteData(cellY, cellX, cellX + 1, 100);
 
+                controller.clearSelection();
                 controller.create(data);
             }
         }
@@ -68,5 +74,7 @@ public class PencilTool implements EditorTool {
                 controller.delete(noteMidiView.getNoteEntry());
             }
         }
+
+        return this;
     }
 }

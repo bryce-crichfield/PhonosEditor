@@ -3,6 +3,7 @@ package piano.view;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Cursor;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -12,7 +13,11 @@ import piano.control.NoteController;
 import piano.model.GridInfo;
 import piano.model.NoteData;
 import piano.model.NoteEntry;
-import piano.model.NoteRegistry;
+import piano.tool.EditorTool;
+import piano.tool.PencilTool;
+
+import javax.swing.text.html.Option;
+import java.util.Optional;
 
 public class NoteMidiView extends StackPane {
     private final NoteEntry noteEntry;
@@ -23,11 +28,15 @@ public class NoteMidiView extends StackPane {
     private final Handle bodyHandle = new BodyHandle();
     ObjectProperty<GridInfo> gridInfo;
     private Handle selectedHandle = null;
+    private NoteMidiController selfController = new PencilNoteMidiController();
 
-    public NoteMidiView(NoteEntry noteEntry, NoteRegistry noteRegistry, ObjectProperty<GridInfo> gridInfo) {
+    ObjectProperty<Optional<EditorTool>> currentTool;
+
+    public NoteMidiView(NoteEntry noteEntry, ObjectProperty<GridInfo> gridInfo, ObjectProperty<Optional<EditorTool>> currentTool) {
         super();
         this.noteEntry = noteEntry;
         this.gridInfo = gridInfo;
+        this.currentTool = currentTool;
 
         label = new Text("");
         rectangle = new Rectangle();
@@ -57,39 +66,25 @@ public class NoteMidiView extends StackPane {
             rectangle.setY(y1);
         });
 
+        currentTool.addListener((observable, oldValue, newValue) -> {
+            if (newValue.isEmpty()) {
+                return;
+            }
+
+            if (newValue.get() instanceof PencilTool) {
+                System.out.println("Pencil tool");
+                selfController = new PencilNoteMidiController();
+            } else {
+                System.out.println("Unknown tool");
+                selfController = new NoteMidiController() {};
+            }
+        });
 
         // Set handle on mouse hover
-        rectangle.setOnMouseMoved(event -> {
-            double mouseX = event.getX();
-
-            if (leftHandle.isHovered(mouseX)) {
-                selectedHandle = leftHandle;
-            } else if (rightHandle.isHovered(mouseX)) {
-                selectedHandle = rightHandle;
-            } else if (bodyHandle.isHovered(mouseX)) {
-                selectedHandle = bodyHandle;
-            } else {
-                throw new RuntimeException("Mouse is not hovering over any handle");
-            }
-
-            // Change the cursor to indicate the handle that will be selected
-            setCursor(selectedHandle.getCursor());
-        });
+        rectangle.setOnMouseMoved(event -> selfController.rectangleOnMouseMoved(event));
 
         // Delegate the drag event to the selected handle
-        this.setOnMouseDragged(event -> {
-            double deltaX = event.getX();
-            double deltaY = event.getY();
-
-            double cellX = deltaX / gridInfo.get().getCellWidth();
-            double cellY = deltaY / gridInfo.get().getCellHeight();
-
-            if (selectedHandle == null) {
-                throw new RuntimeException("Mouse is not hovering over any handle");
-            }
-
-            selectedHandle.onDragged(cellX, cellY);
-        });
+        this.setOnMouseDragged(event -> selfController.stackPaneOnMouseDragged(event));
 
         // Update the view rectangle when the note data model changes
         noteEntry.addListener((observable, oldValue, newValue) -> {
@@ -152,12 +147,77 @@ public class NoteMidiView extends StackPane {
         return noteEntry;
     }
 
+    interface NoteMidiController {
+        default void stackPaneOnMouseDragged(MouseEvent event) {
+            event.consume();
+        }
+
+        default void rectangleOnMouseMoved(MouseEvent event) {
+            event.consume();
+        }
+    }
+
+
     private interface Handle {
         void onDragged(double cellsX, double cellsY);
 
         Cursor getCursor();
 
         boolean isHovered(double mouseX);
+    }
+
+    private static class NullHandle implements Handle {
+        public static final NullHandle instance = new NullHandle();
+
+        @Override
+        public void onDragged(double cellsX, double cellsY) {
+            // Do nothing
+        }
+
+        @Override
+        public Cursor getCursor() {
+            return Cursor.DEFAULT;
+        }
+
+        @Override
+        public boolean isHovered(double mouseX) {
+            return false;
+        }
+    }
+
+    private class PencilNoteMidiController implements NoteMidiController {
+        @Override
+        public void stackPaneOnMouseDragged(MouseEvent event) {
+            double deltaX = event.getX();
+            double deltaY = event.getY();
+
+            double cellX = deltaX / gridInfo.get().getCellWidth();
+            double cellY = deltaY / gridInfo.get().getCellHeight();
+
+            if (selectedHandle == null) {
+                return;
+            }
+
+            selectedHandle.onDragged(cellX, cellY);
+        }
+
+        @Override
+        public void rectangleOnMouseMoved(MouseEvent event) {
+            double mouseX = event.getX();
+
+            if (leftHandle.isHovered(mouseX)) {
+                selectedHandle = leftHandle;
+            } else if (rightHandle.isHovered(mouseX)) {
+                selectedHandle = rightHandle;
+            } else if (bodyHandle.isHovered(mouseX)) {
+                selectedHandle = bodyHandle;
+            } else {
+                selectedHandle = NullHandle.instance;
+            }
+
+            // Change the cursor to indicate the handle that will be selected
+            setCursor(selectedHandle.getCursor());
+        }
     }
 
     private class LeftHandle implements Handle {

@@ -8,8 +8,4 @@ public class NoteEntry extends SimpleObjectProperty<NoteData> {
     public NoteEntry(NoteData note) {
         super(note);
     }
-
-    public void modify(Function<NoteData, NoteData> modifier) {
-        set(modifier.apply(get()));
-    }
 }
