@@ -2,6 +2,7 @@ package piano.model;
 
 import lombok.Getter;
 import lombok.With;
+import piano.Util;
 import piano.util.GridMath;
 
 @With
@@ -12,14 +13,20 @@ public class NoteData {
     private int end;
     private int velocity;
 
-    public NoteData() {
-        this.note = 0;
-        this.start = 0;
-        this.end = 0;
-        this.velocity = 0;
-    }
-
     public NoteData(int note, int start, int end, int velocity) {
+        // Enforce invariants
+        note = (int) Util.clamp(note, 0, 127);
+        start = (int) Util.clamp(start, 0, 127);
+        end = (int) Util.clamp(end, 0, 127);
+        velocity = (int) Util.clamp(velocity, 0, 100);
+
+        // start must be less than end
+        if (start > end) {
+            int temp = start;
+            start = end;
+            end = temp;
+        }
+
         this.note = note;
         this.start = start;
         this.end = end;
@@ -27,18 +34,11 @@ public class NoteData {
     }
 
     public static NoteData from(double x, double y, double width, double height, GridInfo gridInfo) {
-        NoteData noteData = new NoteData();
-
         int colStart = (int) Math.floor(x / gridInfo.getCellWidth());
         int colEnd = (int) Math.floor((x + width) / gridInfo.getCellWidth());
         int rowStart = (int) Math.floor(y / gridInfo.getCellHeight());
 
-        noteData.start = colStart;
-        noteData.end = colEnd;
-        noteData.note = rowStart;
-        noteData.velocity = 100;
-
-        return noteData;
+        return new NoteData(rowStart, colStart, colEnd, 100);
     }
 
     public double calcXPosOnGrid(GridInfo gridInfo) {

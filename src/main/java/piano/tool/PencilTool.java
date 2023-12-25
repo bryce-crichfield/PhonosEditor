@@ -10,6 +10,7 @@ import piano.control.DeleteNoteAction;
 import piano.control.MemoNoteController;
 import piano.model.GridInfo;
 import piano.model.NoteData;
+import piano.util.GridMath;
 import piano.view.NoteMidiView;
 import piano.view.NoteMidiEditor;
 
@@ -32,7 +33,10 @@ public class PencilTool implements EditorTool {
             if (node.equals(view.getBackgroundSurface())) {
                 ObjectProperty<GridInfo> gridInfo = view.getGridInfo();
                 var gi = gridInfo.get();
-                NoteData data = NoteData.from(point.getX(), point.getY(), gi.getCellWidth(), gi.getCellHeight(), gi);
+
+                int cellX = (int) (GridMath.snapToGridX(gi, point.getX()) / gi.getCellWidth());
+                int cellY = (int) (GridMath.snapToGridY(gi, point.getY()) / gi.getCellHeight());
+                NoteData data = new NoteData(cellY, cellX, cellX + 1, 100);
 
                 controller.create(data);
             }

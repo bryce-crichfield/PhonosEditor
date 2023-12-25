@@ -73,8 +73,6 @@ public class SelectTool implements EditorTool {
         world.getChildren().remove(selectionBox);
     }
 
-
-
     @Override
     public void onMouseEvent(MouseEvent event) {
         if (event.getEventType() == MouseEvent.MOUSE_PRESSED && event.isPrimaryButtonDown()) {
