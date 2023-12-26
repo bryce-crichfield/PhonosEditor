@@ -28,6 +28,7 @@ public class MemoNoteController implements NoteController {
     public void undo() {
         if (!undoStack.isEmpty()) {
             NoteAction action = undoStack.pop();
+            System.out.println("undo " + action.getClass().getSimpleName());
             action.undo(registry);
             redoStack.push(action);
         }

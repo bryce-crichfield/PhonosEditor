@@ -8,6 +8,7 @@ import javafx.geometry.Orientation;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -16,6 +17,8 @@ import piano.model.GridInfo;
 import piano.model.NoteData;
 import piano.model.NoteEntry;
 import piano.model.NoteRegistry;
+import piano.playback.PlaybackService;
+import piano.playback.PlaybackState;
 import piano.tool.PencilTool;
 import piano.tool.SelectTool;
 import piano.view.NoteMidiEditor;
@@ -42,6 +45,7 @@ public class NoteEditorController {
     private PianoRoll pianoRoll;
     private ObjectProperty<GridInfo> gridInfo;
     private final double zoomVelocity = 0;
+    private PlaybackService playbackService;
 
     public NoteEditorController() {
         super();
@@ -50,14 +54,17 @@ public class NoteEditorController {
     public void initialize() {
         bodyBorderPane = new BorderPane();
 
+
         // Initialize note pattern and property editors ----------------------------------------------------------------
         {
             var gi = new GridInfo(88, 16 * 16, 32, 16);
             gridInfo = new SimpleObjectProperty<>(gi);
-
+            // Playback Service
+            PlaybackState state = new PlaybackState(0, gridInfo.get().getColumns(), 120, false);
+            playbackService = new PlaybackService(new SimpleObjectProperty<>(state));
             // The pattern editor represents the world as a large rectangle with a grid drawn on it.  The large
             // rectangle is the background surface, and the grid is drawn on top of it.
-            noteMidiEditor = new NoteMidiEditor(gridInfo, new NoteRegistry());
+            noteMidiEditor = new NoteMidiEditor(gridInfo, new NoteRegistry(), playbackService);
             bodyBorderPane.setCenter(noteMidiEditor);
 
             noteParameterEditor = new NoteParameterEditor(gridInfo, noteMidiEditor.getNoteRegistry());
@@ -111,7 +118,6 @@ public class NoteEditorController {
             }
         });
 
-        // on control + z, undo the last action using noteMidiEditor.getNoteController().undo()
         root.setOnKeyPressed(event -> {
             if (event.isControlDown() && event.getCode().toString().equals("Z")) {
                 noteMidiEditor.getController().undo();
@@ -177,6 +183,9 @@ public class NoteEditorController {
             });
             rootBorderPane.setCenter(splitPane);
         }
+
+
+        playbackService.play();
     }
 
     public void scaleGrid(double deltaX, double deltaY) {
@@ -211,5 +220,17 @@ public class NoteEditorController {
 
     public void scaleDownY() {
         scaleGrid(0, -1);
+    }
+
+    public void playlistPause(ActionEvent actionEvent) {
+        playbackService.pause();
+    }
+
+    public void playlistPlay(ActionEvent actionEvent) {
+        playbackService.play();
+    }
+
+    public void playlistStop(ActionEvent actionEvent) {
+        playbackService.stop();
     }
 }

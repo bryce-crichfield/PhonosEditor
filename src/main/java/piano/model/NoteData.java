@@ -84,4 +84,12 @@ public class NoteData {
     public int getLength() {
         return end - start;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof NoteData other) {
+            return note == other.note && start == other.start && end == other.end && velocity == other.velocity;
+        }
+        return false;
+    }
 }

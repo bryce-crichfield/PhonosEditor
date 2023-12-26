@@ -51,19 +51,19 @@ public class NoteMidiView extends StackPane {
 
         // When the grid changes, we need to update the view
         gridInfo.addListener((observable1, oldValue1, newValue1) -> {
-            // Resize the note to fit the new grid
-            double newWidth = newValue1.getCellWidth();
-            double newHeight = newValue1.getCellHeight();
-            rectangle.setWidth(newWidth);
-            rectangle.setHeight(newHeight);
+            NoteData data = this.noteEntry.get();
+            GridInfo grid = gridInfo.get();
 
-            // Move the note to the new position
-            NoteData data1 = this.noteEntry.get();
-            double x1 = data1.calcXPosOnGrid(newValue1);
-            double y1 = data1.calcYPosOnGrid(newValue1);
+            double x = data.calcXPosOnGrid(grid);
+            double y = data.calcYPosOnGrid(grid);
+            rectangle.setX(x);
+            rectangle.setY(y);
 
-            rectangle.setX(x1);
-            rectangle.setY(y1);
+            double width = (data.getEnd() - data.getStart()) * grid.getCellWidth();
+            rectangle.setWidth(width);
+
+            double height = grid.getCellHeight();
+            rectangle.setHeight(height);
         });
 
         currentTool.addListener((observable, oldValue, newValue) -> {

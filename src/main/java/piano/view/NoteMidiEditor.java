@@ -12,6 +12,7 @@ import javafx.scene.shape.Rectangle;
 import piano.control.MemoNoteController;
 import piano.model.GridInfo;
 import piano.model.NoteRegistry;
+import piano.playback.PlaybackService;
 import piano.tool.EditorTool;
 
 import java.util.Optional;
@@ -24,11 +25,13 @@ public class NoteMidiEditor extends AnchorPane {
     private final NoteRegistry notes;
     private final ObjectProperty<Optional<EditorTool>> currentTool = new SimpleObjectProperty<>(Optional.empty());
     private final MemoNoteController controller;
+    private final PlaybackService playbackService;
 
-    public NoteMidiEditor(ObjectProperty<GridInfo> gridInfo, NoteRegistry noteRegistry) {
+    public NoteMidiEditor(ObjectProperty<GridInfo> gridInfo, NoteRegistry noteRegistry, PlaybackService playbackService) {
         this.gridInfo = gridInfo;
         this.notes = noteRegistry;
         this.controller = MemoNoteController.createInstance(noteRegistry);
+        this.playbackService = playbackService;
 
 
         // Create the background grid surface --------------------------------------------------------------------------
@@ -75,6 +78,21 @@ public class NoteMidiEditor extends AnchorPane {
             world.getChildren().removeIf(
                 node -> node instanceof NoteMidiView view && view.getNoteEntry().equals(entry));
         });
+
+
+        Rectangle playbackLine = new Rectangle();
+        playbackLine.setFill(Color.CYAN);
+        playbackLine.setStroke(Color.WHITE);
+        playbackLine.setOpacity(0.5);
+        playbackLine.setWidth(10);
+        playbackLine.heightProperty().bind(heightProperty());
+        world.getChildren().add(playbackLine);
+        playbackService.getPlaybackState().addListener((obs, oldV, newV) -> {
+            GridInfo gi = gridInfo.get();
+            double x = newV.getHead() * gi.getCellWidth();
+            playbackLine.setTranslateX(x);
+            playbackLine.toFront();
+        });
     }
 
     public ImagePattern createGridLineFill() {
@@ -95,9 +113,9 @@ public class NoteMidiEditor extends AnchorPane {
         boolean dark = false;
         for (int col = 0; col < columns; col += 16) {
             if (dark) {
-                gc.setFill(Color.DARKGRAY.darker().darker().darker().darker().darker());
+                gc.setFill(Theme.BACKGROUND);
             } else {
-                gc.setFill(Color.DARKGRAY.darker().darker().darker());
+                gc.setFill(Theme.BACKGROUND.darker());
             }
             gc.fillRect(col * gridWidth, 0, 16 * gridWidth, height);
             dark = !dark;
@@ -106,7 +124,7 @@ public class NoteMidiEditor extends AnchorPane {
         // Darken the black keys
         boolean[] keyMask = {true, false, true, false, true, true, false, true, false, true, false, true, true};
 
-        Color darkerFill = Color.DARKGRAY.deriveColor(1, 1, 1, 0.1);
+        Color darkerFill = Theme.BACKGROUND.deriveColor(1, 1, 1, 0.1);
         gc.setFill(darkerFill);
         int keyIndex = 12;
         for (int row = (int) (rows - 1); row >= 0; row--) {
@@ -123,8 +141,8 @@ public class NoteMidiEditor extends AnchorPane {
         }
 
         // Draw the vertical lines
-        Color vertLineLight = Color.DARKGRAY.darker();
-        Color vertLineDark = Color.DARKGRAY.darker().darker().darker().darker().darker();
+        Color vertLineLight = Theme.BACKGROUND.brighter();
+        Color vertLineDark = Theme.BACKGROUND.darker().darker();
         for (int col = 0; col < columns; col++) {
             if (col % 4 == 0) {
                 gc.setStroke(vertLineLight);

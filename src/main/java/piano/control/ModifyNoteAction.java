@@ -18,14 +18,20 @@ public class ModifyNoteAction implements NoteAction {
 
     @Override
     public void execute(NoteRegistry registry) {
-        undo(registry);
+        if (newData.equals(entry.get())) {
+            return;
+        }
+
         oldData = Optional.of(entry.get());
         entry.set(newData);
     }
 
     @Override
     public void undo(NoteRegistry registry) {
-        oldData.ifPresent(entry::set);
+        System.out.println("undo modify");
+        oldData.ifPresent(old -> {
+            entry.set(old);
+        });
         oldData = Optional.empty();
     }
 }

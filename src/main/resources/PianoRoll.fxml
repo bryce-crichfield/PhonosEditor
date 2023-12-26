@@ -59,6 +59,25 @@
                             <FontIcon iconLiteral="mdi-arrow-down-bold-circle"/>
                         </graphic>
                     </Button>
+
+                    <Separator orientation="VERTICAL"/>
+
+                    <Button onAction="#playlistPause">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-pause"/>
+                        </graphic>
+                    </Button>
+
+                    <Button onAction="#playlistPlay">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-play"/>
+                        </graphic>
+                    </Button>
+                    <Button onAction="#playlistStop">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-stop"/>
+                        </graphic>
+                    </Button>
                 </ToolBar>
             </VBox>
         </top>
