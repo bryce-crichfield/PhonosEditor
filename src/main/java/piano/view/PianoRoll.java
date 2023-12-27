@@ -17,10 +17,12 @@ public class PianoRoll extends AnchorPane {
     private ObjectProperty<GridInfo> gridInfo;
     private final double canvasHeight;
     private double scrollY;
-    public PianoRoll(double canvasHeight, ObjectProperty<GridInfo> gridInfo) {
+    public PianoRoll(ObjectProperty<GridInfo> gridInfo) {
         super();
 
         setMinWidth(125);
+        this.canvasHeight = gridInfo.get().createRectangle().getHeight();
+
         setStyle("-fx-background-color: #000ff0");
 
         this.gridInfo = gridInfo;
@@ -31,8 +33,6 @@ public class PianoRoll extends AnchorPane {
             fill = generateFillImage(125, canvasHeight);
             scrollY(scrollY);
         });
-
-        this.canvasHeight = canvasHeight;
 
         scrollY(0);
     }

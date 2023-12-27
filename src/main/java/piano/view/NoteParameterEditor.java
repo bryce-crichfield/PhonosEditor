@@ -1,28 +1,20 @@
 package piano.view;
 
-import javafx.beans.property.ObjectProperty;
 import javafx.scene.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
-import piano.model.GridInfo;
-import piano.model.NoteRegistry;
+import piano.EditorContext;
 
 
 public class NoteParameterEditor extends AnchorPane {
-    public void scrollX(double v) {
-        world.setTranslateX(v);
-    }
-
-    private final ObjectProperty<GridInfo> gridInfo;
-    private final NoteRegistry notes;
+    private final EditorContext context;
     Rectangle background;
     Camera camera;
     Group world;
-
-    public NoteParameterEditor(ObjectProperty<GridInfo> gridInfo, NoteRegistry notes) {
-        this.gridInfo = gridInfo;
-        this.notes = notes;
+    public NoteParameterEditor(EditorContext context) {
+        this.context = context;
 
         // Create a camera to view the 3D shapes
         camera = new ParallelCamera();
@@ -30,6 +22,7 @@ public class NoteParameterEditor extends AnchorPane {
         camera.setTranslateZ(-100);
 
         // Create the background surface which spans the entire grid area
+        var gridInfo = context.getViewSettings().gridInfoProperty();
         background = gridInfo.get().createRectangle();
         background.setFill(createGridLineFill());
         gridInfo.addListener((observable, oldValue, newValue) -> {
@@ -58,19 +51,22 @@ public class NoteParameterEditor extends AnchorPane {
         this.getChildren().add(scene);
 
         // Spawn a NoteParameterView for each note in the registry
-        notes.onAdded(entry -> {
-            var notePropertyView = new NoteParameterView(this, entry, gridInfo);
+        context.getNotes().onCreate((entry, oldData, newData) -> {
+            var notePropertyView = new NoteParameterView(this, entry, context);
             world.getChildren().add(notePropertyView);
         });
 
-        notes.onRemoved(entry -> {
+        context.getNotes().onDelete((entry, oldData, newData) -> {
             world.getChildren().removeIf(
                     node -> node instanceof NoteParameterView view && view.getNoteEntry().equals(entry));
         });
-
     }
 
-    public static javafx.scene.paint.Paint createGridLineFill() {
+    public static Paint createGridLineFill() {
         return Color.TRANSPARENT;
+    }
+
+    public void scrollX(double v) {
+        world.setTranslateX(v);
     }
 }

@@ -8,14 +8,13 @@ import piano.model.NoteRegistry;
 import java.util.*;
 import java.util.function.Predicate;
 
-public class MemoNoteController implements NoteController {
-    private static Optional<MemoNoteController> instance = Optional.empty();
+public class BaseNoteService implements NoteService {
     private final NoteRegistry registry;
     private final Stack<NoteAction> undoStack = new Stack<>();
     private final Stack<NoteAction> redoStack = new Stack<>();
     private final ObservableList<NoteEntry> selectedEntries = FXCollections.observableArrayList();
 
-    public MemoNoteController(NoteRegistry registry) {
+    public BaseNoteService(NoteRegistry registry) {
         this.registry = registry;
     }
 
@@ -45,6 +44,21 @@ public class MemoNoteController implements NoteController {
         return result;
     }
 
+    @Override
+    public void onCreate(NoteObserver observer) {
+        registry.onAdded(entry -> observer.accept(entry, entry.get(), entry.get()));
+    }
+
+    @Override
+    public void onModify(NoteObserver observer) {
+        registry.onUpdated(observer);
+    }
+
+    @Override
+    public void onDelete(NoteObserver observer) {
+        registry.onRemoved(entry -> observer.accept(entry, entry.get(), entry.get()));
+    }
+
     public void redo() {
         if (!redoStack.isEmpty()) {
             NoteAction action = redoStack.pop();
@@ -67,14 +81,5 @@ public class MemoNoteController implements NoteController {
     @Override
     public ObservableList<NoteEntry> getSelectedEntries() {
         return selectedEntries;
-    }
-
-    public static MemoNoteController createInstance(NoteRegistry registry) {
-        instance = Optional.of(new MemoNoteController(registry));
-        return instance.orElseThrow();
-    }
-
-    public static MemoNoteController getInstance() {
-        return instance.orElseThrow();
     }
 }

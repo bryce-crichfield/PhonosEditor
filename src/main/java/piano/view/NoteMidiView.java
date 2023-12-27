@@ -8,34 +8,33 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import piano.control.MemoNoteController;
-import piano.control.NoteController;
+import piano.EditorContext;
+import piano.control.BaseNoteService;
+import piano.control.NoteService;
 import piano.model.GridInfo;
 import piano.model.NoteData;
 import piano.model.NoteEntry;
 import piano.tool.EditorTool;
 import piano.tool.PencilTool;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 public class NoteMidiView extends StackPane {
+    private final EditorContext context;
     private final NoteEntry noteEntry;
     private final Rectangle rectangle;
     private final Text label;
     private final Handle leftHandle = new LeftHandle();
     private final Handle rightHandle = new RightHandle();
     private final Handle bodyHandle = new BodyHandle();
-    ObjectProperty<GridInfo> gridInfo;
     private Handle selectedHandle = null;
     private NoteMidiController selfController = new PencilNoteMidiController();
-
     ObjectProperty<Optional<EditorTool>> currentTool;
 
-    public NoteMidiView(NoteEntry noteEntry, ObjectProperty<GridInfo> gridInfo, ObjectProperty<Optional<EditorTool>> currentTool) {
+    public NoteMidiView(NoteEntry noteEntry, EditorContext context, ObjectProperty<Optional<EditorTool>> currentTool) {
         super();
+        this.context = context;
         this.noteEntry = noteEntry;
-        this.gridInfo = gridInfo;
         this.currentTool = currentTool;
 
         label = new Text("");
@@ -50,9 +49,9 @@ public class NoteMidiView extends StackPane {
         bindPaneToRectangle();
 
         // When the grid changes, we need to update the view
-        gridInfo.addListener((observable1, oldValue1, newValue1) -> {
+        context.getViewSettings().gridInfoProperty().addListener((observable1, oldValue1, newValue1) -> {
             NoteData data = this.noteEntry.get();
-            GridInfo grid = gridInfo.get();
+            GridInfo grid = newValue1;
 
             double x = data.calcXPosOnGrid(grid);
             double y = data.calcYPosOnGrid(grid);
@@ -88,6 +87,7 @@ public class NoteMidiView extends StackPane {
 
         // Update the view rectangle when the note data model changes
         noteEntry.addListener((observable, oldValue, newValue) -> {
+            var gridInfo = context.getViewSettings().gridInfoProperty();
             double x = newValue.calcXPosOnGrid(gridInfo.get());
             double y = newValue.calcYPosOnGrid(gridInfo.get());
             rectangle.setX(x);
@@ -101,7 +101,7 @@ public class NoteMidiView extends StackPane {
         });
 
         // Update the view rectangle when the selected entries change
-        MemoNoteController.getInstance().getSelectedEntries().addListener((ListChangeListener<NoteEntry>) c -> {
+        context.getNotes().getSelectedEntries().addListener((ListChangeListener<NoteEntry>) c -> {
             if (c.getList().contains(noteEntry)) {
                 rectangle.setFill(Color.BLUE);
             } else {
@@ -111,6 +111,7 @@ public class NoteMidiView extends StackPane {
 
         // Initialize the view
         NoteData data = this.noteEntry.get();
+        var gridInfo = context.getViewSettings().gridInfoProperty();
         double x = data.calcXPosOnGrid(gridInfo.get());
         double y = data.calcYPosOnGrid(gridInfo.get());
         rectangle.setX(x);
@@ -191,6 +192,8 @@ public class NoteMidiView extends StackPane {
             double deltaX = event.getX();
             double deltaY = event.getY();
 
+            var gridInfo = context.getViewSettings().gridInfoProperty();
+
             double cellX = deltaX / gridInfo.get().getCellWidth();
             double cellY = deltaY / gridInfo.get().getCellHeight();
 
@@ -223,8 +226,7 @@ public class NoteMidiView extends StackPane {
     private class LeftHandle implements Handle {
         @Override
         public void onDragged(double cellsX, double cellsY) {
-            NoteController controller = MemoNoteController.getInstance();
-            controller.modify(noteEntry, noteData -> {
+            context.getNotes().modify(noteEntry, noteData -> {
                 int x = (int) (noteData.getStart() + cellsX);
                 return noteData.withStart(x);
             });
@@ -244,8 +246,7 @@ public class NoteMidiView extends StackPane {
     private class RightHandle implements Handle {
         @Override
         public void onDragged(double cellsX, double cellsY) {
-            NoteController controller = MemoNoteController.getInstance();
-            controller.modify(noteEntry, noteData -> {
+            context.getNotes().modify(noteEntry, noteData -> {
                 int x = (int) (noteData.getStart() + cellsX);
                 return noteData.withEnd(x);
             });
@@ -265,8 +266,7 @@ public class NoteMidiView extends StackPane {
     private class BodyHandle implements Handle {
         @Override
         public void onDragged(double cellsX, double cellsY) {
-            NoteController controller = MemoNoteController.getInstance();
-            controller.modify(noteEntry, noteData -> {
+            context.getNotes().modify(noteEntry, noteData -> {
                 int newStart = (int) (noteData.getStart() + cellsX);
                 int newEnd = (int) (noteData.getEnd() + cellsX);
                 int newNote = (int) (noteData.getNote() + cellsY);

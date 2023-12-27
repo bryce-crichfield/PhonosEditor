@@ -5,9 +5,8 @@ import javafx.geometry.Point3D;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
-import piano.control.CreateNoteAction;
-import piano.control.DeleteNoteAction;
-import piano.control.MemoNoteController;
+import piano.EditorContext;
+import piano.control.BaseNoteService;
 import piano.model.GridInfo;
 import piano.model.NoteData;
 import piano.util.GridMath;
@@ -16,12 +15,12 @@ import piano.view.NoteMidiEditor;
 
 public class PencilTool implements EditorTool {
     private final NoteMidiEditor view;
-    private final MemoNoteController controller;
+    private final EditorContext context;
 
-    public PencilTool(NoteMidiEditor view) {
+    public PencilTool(NoteMidiEditor view, EditorContext context) {
         super();
         this.view = view;
-        this.controller = view.getController();
+        this.context = context;
     }
 
     @Override
@@ -36,15 +35,15 @@ public class PencilTool implements EditorTool {
             Point3D point = pickResult.getIntersectedPoint();
             Node node = pickResult.getIntersectedNode();
             if (node.equals(view.getBackgroundSurface())) {
-                ObjectProperty<GridInfo> gridInfo = view.getGridInfo();
+                ObjectProperty<GridInfo> gridInfo = context.getViewSettings().gridInfoProperty();
                 var gi = gridInfo.get();
 
                 int cellX = (int) (GridMath.snapToGridX(gi, point.getX()) / gi.getCellWidth());
                 int cellY = (int) (GridMath.snapToGridY(gi, point.getY()) / gi.getCellHeight());
                 NoteData data = new NoteData(cellY, cellX, cellX + 1, 100);
 
-                controller.clearSelection();
-                controller.create(data);
+                context.getNotes().clearSelection();
+                context.getNotes().create(data);
             }
         }
 
@@ -71,7 +70,7 @@ public class PencilTool implements EditorTool {
             }
 
             if (noteMidiView != null) {
-                controller.delete(noteMidiView.getNoteEntry());
+                context.getNotes().delete(noteMidiView.getNoteEntry());
             }
         }
 

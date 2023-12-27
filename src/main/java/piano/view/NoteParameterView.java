@@ -5,31 +5,30 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import piano.EditorContext;
 import piano.Util;
-import piano.control.ModifyNoteAction;
-import piano.control.MemoNoteController;
-import piano.control.NoteController;
-import piano.model.NoteData;
+import piano.control.BaseNoteService;
+import piano.control.NoteService;
 import piano.model.NoteEntry;
 import piano.model.GridInfo;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 class NoteParameterView extends Rectangle {
+    private final EditorContext context;
     private final Pane parent;
+    private NoteEntry noteEntry;
+
     public NoteEntry getNoteEntry() {
         return noteEntry;
     }
 
-    private NoteEntry noteEntry;
-    private ObjectProperty<GridInfo> gridInfo;
 
-    public NoteParameterView(Pane parent, NoteEntry note, ObjectProperty<GridInfo> gridInfo) {
+    public NoteParameterView(Pane parent, NoteEntry note, EditorContext context) {
         super();
-
+        this.context = context;
         this.parent = parent;
         this.noteEntry = note;
-        this.gridInfo = gridInfo;
 
         this.setFill(Color.WHITE);
 
@@ -39,8 +38,7 @@ class NoteParameterView extends Rectangle {
         });
 
         // when gridInfo changes, update the circle's position
-        gridInfo.addListener((observable, oldValue, newValue) -> {
-            // ensure the velocity doesn't change
+        context.getViewSettings().gridInfoProperty().addListener((observable, oldValue, newValue) -> {
             recalculateViewFromModel();
         });
 
@@ -87,8 +85,7 @@ class NoteParameterView extends Rectangle {
             double ty = this.getTranslateY() + dy;
             double velocity = Util.clamp(1 - (ty / parent.getHeight()), 0, 1);
 
-            NoteController controller = MemoNoteController.getInstance();
-            controller.modify(noteEntry, data -> data.withVelocity((int) (velocity * 100)));
+            context.getNotes().modify(noteEntry, data -> data.withVelocity((int) (velocity * 100)));
         });
 
         // Sheet Metal gradient
@@ -97,10 +94,10 @@ class NoteParameterView extends Rectangle {
         this.setArcHeight(10);
         this.setArcWidth(10);
 
-
-        NoteController controller = MemoNoteController.getInstance();
-        controller.getSelectedEntries().addListener((ListChangeListener<? super NoteEntry>) c -> {
-            if (controller.getSelectedEntries().contains(noteEntry)) {
+        // When the note is selected, change the color of the rectangle
+        NoteService noteService = context.getNotes();
+        noteService.getSelectedEntries().addListener((ListChangeListener<? super NoteEntry>) c -> {
+            if (noteService.getSelectedEntries().contains(noteEntry)) {
                 this.setFill(Color.BLUE);
             } else {
                 this.setFill(Color.DARKGREEN.darker());
@@ -111,12 +108,14 @@ class NoteParameterView extends Rectangle {
     private void recalculateViewFromModel() {
         var note = this.noteEntry.get();
 
-        double x = note.calcXPosOnGrid(gridInfo.get());
+        var gridInfo = context.getViewSettings().getGridInfo();
+
+        double x = note.calcXPosOnGrid(gridInfo);
         double y = (1 - note.getVelocityAsPercentage()) * parent.getHeight();
 
         this.setTranslateX(x);
         this.setTranslateY(y);
-        this.setWidth(gridInfo.get().getCellWidth());
+        this.setWidth(gridInfo.getCellWidth());
         this.setHeight(parent.getHeight());
     }
 }

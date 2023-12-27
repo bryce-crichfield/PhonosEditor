@@ -6,7 +6,7 @@
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:id="root"
-            fx:controller="piano.NoteEditorController">
+            fx:controller="piano.Editor">
     <BorderPane fx:id="rootBorderPane">
         <top>
             <VBox fx:id="toolBarRoot">

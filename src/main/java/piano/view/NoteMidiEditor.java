@@ -9,32 +9,24 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
-import piano.control.MemoNoteController;
+import piano.EditorContext;
 import piano.model.GridInfo;
-import piano.model.NoteRegistry;
-import piano.playback.PlaybackService;
 import piano.tool.EditorTool;
 
 import java.util.Optional;
 
 
 public class NoteMidiEditor extends AnchorPane {
-    private final ObjectProperty<GridInfo> gridInfo;
+    private final EditorContext context;
     private final Rectangle background;
     private final Group world;
-    private final NoteRegistry notes;
     private final ObjectProperty<Optional<EditorTool>> currentTool = new SimpleObjectProperty<>(Optional.empty());
-    private final MemoNoteController controller;
-    private final PlaybackService playbackService;
 
-    public NoteMidiEditor(ObjectProperty<GridInfo> gridInfo, NoteRegistry noteRegistry, PlaybackService playbackService) {
-        this.gridInfo = gridInfo;
-        this.notes = noteRegistry;
-        this.controller = MemoNoteController.createInstance(noteRegistry);
-        this.playbackService = playbackService;
-
+    public NoteMidiEditor(EditorContext context) {
+        this.context = context;
 
         // Create the background grid surface --------------------------------------------------------------------------
+        var gridInfo = context.getViewSettings().gridInfoProperty();
         background = gridInfo.get().createRectangle();
         background.setFill(createGridLineFill());
         gridInfo.addListener((observable, oldValue, newValue) -> {
@@ -69,36 +61,27 @@ public class NoteMidiEditor extends AnchorPane {
         subScene.setOnMouseReleased(mouseEvent -> currentTool.get().ifPresent(tool -> tool.onMouseEvent(mouseEvent)));
 
         // Bind view to model ------------------------------------------------------------------------------------------
-        notes.onAdded(entry -> {
-            var noteMidiView = new NoteMidiView(entry, gridInfo, currentTool);
+        context.getNotes().onCreate((entry, oldData, newData) -> {
+            var noteMidiView = new NoteMidiView(entry, context, currentTool);
             world.getChildren().add(noteMidiView);
         });
 
-        notes.onRemoved(entry -> {
+        context.getNotes().onDelete((entry, oldData, newData) -> {
             world.getChildren().removeIf(
                 node -> node instanceof NoteMidiView view && view.getNoteEntry().equals(entry));
         });
 
 
-        Rectangle playbackLine = new Rectangle();
-        playbackLine.setFill(Color.CYAN);
-        playbackLine.setStroke(Color.WHITE);
-        playbackLine.setOpacity(0.5);
-        playbackLine.setWidth(10);
-        playbackLine.heightProperty().bind(heightProperty());
-        world.getChildren().add(playbackLine);
-        playbackService.getPlaybackState().addListener((obs, oldV, newV) -> {
-            GridInfo gi = gridInfo.get();
-            double x = newV.getHead() * gi.getCellWidth();
-            playbackLine.setTranslateX(x);
-            playbackLine.toFront();
-        });
+
+        PlaylistView playlistView = new PlaylistView(background.heightProperty(), context);
+        playlistView.setManaged(false);
+        world.getChildren().add(playlistView);
     }
 
     public ImagePattern createGridLineFill() {
         // TODO: Doesn't support large grid sizes
         // TODO: Please rewrite me before I am lost forever :((((
-        GridInfo gridInfo = this.gridInfo.get();
+        GridInfo gridInfo = context.getViewSettings().getGridInfo();
         double width = gridInfo.getColumns() * gridInfo.getCellWidth();
         double height = gridInfo.getRows() * gridInfo.getCellHeight();
         double gridWidth = gridInfo.getCellWidth();
@@ -161,16 +144,9 @@ public class NoteMidiEditor extends AnchorPane {
         return new ImagePattern(image, 0, 0, width, height, false);
     }
 
-    public MemoNoteController getController() {
-        return controller;
-    }
 
     public Rectangle getBackgroundSurface() {
         return background;
-    }
-
-    public NoteRegistry getNoteRegistry() {
-        return notes;
     }
 
     public void setTool(EditorTool tool) {
@@ -178,16 +154,22 @@ public class NoteMidiEditor extends AnchorPane {
         currentTool.get().ifPresent(EditorTool::onEnter);
     }
 
-    public void scrollX(double deltaX) {
-        world.setTranslateX(deltaX);
+    public void scrollByX(double deltaX) {
+        double nowX = world.getLayoutX();
+        world.setTranslateX(nowX + deltaX);
     }
 
-    public void scrollY(double deltaY) {
+    public void scrollByY(double deltaY) {
+        double nowY = world.getLayoutY();
+        world.setTranslateY(nowY + deltaY);
+    }
+
+    public void scrollToX(double newX) {
+        world.setTranslateX(newX);
+    }
+
+    public void scrollToY(double deltaY) {
         world.setTranslateY(deltaY);
-    }
-
-    public ObjectProperty<GridInfo> getGridInfo() {
-        return gridInfo;
     }
 
     public Group getWorld() {

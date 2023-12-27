@@ -1,6 +1,5 @@
 package piano;
 
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -8,29 +7,26 @@ import javafx.geometry.Orientation;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import piano.control.BaseNoteService;
 import piano.model.GridInfo;
 import piano.model.NoteData;
 import piano.model.NoteEntry;
 import piano.model.NoteRegistry;
-import piano.playback.PlaybackService;
+import piano.playback.BasePlaybackService;
 import piano.playback.PlaybackState;
 import piano.tool.PencilTool;
 import piano.tool.SelectTool;
-import piano.view.NoteMidiEditor;
-import piano.view.NoteParameterEditor;
-import piano.view.PianoRoll;
-import piano.view.ScrollBar;
+import piano.view.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-public class NoteEditorController {
+public class Editor {
     // FXML (Tool bar)
     public ToggleButton toggleToolSelect;
     public ToggleButton toggleToolPencil;
@@ -43,31 +39,37 @@ public class NoteEditorController {
     private NoteMidiEditor noteMidiEditor;
     private NoteParameterEditor noteParameterEditor;
     private PianoRoll pianoRoll;
-    private ObjectProperty<GridInfo> gridInfo;
-    private final double zoomVelocity = 0;
-    private PlaybackService playbackService;
+    private EditorContext context;
 
-    public NoteEditorController() {
+    public Editor() {
         super();
     }
 
     public void initialize() {
         bodyBorderPane = new BorderPane();
 
+        // Create the editor context -----------------------------------------------------------------------------------
+        {
+            var gridInfo = new GridInfo(88, 16 * 16, 32, 16);
+            var viewSettings = new ViewSettings(gridInfo);
+
+            var noteRegistry = new NoteRegistry();
+            var playbackState = new PlaybackState(0, gridInfo.getColumns(), 120, false);
+
+            var playbackService = new BasePlaybackService(new SimpleObjectProperty<>(playbackState));
+            var noteService = new BaseNoteService(noteRegistry);
+            context = new EditorContext(playbackService, noteService, viewSettings);
+        }
+
 
         // Initialize note pattern and property editors ----------------------------------------------------------------
         {
-            var gi = new GridInfo(88, 16 * 16, 32, 16);
-            gridInfo = new SimpleObjectProperty<>(gi);
-            // Playback Service
-            PlaybackState state = new PlaybackState(0, gridInfo.get().getColumns(), 120, false);
-            playbackService = new PlaybackService(new SimpleObjectProperty<>(state));
             // The pattern editor represents the world as a large rectangle with a grid drawn on it.  The large
             // rectangle is the background surface, and the grid is drawn on top of it.
-            noteMidiEditor = new NoteMidiEditor(gridInfo, new NoteRegistry(), playbackService);
+            noteMidiEditor = new NoteMidiEditor(context);
             bodyBorderPane.setCenter(noteMidiEditor);
 
-            noteParameterEditor = new NoteParameterEditor(gridInfo, noteMidiEditor.getNoteRegistry());
+            noteParameterEditor = new NoteParameterEditor(context);
             noteParameterEditor.setMinHeight(100);
             noteParameterEditor.setMaxHeight(500);
         }
@@ -83,10 +85,9 @@ public class NoteEditorController {
                 newTranslateY = Util.map(newTranslateY, 0, noteMidiEditor.getBackgroundSurface().getHeight(), 0,
                                          noteMidiEditor.getBackgroundSurface().getHeight() - noteMidiEditor.getHeight()
                 );
-                noteMidiEditor.scrollY(-newTranslateY);
+                noteMidiEditor.scrollToY(-newTranslateY);
                 pianoRoll.scrollY(-newTranslateY);
             });
-
 
             bodyBorderPane.setRight(verticalScrollBar);
         }
@@ -102,9 +103,10 @@ public class NoteEditorController {
                 newTranslateX = Util.map(newTranslateX, 0, noteMidiEditor.getBackgroundSurface().getWidth(), 0,
                                          noteMidiEditor.getBackgroundSurface().getWidth() - noteMidiEditor.getWidth()
                 );
-                noteMidiEditor.scrollX(-newTranslateX);
+                noteMidiEditor.scrollToX(-newTranslateX);
                 noteParameterEditor.scrollX(-newTranslateX);
             });
+
             bodyBorderPane.setTop(horizontalScrollBar);
         }
 
@@ -120,15 +122,16 @@ public class NoteEditorController {
 
         root.setOnKeyPressed(event -> {
             if (event.isControlDown() && event.getCode().toString().equals("Z")) {
-                noteMidiEditor.getController().undo();
+                context.getNotes().undo();
+//                noteMidiEditor.getController().undo();
             }
 
             if (event.isControlDown() && event.getCode().toString().equals("Y")) {
-                noteMidiEditor.getController().redo();
+                context.getNotes().redo();
             }
 
             if (event.isControlDown() && event.getCode().toString().equals("B")) {
-                Collection<NoteEntry> selected = noteMidiEditor.getController().getSelectedEntries();
+                Collection<NoteEntry> selected = context.getNotes().getSelectedEntries();
 
                 // Find the lowest start and highest end to determine the length of the pattern to create
                 int lowestStart = Integer.MAX_VALUE;
@@ -150,13 +153,13 @@ public class NoteEditorController {
                     newNotes.add(newData);
                 }
 
-                noteMidiEditor.getController().createMany(newNotes);
+                context.getNotes().createMany(newNotes);
             }
         });
 
         // Initialize piano roll ---------------------------------------------------------------------------------------
         {
-            pianoRoll = new PianoRoll(noteMidiEditor.getBackgroundSurface().getHeight(), gridInfo);
+            pianoRoll = new PianoRoll(context.getViewSettings().gridInfoProperty());
             noteMidiEditor.heightProperty().addListener((observable, oldValue, newValue) -> {
                 pianoRoll.setPrefHeight(newValue.doubleValue());
             });
@@ -184,26 +187,26 @@ public class NoteEditorController {
             rootBorderPane.setCenter(splitPane);
         }
 
-
-        playbackService.play();
+        context.getPlayback().play();
     }
 
     public void scaleGrid(double deltaX, double deltaY) {
-        var gi = gridInfo.get();
+        var gi = context.getViewSettings().gridInfoProperty().get();
         double newCellWidth = gi.getCellWidth() + deltaX;
         newCellWidth = Util.clamp(newCellWidth, 10, 48);
         double newCellHeight = gi.getCellHeight() + deltaY;
         newCellHeight = Util.clamp(newCellHeight, 10, 48);
 
-        gridInfo.set(gi.withCellWidth(newCellWidth).withCellHeight(newCellHeight));
+        var newGi = gi.withCellWidth(newCellWidth).withCellHeight(newCellHeight);
+        context.getViewSettings().setGridInfo(newGi);
     }
 
     public void changeToSelect(ActionEvent actionEvent) {
-        noteMidiEditor.setTool(new SelectTool(noteMidiEditor, noteMidiEditor.getWorld()));
+        noteMidiEditor.setTool(new SelectTool(noteMidiEditor, noteMidiEditor.getWorld(), context));
     }
 
     public void changeToPencil(ActionEvent actionEvent) {
-        noteMidiEditor.setTool(new PencilTool(noteMidiEditor));
+        noteMidiEditor.setTool(new PencilTool(noteMidiEditor, context));
     }
 
     public void scaleUpX() {
@@ -223,14 +226,14 @@ public class NoteEditorController {
     }
 
     public void playlistPause(ActionEvent actionEvent) {
-        playbackService.pause();
+        context.getPlayback().pause();
     }
 
     public void playlistPlay(ActionEvent actionEvent) {
-        playbackService.play();
+        context.getPlayback().play();
     }
 
     public void playlistStop(ActionEvent actionEvent) {
-        playbackService.stop();
+        context.getPlayback().stop();
     }
 }

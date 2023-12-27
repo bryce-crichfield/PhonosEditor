@@ -7,24 +7,25 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Box;
 import javafx.scene.shape.Rectangle;
-import piano.control.NoteController;
+import piano.EditorContext;
+import piano.control.NoteService;
 import piano.model.NoteEntry;
-import piano.tool.EditorTool;
 import piano.view.NoteMidiEditor;
 
 import java.util.Collection;
 
 public class SelectTool implements EditorTool {
+    private final EditorContext context;
     private final Group world;
     private final NoteMidiEditor editor;
     Rectangle selectionBox;
     Point2D anchorPoint;
 
-    public SelectTool(NoteMidiEditor editor, Group world) {
+    public SelectTool(NoteMidiEditor editor, Group world, EditorContext context) {
         this.world = world;
         this.editor = editor;
+        this.context = context;
     }
 
     public void onSelectionStart(Point3D point) {
@@ -55,17 +56,19 @@ public class SelectTool implements EditorTool {
         selectionBox.setWidth(width);
         selectionBox.setHeight(height);
 
-        Collection<NoteEntry> hoveredNotes = editor.getController().query(entry -> {
-            double entryX = entry.get().calcXPosOnGrid(editor.getGridInfo().get());
-            double entryY = entry.get().calcYPosOnGrid(editor.getGridInfo().get());
+        var gridInfo = context.getViewSettings().gridInfoProperty();
+
+        Collection<NoteEntry> hoveredNotes = context.getNotes().query(entry -> {
+            double entryX = entry.get().calcXPosOnGrid(gridInfo.get());
+            double entryY = entry.get().calcYPosOnGrid(gridInfo.get());
             double entryWidth = entry.get().getEnd() - entry.get().getStart();
             double entryHeight = 1;
             return entryX < x + width && entryX + entryWidth > x && entryY < y + height && entryY + entryHeight > y;
         });
 
-        editor.getController().clearSelection();
+        context.getNotes().clearSelection();
         for (NoteEntry entry : hoveredNotes) {
-            editor.getController().select(entry);
+            context.getNotes().select(entry);
         }
     }
 
@@ -76,8 +79,7 @@ public class SelectTool implements EditorTool {
 
     @Override
     public void onEnter() {
-        NoteController controller = editor.getController();
-        controller.clearSelection();
+        context.getNotes().clearSelection();
     }
 
     @Override
@@ -100,7 +102,7 @@ public class SelectTool implements EditorTool {
 
         if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
             onSelectionEnd(null);
-            return new PencilTool(editor);
+            return new PencilTool(editor, context);
         }
 
         return this;

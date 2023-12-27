@@ -4,13 +4,14 @@ import javafx.collections.ObservableList;
 import piano.model.NoteData;
 import piano.model.NoteEntry;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public interface NoteController {
+
+// The service is used by the ViewController to modify the model.
+// It also provides for editor features such as undo/redo, selection, query, and clipboard.
+public interface NoteService {
     default void create(NoteData data) {
         execute(new CreateNoteAction(data));
     }
@@ -36,10 +37,15 @@ public interface NoteController {
 
     void execute(NoteAction action);
     void undo();
+    void redo();
     void select(NoteEntry entry);
     void clearSelection();
 
     ObservableList<NoteEntry> getSelectedEntries();
 
     Collection<NoteEntry> query(Predicate<NoteEntry> predicate);
+
+     void onCreate(NoteObserver observer);
+     void onModify(NoteObserver observer);
+     void onDelete(NoteObserver observer);
 }
