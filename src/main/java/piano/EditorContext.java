@@ -2,7 +2,7 @@ package piano;
 
 import piano.control.NoteService;
 import piano.playback.PlaybackService;
-import piano.view.ViewSettings;
+import piano.view.settings.ViewSettings;
 
 public class EditorContext {
     private final PlaybackService playback;

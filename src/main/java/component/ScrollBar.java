@@ -1,4 +1,4 @@
-package piano.view;
+package component;
 
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Orientation;

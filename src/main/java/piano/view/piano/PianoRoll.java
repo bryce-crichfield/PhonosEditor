@@ -1,4 +1,4 @@
-package piano.view;
+package piano.view.piano;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.SnapshotParameters;

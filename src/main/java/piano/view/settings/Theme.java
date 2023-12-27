@@ -1,4 +1,4 @@
-package piano.view;
+package piano.view.settings;
 
 import javafx.scene.paint.Color;
 

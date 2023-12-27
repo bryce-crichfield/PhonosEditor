@@ -1,4 +1,4 @@
-package piano.view;
+package piano.view.parameter;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ListChangeListener;

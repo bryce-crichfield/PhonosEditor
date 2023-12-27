@@ -1,4 +1,4 @@
-package piano.view;
+package piano.view.settings;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;

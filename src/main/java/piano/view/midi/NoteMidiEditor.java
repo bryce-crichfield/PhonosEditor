@@ -1,4 +1,4 @@
-package piano.view;
+package piano.view.midi;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -12,6 +12,8 @@ import javafx.scene.shape.Rectangle;
 import piano.EditorContext;
 import piano.model.GridInfo;
 import piano.tool.EditorTool;
+import piano.view.playlist.PlaylistView;
+import piano.view.settings.Theme;
 
 import java.util.Optional;
 

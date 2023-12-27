@@ -6,12 +6,11 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import piano.EditorContext;
-import piano.control.BaseNoteService;
 import piano.model.GridInfo;
 import piano.model.NoteData;
 import piano.util.GridMath;
-import piano.view.NoteMidiView;
-import piano.view.NoteMidiEditor;
+import piano.view.midi.NoteMidiView;
+import piano.view.midi.NoteMidiEditor;
 
 public class PencilTool implements EditorTool {
     private final NoteMidiEditor view;

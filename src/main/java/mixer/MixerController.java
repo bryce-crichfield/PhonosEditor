@@ -2,18 +2,15 @@ package mixer;
 
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.scene.Camera;
 import javafx.scene.Group;
 import javafx.scene.ParallelCamera;
 import javafx.scene.SubScene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.control.Slider;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import piano.view.ScrollBar;
+import component.ScrollBar;
 
 import java.util.function.Consumer;
 

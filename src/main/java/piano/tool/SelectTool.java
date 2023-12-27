@@ -9,9 +9,8 @@ import javafx.scene.input.PickResult;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import piano.EditorContext;
-import piano.control.NoteService;
 import piano.model.NoteEntry;
-import piano.view.NoteMidiEditor;
+import piano.view.midi.NoteMidiEditor;
 
 import java.util.Collection;
 

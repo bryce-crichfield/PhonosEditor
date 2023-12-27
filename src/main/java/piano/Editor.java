@@ -1,5 +1,6 @@
 package piano;
 
+import component.ScrollBar;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -20,7 +21,10 @@ import piano.playback.BasePlaybackService;
 import piano.playback.PlaybackState;
 import piano.tool.PencilTool;
 import piano.tool.SelectTool;
-import piano.view.*;
+import piano.view.midi.NoteMidiEditor;
+import piano.view.parameter.NoteParameterEditor;
+import piano.view.piano.PianoRoll;
+import piano.view.settings.ViewSettings;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -74,7 +78,7 @@ public class Editor {
             noteParameterEditor.setMaxHeight(500);
         }
 
-        piano.view.ScrollBar verticalScrollBar = new piano.view.ScrollBar(Orientation.VERTICAL);
+        ScrollBar verticalScrollBar = new ScrollBar(Orientation.VERTICAL);
         // Initialize vertical scroll bar ------------------------------------------------------------------------------
         {
 
@@ -92,7 +96,7 @@ public class Editor {
             bodyBorderPane.setRight(verticalScrollBar);
         }
 
-        piano.view.ScrollBar horizontalScrollBar = new ScrollBar(Orientation.HORIZONTAL);
+        ScrollBar horizontalScrollBar = new ScrollBar(Orientation.HORIZONTAL);
         // Initialize horizontal scroll bar ----------------------------------------------------------------------------
         {
 

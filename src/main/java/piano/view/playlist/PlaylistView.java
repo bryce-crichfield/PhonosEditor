@@ -1,4 +1,4 @@
-package piano.view;
+package piano.view.playlist;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.Scene;
