@@ -2,15 +2,12 @@ package piano.view.midi;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ListChangeListener;
-import javafx.scene.Cursor;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import piano.EditorContext;
-import piano.control.BaseNoteService;
-import piano.control.NoteService;
 import piano.model.GridInfo;
 import piano.model.NoteData;
 import piano.model.NoteEntry;
@@ -24,10 +21,10 @@ public class NoteMidiView extends StackPane {
     private final NoteEntry noteEntry;
     private final Rectangle rectangle;
     private final Text label;
-    private final Handle leftHandle = new LeftHandle();
-    private final Handle rightHandle = new RightHandle();
-    private final Handle bodyHandle = new BodyHandle();
-    private Handle selectedHandle = null;
+    private final NoteMidiHandle.Left leftHandle;
+    private final NoteMidiHandle.Right rightHandle;
+    private final NoteMidiHandle.Body bodyHandle;
+    private Optional<NoteMidiHandle> selectedHandle;
     private NoteMidiController selfController = new PencilNoteMidiController();
     ObjectProperty<Optional<EditorTool>> currentTool;
 
@@ -120,6 +117,11 @@ public class NoteMidiView extends StackPane {
         rectangle.setWidth(width);
         double height = gridInfo.get().getCellHeight();
         rectangle.setHeight(height);
+
+        // Create handles
+        leftHandle = new NoteMidiHandle.Left(this, context, noteEntry, rectangle);
+        rightHandle = new NoteMidiHandle.Right(this, context, noteEntry, rectangle);
+        bodyHandle = new NoteMidiHandle.Body(this, context, noteEntry, rectangle);
     }
 
     private void bindPaneToRectangle() {
@@ -148,43 +150,6 @@ public class NoteMidiView extends StackPane {
         return noteEntry;
     }
 
-    interface NoteMidiController {
-        default void stackPaneOnMouseDragged(MouseEvent event) {
-            event.consume();
-        }
-
-        default void rectangleOnMouseMoved(MouseEvent event) {
-            event.consume();
-        }
-    }
-
-
-    private interface Handle {
-        void onDragged(double cellsX, double cellsY);
-
-        Cursor getCursor();
-
-        boolean isHovered(double mouseX);
-    }
-
-    private static class NullHandle implements Handle {
-        public static final NullHandle instance = new NullHandle();
-
-        @Override
-        public void onDragged(double cellsX, double cellsY) {
-            // Do nothing
-        }
-
-        @Override
-        public Cursor getCursor() {
-            return Cursor.DEFAULT;
-        }
-
-        @Override
-        public boolean isHovered(double mouseX) {
-            return false;
-        }
-    }
 
     private class PencilNoteMidiController implements NoteMidiController {
         @Override
@@ -197,11 +162,7 @@ public class NoteMidiView extends StackPane {
             double cellX = deltaX / gridInfo.get().getCellWidth();
             double cellY = deltaY / gridInfo.get().getCellHeight();
 
-            if (selectedHandle == null) {
-                return;
-            }
-
-            selectedHandle.onDragged(cellX, cellY);
+            selectedHandle.ifPresent(handle -> handle.onDragged(cellX, cellY));
         }
 
         @Override
@@ -209,80 +170,17 @@ public class NoteMidiView extends StackPane {
             double mouseX = event.getX();
 
             if (leftHandle.isHovered(mouseX)) {
-                selectedHandle = leftHandle;
+                selectedHandle = Optional.of(leftHandle);
             } else if (rightHandle.isHovered(mouseX)) {
-                selectedHandle = rightHandle;
+                selectedHandle = Optional.of(rightHandle);
             } else if (bodyHandle.isHovered(mouseX)) {
-                selectedHandle = bodyHandle;
+                selectedHandle = Optional.of(bodyHandle);
             } else {
-                selectedHandle = NullHandle.instance;
+                selectedHandle = Optional.empty();
             }
 
             // Change the cursor to indicate the handle that will be selected
-            setCursor(selectedHandle.getCursor());
-        }
-    }
-
-    private class LeftHandle implements Handle {
-        @Override
-        public void onDragged(double cellsX, double cellsY) {
-            context.getNotes().modify(noteEntry, noteData -> {
-                int x = (int) (noteData.getStart() + cellsX);
-                return noteData.withStart(x);
-            });
-        }
-
-        @Override
-        public Cursor getCursor() {
-            return Cursor.W_RESIZE;
-        }
-
-        @Override
-        public boolean isHovered(double mouseX) {
-            return mouseX >= rectangle.getX() && mouseX <= rectangle.getX() + 15;
-        }
-    }
-
-    private class RightHandle implements Handle {
-        @Override
-        public void onDragged(double cellsX, double cellsY) {
-            context.getNotes().modify(noteEntry, noteData -> {
-                int x = (int) (noteData.getStart() + cellsX);
-                return noteData.withEnd(x);
-            });
-        }
-
-        @Override
-        public Cursor getCursor() {
-            return Cursor.E_RESIZE;
-        }
-
-        @Override
-        public boolean isHovered(double mouseX) {
-            return mouseX >= rectangle.getX() + getWidth() - 15 && mouseX <= rectangle.getX() + getWidth();
-        }
-    }
-
-    private class BodyHandle implements Handle {
-        @Override
-        public void onDragged(double cellsX, double cellsY) {
-            context.getNotes().modify(noteEntry, noteData -> {
-                int newStart = (int) (noteData.getStart() + cellsX);
-                int newEnd = (int) (noteData.getEnd() + cellsX);
-                int newNote = (int) (noteData.getNote() + cellsY);
-
-                return noteData.withStart(newStart).withEnd(newEnd).withNote(newNote);
-            });
-        }
-
-        @Override
-        public Cursor getCursor() {
-            return Cursor.MOVE;
-        }
-
-        @Override
-        public boolean isHovered(double mouseX) {
-            return mouseX >= rectangle.getX() + 15 && mouseX <= rectangle.getX() + getWidth() - 15;
+            selectedHandle.ifPresent(handle -> setCursor(handle.getCursor()));
         }
     }
 }
