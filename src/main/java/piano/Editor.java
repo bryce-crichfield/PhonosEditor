@@ -1,6 +1,8 @@
 package piano;
 
+import component.HorizontalScrollBar;
 import component.ScrollBar;
+import component.VerticalScrollBar;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -28,7 +30,6 @@ import piano.view.settings.ViewSettings;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.function.Consumer;
 
 public class Editor {
     // FXML (Tool bar)
@@ -78,14 +79,14 @@ public class Editor {
             noteParameterEditor.setMaxHeight(500);
         }
 
-        ScrollBar verticalScrollBar = new ScrollBar(Orientation.VERTICAL);
+        ScrollBar verticalScrollBar = new VerticalScrollBar();
         // Initialize vertical scroll bar ------------------------------------------------------------------------------
         {
 
             // When scrolled, move the note pattern editor and piano roll by the same amount as along the height of the
             // background surface as the percentage scrolled along the scroll bar
-            verticalScrollBar.setOnScroll((Consumer<Double>) percentage -> {
-                double newTranslateY = percentage * noteMidiEditor.getBackgroundSurface().getHeight();
+            verticalScrollBar.onScroll(scroll -> {
+                double newTranslateY = scroll.getRelativePosition() * noteMidiEditor.getBackgroundSurface().getHeight();
                 newTranslateY = Util.map(newTranslateY, 0, noteMidiEditor.getBackgroundSurface().getHeight(), 0,
                                          noteMidiEditor.getBackgroundSurface().getHeight() - noteMidiEditor.getHeight()
                 );
@@ -94,16 +95,17 @@ public class Editor {
             });
 
             bodyBorderPane.setRight(verticalScrollBar);
+
         }
 
-        ScrollBar horizontalScrollBar = new ScrollBar(Orientation.HORIZONTAL);
+        ScrollBar horizontalScrollBar = new HorizontalScrollBar();
         // Initialize horizontal scroll bar ----------------------------------------------------------------------------
         {
 
             // When scrolled, move the note pattern editor and note parameter editor by the same amount as along the
             // width of the background surface as the percentage scrolled along the scroll bar
-            horizontalScrollBar.setOnScroll((Consumer<Double>) percentage -> {
-                double newTranslateX = percentage * noteMidiEditor.getBackgroundSurface().getWidth();
+            horizontalScrollBar.onScroll(scroll -> {
+                double newTranslateX = scroll.getRelativePosition() * noteMidiEditor.getBackgroundSurface().getWidth();
                 newTranslateX = Util.map(newTranslateX, 0, noteMidiEditor.getBackgroundSurface().getWidth(), 0,
                                          noteMidiEditor.getBackgroundSurface().getWidth() - noteMidiEditor.getWidth()
                 );
@@ -114,16 +116,18 @@ public class Editor {
             bodyBorderPane.setTop(horizontalScrollBar);
         }
 
+        // Initialize scrolling ---------------------------------------------------------------------------------------
         noteMidiEditor.setOnScroll((EventHandler<? super ScrollEvent>) event -> {
             if (event.isAltDown() && !event.isControlDown()) {
                 scaleGrid(event.getDeltaX(), event.getDeltaY());
             } else if (!event.isAltDown() && event.isControlDown()) {
-                horizontalScrollBar.scroll(-event.getDeltaY());
+                horizontalScrollBar.scrollBy(-event.getDeltaY());
             } else {
-                verticalScrollBar.scroll(-event.getDeltaY());
+                verticalScrollBar.scrollBy(-event.getDeltaY());
             }
         });
 
+        // When dragging the mouse, scroll the screen if the mouse is near the edge of the screen ----------------------
         noteMidiEditor.setOnMouseDragged(event -> {
             // if nearing the edge of the screen, scroll the screen
             double x = event.getX();
@@ -135,15 +139,15 @@ public class Editor {
             double scrollSpeed = 25;
 
             if (x < scrollSpeed) {
-                horizontalScrollBar.scroll(-scrollSpeed);
+                horizontalScrollBar.scrollBy(-scrollSpeed);
             } else if (x > width - scrollSpeed) {
-                horizontalScrollBar.scroll(scrollSpeed);
+                horizontalScrollBar.scrollBy(scrollSpeed);
             }
 
             if (y < scrollSpeed) {
-                verticalScrollBar.scroll(-scrollSpeed);
+                verticalScrollBar.scrollBy(-scrollSpeed);
             } else if (y > height - scrollSpeed) {
-                verticalScrollBar.scroll(scrollSpeed);
+                verticalScrollBar.scrollBy(scrollSpeed);
             }
         });
 
@@ -214,6 +218,10 @@ public class Editor {
         }
 
         context.getPlayback().play();
+
+
+//        // Scroll the screen halfway down initially
+        verticalScrollBar.scrollTo(-200);
     }
 
     public void scaleGrid(double deltaX, double deltaY) {

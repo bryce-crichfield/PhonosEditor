@@ -1,6 +1,6 @@
 package mixer;
 
-import component.ScrollBar;
+import component.VerticalScrollBar;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -41,12 +41,12 @@ public class MixerController {
 
         rootBorderPane.setCenter(mixerSceneRoot);
 
-        ScrollBar scrollBar = new ScrollBar(Orientation.HORIZONTAL);
+        VerticalScrollBar scrollBar = new VerticalScrollBar();
         rootBorderPane.setBottom(scrollBar);
 
-        scrollBar.setOnScroll((Consumer<Double>) event -> {
-            mixerGroup.setTranslateX(mixerSceneRoot.getHeight() * -event);
-        });
+//        scrollBar.setOnScroll((Consumer<Double>) event -> {
+//            mixerGroup.setTranslateX(mixerSceneRoot.getHeight() * -event);
+//        });
 
         for (int i = 0; i < 15; i++) {
             var track = new MixerTrack(i);
