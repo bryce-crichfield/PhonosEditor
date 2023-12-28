@@ -162,7 +162,9 @@ public class NoteMidiView extends StackPane {
             double cellX = deltaX / gridInfo.get().getCellWidth();
             double cellY = deltaY / gridInfo.get().getCellHeight();
 
-            selectedHandle.ifPresent(handle -> handle.onDragged(cellX, cellY));
+            if (selectedHandle != null) {
+                selectedHandle.ifPresent(handle -> handle.onDragged(cellX, cellY));
+            }
         }
 
         @Override

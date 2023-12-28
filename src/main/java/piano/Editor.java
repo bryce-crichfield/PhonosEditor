@@ -124,6 +124,29 @@ public class Editor {
             }
         });
 
+        noteMidiEditor.setOnMouseDragged(event -> {
+            // if nearing the edge of the screen, scroll the screen
+            double x = event.getX();
+            double y = event.getY();
+
+            double width = noteMidiEditor.getWidth();
+            double height = noteMidiEditor.getHeight();
+
+            double scrollSpeed = 25;
+
+            if (x < scrollSpeed) {
+                horizontalScrollBar.scroll(-scrollSpeed);
+            } else if (x > width - scrollSpeed) {
+                horizontalScrollBar.scroll(scrollSpeed);
+            }
+
+            if (y < scrollSpeed) {
+                verticalScrollBar.scroll(-scrollSpeed);
+            } else if (y > height - scrollSpeed) {
+                verticalScrollBar.scroll(scrollSpeed);
+            }
+        });
+
         root.setOnKeyPressed(event -> {
             if (event.isControlDown() && event.getCode().toString().equals("Z")) {
                 context.getNotes().undo();
