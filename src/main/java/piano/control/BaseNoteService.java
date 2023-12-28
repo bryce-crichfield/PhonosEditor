@@ -5,7 +5,10 @@ import javafx.collections.ObservableList;
 import piano.model.NoteEntry;
 import piano.model.NoteRegistry;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Stack;
 import java.util.function.Predicate;
 
 public class BaseNoteService implements NoteService {

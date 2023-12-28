@@ -9,8 +9,8 @@ import piano.EditorContext;
 import piano.model.GridInfo;
 import piano.model.NoteData;
 import piano.util.GridMath;
-import piano.view.midi.NoteMidiView;
 import piano.view.midi.NoteMidiEditor;
+import piano.view.midi.NoteMidiView;
 
 public class PencilTool implements EditorTool {
     private final NoteMidiEditor view;

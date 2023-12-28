@@ -13,16 +13,13 @@ import java.util.function.Consumer;
 
 public class ScrollBar extends AnchorPane {
     public static final int SIZE = 25;
+    float handleVelocity = 0;
     private Pane container;
     private Button negativeButton;
     private AnchorPane track;
     private Button positiveButton;
     private Handle handle;
-    float handleVelocity = 0;
     private Consumer<Double> onScrollIn;
-    public void scroll(double delta) {
-        onScrollIn.accept(delta);
-    }
     private Consumer<Double> onScroll = (percentage) -> {
     };
 
@@ -246,6 +243,10 @@ public class ScrollBar extends AnchorPane {
         }
     }
 
+    public void scroll(double delta) {
+        onScrollIn.accept(delta);
+    }
+
     public void setOnScroll(Consumer<Double> onScroll) {
         this.onScroll = onScroll;
     }
@@ -289,12 +290,6 @@ public class ScrollBar extends AnchorPane {
             setStrokeWidth(1);
         }
 
-
-
-        public void setTargetVal(float targetVal) {
-            this.targetVal = targetVal;
-        }
-
         private static Paint getFill(Color color) {
             LinearGradient gradient = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
                                                          new Stop(0, color),
@@ -303,6 +298,10 @@ public class ScrollBar extends AnchorPane {
             );
 
             return gradient;
+        }
+
+        public void setTargetVal(float targetVal) {
+            this.targetVal = targetVal;
         }
     }
 }

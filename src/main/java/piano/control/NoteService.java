@@ -15,6 +15,9 @@ public interface NoteService {
     default void create(NoteData data) {
         execute(new CreateNoteAction(data));
     }
+
+    void execute(NoteAction action);
+
     default void createMany(Collection<NoteData> data) {
         System.out.println("createMany");
         execute(new CreateNoteAction(data));
@@ -31,21 +34,25 @@ public interface NoteService {
         }
     }
 
+    ObservableList<NoteEntry> getSelectedEntries();
+
     default void delete(NoteEntry entry) {
         execute(new DeleteNoteAction(entry));
     }
 
-    void execute(NoteAction action);
     void undo();
-    void redo();
-    void select(NoteEntry entry);
-    void clearSelection();
 
-    ObservableList<NoteEntry> getSelectedEntries();
+    void redo();
+
+    void select(NoteEntry entry);
+
+    void clearSelection();
 
     Collection<NoteEntry> query(Predicate<NoteEntry> predicate);
 
-     void onCreate(NoteObserver observer);
-     void onModify(NoteObserver observer);
-     void onDelete(NoteObserver observer);
+    void onCreate(NoteObserver observer);
+
+    void onModify(NoteObserver observer);
+
+    void onDelete(NoteObserver observer);
 }

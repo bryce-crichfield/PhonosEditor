@@ -1,18 +1,16 @@
 package piano.animation;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 @FunctionalInterface
 public interface Interpolator {
     double interpolate(double start, double current, double end, double t);
 
-    public static Interpolator linear() {
+    static Interpolator linear() {
         return (start, current, end, t) -> {
             return start + (end - start) * t;
         };
     }
 
-    public static Interpolator easeInOut() {
+    static Interpolator easeInOut() {
         return (start, current, end, t) -> {
             double t2 = t * t;
             double t3 = t2 * t;
@@ -20,7 +18,7 @@ public interface Interpolator {
         };
     }
 
-    public static Interpolator easeIn() {
+    static Interpolator easeIn() {
         return (start, current, end, t) -> {
             double t2 = t * t;
             double t3 = t2 * t;
@@ -28,7 +26,7 @@ public interface Interpolator {
         };
     }
 
-    public static Interpolator easeOut() {
+    static Interpolator easeOut() {
         return (start, current, end, t) -> {
             double t2 = t * t;
             double t3 = t2 * t;

@@ -24,9 +24,9 @@ public class NoteMidiView extends StackPane {
     private final NoteMidiHandle.Left leftHandle;
     private final NoteMidiHandle.Right rightHandle;
     private final NoteMidiHandle.Body bodyHandle;
+    ObjectProperty<Optional<EditorTool>> currentTool;
     private Optional<NoteMidiHandle> selectedHandle;
     private NoteMidiController selfController = new PencilNoteMidiController();
-    ObjectProperty<Optional<EditorTool>> currentTool;
 
     public NoteMidiView(NoteEntry noteEntry, EditorContext context, ObjectProperty<Optional<EditorTool>> currentTool) {
         super();
@@ -72,7 +72,8 @@ public class NoteMidiView extends StackPane {
                 selfController = new PencilNoteMidiController();
             } else {
                 System.out.println("Unknown tool");
-                selfController = new NoteMidiController() {};
+                selfController = new NoteMidiController() {
+                };
             }
         });
 

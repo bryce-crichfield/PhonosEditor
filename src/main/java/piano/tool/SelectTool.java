@@ -27,6 +27,37 @@ public class SelectTool implements EditorTool {
         this.context = context;
     }
 
+    @Override
+    public void onEnter() {
+        context.getNotes().clearSelection();
+    }
+
+    @Override
+    public EditorTool onMouseEvent(MouseEvent event) {
+        if (event.getEventType() == MouseEvent.MOUSE_PRESSED && event.isPrimaryButtonDown()) {
+            PickResult pickResult = event.getPickResult();
+            Node node = pickResult.getIntersectedNode();
+            if (node.equals(editor.getBackgroundSurface())) {
+                onSelectionStart(pickResult.getIntersectedPoint());
+            }
+        }
+
+        if (event.getEventType() == MouseEvent.MOUSE_DRAGGED && event.isPrimaryButtonDown()) {
+            PickResult pickResult = event.getPickResult();
+            Node node = pickResult.getIntersectedNode();
+            if (node.equals(editor.getBackgroundSurface())) {
+                onSelectionUpdate(pickResult.getIntersectedPoint());
+            }
+        }
+
+        if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
+            onSelectionEnd(null);
+            return new PencilTool(editor, context);
+        }
+
+        return this;
+    }
+
     public void onSelectionStart(Point3D point) {
         selectionBox = new Rectangle();
         selectionBox.setTranslateX(point.getX());
@@ -74,36 +105,5 @@ public class SelectTool implements EditorTool {
     public void onSelectionEnd(Point3D point) {
         // Find all the nodes that are inside the selection box
         world.getChildren().remove(selectionBox);
-    }
-
-    @Override
-    public void onEnter() {
-        context.getNotes().clearSelection();
-    }
-
-    @Override
-    public EditorTool onMouseEvent(MouseEvent event) {
-        if (event.getEventType() == MouseEvent.MOUSE_PRESSED && event.isPrimaryButtonDown()) {
-            PickResult pickResult = event.getPickResult();
-            Node node = pickResult.getIntersectedNode();
-            if (node.equals(editor.getBackgroundSurface())) {
-                onSelectionStart(pickResult.getIntersectedPoint());
-            }
-        }
-
-        if (event.getEventType() == MouseEvent.MOUSE_DRAGGED && event.isPrimaryButtonDown()) {
-            PickResult pickResult = event.getPickResult();
-            Node node = pickResult.getIntersectedNode();
-            if (node.equals(editor.getBackgroundSurface())) {
-                onSelectionUpdate(pickResult.getIntersectedPoint());
-            }
-        }
-
-        if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
-            onSelectionEnd(null);
-            return new PencilTool(editor, context);
-        }
-
-        return this;
     }
 }

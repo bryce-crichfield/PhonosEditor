@@ -1,16 +1,12 @@
 package piano.view.playlist;
 
 import javafx.beans.property.DoubleProperty;
-import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import piano.EditorContext;
 import piano.model.GridInfo;
 
-import java.awt.*;
-
-public class PlaylistView extends Rectangle {
-    public PlaylistView(DoubleProperty height, EditorContext context) {
+public class PlayHeadView extends Rectangle {
+    public PlayHeadView(DoubleProperty height, EditorContext context) {
         super();
 
         this.setFill(javafx.scene.paint.Color.CYAN);

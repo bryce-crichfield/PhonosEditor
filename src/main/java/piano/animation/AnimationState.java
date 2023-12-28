@@ -10,26 +10,25 @@ public class AnimationState extends AtomicReference<Pair<Double, Double>> {
         super(new Pair<>(target, current));
     }
 
-    public double getTarget() {
-        return get().getKey();
+    public void modifyTarget(BiFunction<Double, Double, Double> f) {
+        set(new Pair<>(f.apply(getTarget(), getCurrent()), getCurrent()));
     }
 
-    public double getCurrent() {
-        return get().getValue();
+    public double getTarget() {
+        return get().getKey();
     }
 
     public void setTarget(double target) {
         set(new Pair<>(target, getCurrent()));
     }
 
+    public double getCurrent() {
+        return get().getValue();
+    }
+
     public void setCurrent(double current) {
         set(new Pair<>(getTarget(), current));
     }
-
-    public void modifyTarget(BiFunction<Double, Double, Double> f) {
-        set(new Pair<>(f.apply(getTarget(), getCurrent()), getCurrent()));
-    }
-
 
     public void modifyCurrent(BiFunction<Double, Double, Double> f) {
         set(new Pair<>(getTarget(), f.apply(getTarget(), getCurrent())));

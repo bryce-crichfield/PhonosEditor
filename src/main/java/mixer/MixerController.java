@@ -1,5 +1,6 @@
 package mixer;
 
+import component.ScrollBar;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -10,19 +11,49 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import component.ScrollBar;
 
 import java.util.function.Consumer;
 
 public class MixerController {
     public BorderPane rootBorderPane;
     public VBox toolBarRoot;
-
-
-    private AnchorPane mixerSceneRoot;
     Group mixerGroup;
     SubScene mixerSubScene;
+    private AnchorPane mixerSceneRoot;
 
+    public void initialize() {
+
+
+        mixerSceneRoot = new AnchorPane();
+        mixerSceneRoot.setPrefSize(1000, 500);
+        mixerGroup = new Group();
+        mixerSubScene = new SubScene(mixerGroup, 1000, 1000);
+        mixerSubScene.setCamera(new ParallelCamera());
+        mixerSubScene.setManaged(false);
+        mixerSubScene.widthProperty().bind(mixerSceneRoot.widthProperty());
+        mixerSubScene.heightProperty().bind(mixerSceneRoot.heightProperty());
+        mixerSceneRoot.getChildren().add(mixerSubScene);
+
+        AnchorPane.setTopAnchor(mixerSubScene, 0.0);
+        AnchorPane.setBottomAnchor(mixerSubScene, 0.0);
+        AnchorPane.setLeftAnchor(mixerSubScene, 0.0);
+        AnchorPane.setRightAnchor(mixerSubScene, 0.0);
+
+        rootBorderPane.setCenter(mixerSceneRoot);
+
+        ScrollBar scrollBar = new ScrollBar(Orientation.HORIZONTAL);
+        rootBorderPane.setBottom(scrollBar);
+
+        scrollBar.setOnScroll((Consumer<Double>) event -> {
+            mixerGroup.setTranslateX(mixerSceneRoot.getHeight() * -event);
+        });
+
+        for (int i = 0; i < 15; i++) {
+            var track = new MixerTrack(i);
+            track.setTranslateX(i * 100);
+            mixerGroup.getChildren().add(track);
+        }
+    }
 
     static class MixerTrack extends AnchorPane {
         public MixerTrack(int index) {
@@ -70,40 +101,6 @@ public class MixerController {
             sliderTrack.setFill(Color.DARKGRAY.darker());
             borderPane.setBottom(sliderTrack);
 
-        }
-    }
-
-    public void initialize() {
-
-
-        mixerSceneRoot = new AnchorPane();
-        mixerSceneRoot.setPrefSize(1000, 500);
-        mixerGroup = new Group();
-        mixerSubScene = new SubScene(mixerGroup, 1000, 1000);
-        mixerSubScene.setCamera(new ParallelCamera());
-        mixerSubScene.setManaged(false);
-        mixerSubScene.widthProperty().bind(mixerSceneRoot.widthProperty());
-        mixerSubScene.heightProperty().bind(mixerSceneRoot.heightProperty());
-        mixerSceneRoot.getChildren().add(mixerSubScene);
-
-        AnchorPane.setTopAnchor(mixerSubScene, 0.0);
-        AnchorPane.setBottomAnchor(mixerSubScene, 0.0);
-        AnchorPane.setLeftAnchor(mixerSubScene, 0.0);
-        AnchorPane.setRightAnchor(mixerSubScene, 0.0);
-
-        rootBorderPane.setCenter(mixerSceneRoot);
-
-        ScrollBar scrollBar = new ScrollBar(Orientation.HORIZONTAL);
-        rootBorderPane.setBottom(scrollBar);
-
-        scrollBar.setOnScroll((Consumer<Double>) event -> {
-            mixerGroup.setTranslateX(mixerSceneRoot.getHeight() * -event);
-        });
-
-        for (int i = 0; i < 15; i++) {
-            var track = new MixerTrack(i);
-            track.setTranslateX(i * 100);
-            mixerGroup.getChildren().add(track);
         }
     }
 }

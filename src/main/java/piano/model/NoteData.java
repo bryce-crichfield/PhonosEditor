@@ -33,14 +33,6 @@ public class NoteData {
         this.velocity = velocity;
     }
 
-    public static NoteData from(double x, double y, double width, double height, GridInfo gridInfo) {
-        int colStart = (int) Math.floor(x / gridInfo.getCellWidth());
-        int colEnd = (int) Math.floor((x + width) / gridInfo.getCellWidth());
-        int rowStart = (int) Math.floor(y / gridInfo.getCellHeight());
-
-        return new NoteData(rowStart, colStart, colEnd, 100);
-    }
-
     public double calcXPosOnGrid(GridInfo gridInfo) {
         double x = start * gridInfo.getCellWidth();
         return GridMath.snapToGridX(gridInfo, x);
@@ -59,28 +51,6 @@ public class NoteData {
         return this.withVelocity((int) (velocity * 100));
     }
 
-    public static String noteToString(int note) {
-        String[] notes = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F",
-                          "F#", "G", "G#"};
-        int octave = note / 12;
-        int noteIndex = note % 12;
-        return notes[noteIndex] + octave;
-    }
-
-    public static int stringToNote(String note) {
-        String[] notes = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F",
-                          "F#", "G", "G#"};
-        int octave = Integer.parseInt(note.substring(note.length() - 1));
-        int noteIndex = 0;
-        for (int i = 0; i < notes.length; i++) {
-            if (notes[i].equals(note.substring(0, note.length() - 1))) {
-                noteIndex = i;
-                break;
-            }
-        }
-        return octave * 12 + noteIndex;
-    }
-
     public int getLength() {
         return end - start;
     }
@@ -91,5 +61,35 @@ public class NoteData {
             return note == other.note && start == other.start && end == other.end && velocity == other.velocity;
         }
         return false;
+    }
+
+    public static NoteData from(double x, double y, double width, double height, GridInfo gridInfo) {
+        int colStart = (int) Math.floor(x / gridInfo.getCellWidth());
+        int colEnd = (int) Math.floor((x + width) / gridInfo.getCellWidth());
+        int rowStart = (int) Math.floor(y / gridInfo.getCellHeight());
+
+        return new NoteData(rowStart, colStart, colEnd, 100);
+    }
+
+    public static String noteToString(int note) {
+        String[] notes = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F",
+                "F#", "G", "G#"};
+        int octave = note / 12;
+        int noteIndex = note % 12;
+        return notes[noteIndex] + octave;
+    }
+
+    public static int stringToNote(String note) {
+        String[] notes = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F",
+                "F#", "G", "G#"};
+        int octave = Integer.parseInt(note.substring(note.length() - 1));
+        int noteIndex = 0;
+        for (int i = 0; i < notes.length; i++) {
+            if (notes[i].equals(note.substring(0, note.length() - 1))) {
+                noteIndex = i;
+                break;
+            }
+        }
+        return octave * 12 + noteIndex;
     }
 }

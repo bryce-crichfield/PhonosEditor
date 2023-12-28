@@ -13,6 +13,7 @@ public class NoteParameterEditor extends AnchorPane {
     Rectangle background;
     Camera camera;
     Group world;
+
     public NoteParameterEditor(EditorContext context) {
         this.context = context;
 

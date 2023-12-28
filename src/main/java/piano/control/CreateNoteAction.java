@@ -5,7 +5,6 @@ import piano.model.NoteEntry;
 import piano.model.NoteRegistry;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 

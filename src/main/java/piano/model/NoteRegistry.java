@@ -6,7 +6,6 @@ import javafx.collections.ObservableList;
 import piano.control.NoteObserver;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class NoteRegistry {
@@ -25,6 +24,7 @@ public class NoteRegistry {
     public void unregister(NoteEntry note) {
         notes.remove(note);
     }
+
     public void onAdded(Consumer<NoteEntry> callback) {
         notes.addListener((ListChangeListener<NoteEntry>) change -> {
             while (change.next()) {

@@ -3,7 +3,6 @@ package piano.view.piano;
 import javafx.scene.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import piano.EditorContext;
 
 public class NoteEditorPianoView extends AnchorPane {

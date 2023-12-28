@@ -2,30 +2,12 @@ import atlantafx.base.theme.PrimerDark;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.*;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class Main {
-    public static class App extends Application {
-        @Override
-        public void start(Stage stage) throws Exception {
-            Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(Main.class.getResource("PianoRoll.fxml"));
-            Parent root = loader.load();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-
-            // maximize the window
-//            stage.setMaximized(true);
-            setStageOnSecondMonitor(stage);
-            stage.setHeight(800);
-            stage.setWidth(1200);
-        }
-    }
-
     private static void setStageOnSecondMonitor(Stage stage) {
         // Get the list of screens (monitors)
         Screen secondScreen = null;
@@ -48,5 +30,24 @@ public class Main {
 
     public static void main(String[] args) {
         Application.launch(App.class, args);
+    }
+
+    public static class App extends Application {
+        @Override
+        public void start(Stage stage) throws Exception {
+            Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Main.class.getResource("PianoRoll.fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+
+            // maximize the window
+//            stage.setMaximized(true);
+            setStageOnSecondMonitor(stage);
+            stage.setHeight(800);
+            stage.setWidth(1200);
+        }
     }
 }

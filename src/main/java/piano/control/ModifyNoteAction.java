@@ -7,9 +7,9 @@ import piano.model.NoteRegistry;
 import java.util.Optional;
 
 public class ModifyNoteAction implements NoteAction {
-    private NoteEntry entry;
+    private final NoteEntry entry;
+    private final NoteData newData;
     private Optional<NoteData> oldData = Optional.empty();
-    private NoteData newData;
 
     public ModifyNoteAction(NoteEntry entry, NoteData newData) {
         this.entry = entry;

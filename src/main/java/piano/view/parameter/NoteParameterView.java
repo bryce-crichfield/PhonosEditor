@@ -1,28 +1,20 @@
 package piano.view.parameter;
 
-import javafx.beans.property.ObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import piano.EditorContext;
 import piano.Util;
-import piano.control.BaseNoteService;
 import piano.control.NoteService;
 import piano.model.NoteEntry;
-import piano.model.GridInfo;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 class NoteParameterView extends Rectangle {
     private final EditorContext context;
     private final Pane parent;
-    private NoteEntry noteEntry;
-
-    public NoteEntry getNoteEntry() {
-        return noteEntry;
-    }
-
+    private final NoteEntry noteEntry;
 
     public NoteParameterView(Pane parent, NoteEntry note, EditorContext context) {
         super();
@@ -58,7 +50,7 @@ class NoteParameterView extends Rectangle {
 
 
             // Change the cursor to indicate which handle we are over
-                this.getScene().setCursor(javafx.scene.Cursor.N_RESIZE);
+            this.getScene().setCursor(javafx.scene.Cursor.N_RESIZE);
         });
 
         this.setOnMouseEntered(event -> {
@@ -117,5 +109,9 @@ class NoteParameterView extends Rectangle {
         this.setTranslateY(y);
         this.setWidth(gridInfo.getCellWidth());
         this.setHeight(parent.getHeight());
+    }
+
+    public NoteEntry getNoteEntry() {
+        return noteEntry;
     }
 }
