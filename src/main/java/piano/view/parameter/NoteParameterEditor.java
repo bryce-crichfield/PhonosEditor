@@ -6,7 +6,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import piano.EditorContext;
-import piano.view.piano.PianoRoll;
 
 
 public class NoteParameterEditor extends AnchorPane {

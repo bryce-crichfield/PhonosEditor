@@ -23,7 +23,7 @@ import piano.tool.PencilTool;
 import piano.tool.SelectTool;
 import piano.view.midi.NoteMidiEditor;
 import piano.view.parameter.NoteParameterEditor;
-import piano.view.piano.PianoRoll;
+import piano.view.piano.NoteEditorPianoView;
 import piano.view.settings.ViewSettings;
 
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public class Editor {
     private SplitPane splitPane;
     private NoteMidiEditor noteMidiEditor;
     private NoteParameterEditor noteParameterEditor;
-    private PianoRoll pianoRoll;
+    private NoteEditorPianoView pianoView;
     private EditorContext context;
 
     public Editor() {
@@ -90,7 +90,7 @@ public class Editor {
                                          noteMidiEditor.getBackgroundSurface().getHeight() - noteMidiEditor.getHeight()
                 );
                 noteMidiEditor.scrollToY(-newTranslateY);
-                pianoRoll.scrollY(-newTranslateY);
+                pianoView.scrollY(-newTranslateY);
             });
 
             bodyBorderPane.setRight(verticalScrollBar);
@@ -127,7 +127,6 @@ public class Editor {
         root.setOnKeyPressed(event -> {
             if (event.isControlDown() && event.getCode().toString().equals("Z")) {
                 context.getNotes().undo();
-//                noteMidiEditor.getController().undo();
             }
 
             if (event.isControlDown() && event.getCode().toString().equals("Y")) {
@@ -163,11 +162,11 @@ public class Editor {
 
         // Initialize piano roll ---------------------------------------------------------------------------------------
         {
-            pianoRoll = new PianoRoll(context.getViewSettings().gridInfoProperty());
+            pianoView = new NoteEditorPianoView(context);
             noteMidiEditor.heightProperty().addListener((observable, oldValue, newValue) -> {
-                pianoRoll.setPrefHeight(newValue.doubleValue());
+                pianoView.setPrefHeight(newValue.doubleValue());
             });
-            bodyBorderPane.setLeft(pianoRoll);
+            bodyBorderPane.setLeft(pianoView);
         }
 
         // Initialize tool bar buttons ---------------------------------------------------------------------------------

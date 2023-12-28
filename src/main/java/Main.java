@@ -19,7 +19,7 @@ public class Main {
             stage.show();
 
             // maximize the window
-            stage.setMaximized(true);
+//            stage.setMaximized(true);
             setStageOnSecondMonitor(stage);
         }
     }
