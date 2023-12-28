@@ -37,9 +37,9 @@ public class NoteParameterEditor extends AnchorPane {
 
         SubScene scene = new SubScene(world, 0, 0, true, SceneAntialiasing.BALANCED);
 
-        scene.layoutXProperty().bind(this.layoutXProperty().add(PianoRoll.DEFAULT_WIDTH));
+        scene.layoutXProperty().bind(this.layoutXProperty().add(125));
         scene.layoutYProperty().bind(this.layoutYProperty());
-        scene.widthProperty().bind(this.widthProperty().subtract(PianoRoll.DEFAULT_WIDTH));
+        scene.widthProperty().bind(this.widthProperty().subtract(125));
         scene.heightProperty().bind(this.heightProperty());
 
         scene.setCamera(camera);

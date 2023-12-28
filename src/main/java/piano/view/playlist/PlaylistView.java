@@ -21,7 +21,7 @@ public class PlaylistView extends Rectangle {
 
         context.getPlayback().observe((old, now) -> {
             GridInfo gi = context.getViewSettings().getGridInfo();
-            double x = now.getHead() * gi.getCellWidth();
+            double x = now.getValue() * gi.getCellWidth();
             this.setTranslateX(x);
             this.toFront();
         });

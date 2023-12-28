@@ -5,4 +5,6 @@ public interface PlaybackService {
     void pause();
     void stop();
     void observe(PlaybackObserver observer);
+    void setHead(double head);
+    void setTail(double tail);
 }

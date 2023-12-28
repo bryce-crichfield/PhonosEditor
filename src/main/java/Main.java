@@ -21,6 +21,8 @@ public class Main {
             // maximize the window
 //            stage.setMaximized(true);
             setStageOnSecondMonitor(stage);
+            stage.setHeight(800);
+            stage.setWidth(1200);
         }
     }
 

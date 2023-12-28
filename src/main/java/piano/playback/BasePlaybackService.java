@@ -45,7 +45,7 @@ public class BasePlaybackService implements PlaybackService {
 
     public void stop() {
         PlaybackState state = playbackState.get();
-        playbackState.set(state.withPlaying(false).withHead(0));
+        playbackState.set(state.withPlaying(false).withValue(state.getHead()));
     }
 
     @Override
@@ -55,20 +55,34 @@ public class BasePlaybackService implements PlaybackService {
         });
     }
 
+    @Override
+    public void setHead(double head) {
+        PlaybackState state = playbackState.get();
+        playbackState.set(state.withHead(head).withValue(head));
+    }
+
+    @Override
+    public void setTail(double tail) {
+        PlaybackState state = playbackState.get();
+        playbackState.set(state.withTail(tail));
+    }
+
     public void advance(Duration delta) {
         PlaybackState state = playbackState.get();
         double head = state.getHead();
         double tail = state.getTail();
+        double value = state.getValue();
         int tempo = state.getTempo();
         boolean isPlaying = state.isPlaying();
 
         if (isPlaying) {
-            double offset = (delta.toMillis() * tempo / 60000.0);
-            double newHead = head + offset;
-            if (newHead > tail) {
-                newHead = tail;
+            double deltaBpm = (delta.toMillis() * tempo / 60000.0);
+            double newValue = value + deltaBpm;
+            if (newValue > tail) {
+                newValue = head;
             }
-            playbackState.set(state.withHead(newHead));
+
+            playbackState.set(state.withValue(newValue));
         }
     }
 }

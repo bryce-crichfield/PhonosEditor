@@ -1,5 +1,6 @@
 package piano.view.midi;
 
+import component.Handle;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.*;
@@ -12,6 +13,7 @@ import javafx.scene.shape.Rectangle;
 import piano.EditorContext;
 import piano.model.GridInfo;
 import piano.tool.EditorTool;
+import piano.util.GridMath;
 import piano.view.playlist.PlaylistView;
 import piano.view.settings.Theme;
 
@@ -70,14 +72,48 @@ public class NoteMidiEditor extends AnchorPane {
 
         context.getNotes().onDelete((entry, oldData, newData) -> {
             world.getChildren().removeIf(
-                node -> node instanceof NoteMidiView view && view.getNoteEntry().equals(entry));
+                    node -> node instanceof NoteMidiView view && view.getNoteEntry().equals(entry));
         });
-
 
 
         PlaylistView playlistView = new PlaylistView(background.heightProperty(), context);
         playlistView.setManaged(false);
         world.getChildren().add(playlistView);
+
+        Handle handle = Handle.builder()
+                .makeCenterMovableHorizontally()
+                .makeLeftHandle()
+                .makeRightHandle()
+                .build(0, 0, 100, 100, world);
+        handle.heightProperty().bind(background.heightProperty());
+        handle.setFill(Color.CYAN.deriveColor(1, 1, 1, 0.25));
+
+        handle.setOnCenterHandleDragged(() -> {
+            var gi = context.getViewSettings().getGridInfo();
+            double newX = GridMath.snapToGridX(gi, handle.getX());
+            handle.setX(newX);
+
+            var playback = context.getPlayback();
+            // The playback wants units in terms of cells
+            playback.setHead(newX / gi.getCellWidth());
+            playback.setTail((newX + handle.getWidth()) / gi.getCellWidth());
+        });
+
+        handle.setOnRightHandleDragged(() -> {
+            var gi = context.getViewSettings().getGridInfo();
+            double newWidth = GridMath.snapToGridX(gi, handle.getWidth());
+            handle.setWidth(newWidth);
+
+            var playback = context.getPlayback();
+            // The playback wants units in terms of cells
+            playback.setTail((handle.getX() + newWidth) / gi.getCellWidth());
+        });
+
+        handle.setOnLeftHandleDragged(() -> {
+            var gi = context.getViewSettings().getGridInfo();
+            double newX = GridMath.snapToGridX(gi, handle.getX());
+            double newWidth = GridMath.snapToGridX(gi, handle.getWidth());
+        });
     }
 
     public ImagePattern createGridLineFill() {
