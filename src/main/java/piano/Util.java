@@ -40,37 +40,4 @@ public class Util {
         pane.getChildren().add(child);
         return pane;
     }
-
-    public static <T, R> ObjectProperty<R> mapToObj(ObjectProperty<T> prop, Function<T, R> mapper) {
-        ObjectProperty<R> binding = new SimpleObjectProperty<>();
-
-        prop.addListener((observable, oldValue, newValue) -> {
-            binding.set(mapper.apply(newValue));
-        });
-
-        return binding;
-    }
-
-    public static <T> DoubleProperty mapToDouble(ObjectProperty<T> prop, Function<T, Double> mapper) {
-        DoubleProperty binding = new SimpleDoubleProperty();
-
-        prop.addListener((observable, oldValue, newValue) -> {
-            binding.set(mapper.apply(newValue));
-        });
-
-        return binding;
-    }
-
-    public static class DebugListener implements ChangeListener<Number> {
-        private final String name;
-
-        public DebugListener(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-            System.out.println(name + " changed from " + number + " to " + t1);
-        }
-    }
 }
