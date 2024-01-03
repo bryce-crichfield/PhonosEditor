@@ -45,8 +45,6 @@ public class PlaybackView {
             double newWidth = GridMath.snapToGridX(gi, handle.getWidth());
             handle.setWidth(newWidth);
 
-            System.out.println("newWidth = " + newWidth);
-
             var playback = context.getPlayback();
             // The playback wants units in terms of cells
             playback.setTail((handle.getX() + newWidth) / gi.getCellWidth());

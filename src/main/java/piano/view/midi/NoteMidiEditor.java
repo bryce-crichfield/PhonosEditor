@@ -55,7 +55,6 @@ public class NoteMidiEditor extends AnchorPane {
         subScene.setRoot(world);
 
         getChildren().add(subScene);
-
         // Delegate mouse events to EditorTool -------------------------------------------------------------------------
         subScene.setOnMousePressed(mouseEvent -> currentTool.get().ifPresent(tool -> tool.onMouseEvent(mouseEvent)));
         subScene.setOnMouseMoved(mouseEvent -> currentTool.get().ifPresent(tool -> tool.onMouseEvent(mouseEvent)));

@@ -11,18 +11,23 @@
         <top>
             <VBox fx:id="toolBarRoot">
                 <ToolBar>
-                    <ToggleButton fx:id="toggleToolSelect" onAction="#changeToSelect">
+                    <ToggleButton fx:id="toggleToolPlayhead">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-textbox"/>
+                        </graphic>
+                    </ToggleButton>
+                    <ToggleButton fx:id="toggleToolSelect">
                         <graphic>
                             <FontIcon iconLiteral="mdi-selection"/>
                         </graphic>
                     </ToggleButton>
 
-                    <ToggleButton fx:id="toggleToolPencil" onAction="#changeToPencil">
+                    <ToggleButton fx:id="toggleToolPencil">
                         <graphic>
                             <FontIcon iconLiteral="mdi-pencil"/>
                         </graphic>
                     </ToggleButton>
-                    <ToggleButton fx:id="toggleSlice">
+                    <ToggleButton fx:id="toggleToolSlice">
                         <graphic>
                             <FontIcon iconLiteral="mdi-box-cutter"/>
                         </graphic>

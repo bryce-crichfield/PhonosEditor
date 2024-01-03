@@ -22,7 +22,9 @@ import piano.model.NoteRegistry;
 import piano.playback.BasePlaybackService;
 import piano.playback.PlaybackState;
 import piano.tool.PencilTool;
+import piano.tool.PlayheadTool;
 import piano.tool.SelectTool;
+import piano.tool.SliceTool;
 import piano.view.midi.NoteMidiEditor;
 import piano.view.parameter.NoteParameterEditor;
 import piano.view.piano.NoteEditorPianoView;
@@ -33,8 +35,10 @@ import java.util.Collection;
 
 public class Editor {
     // FXML (Tool bar)
+    public ToggleButton toggleToolPlayhead;
     public ToggleButton toggleToolSelect;
     public ToggleButton toggleToolPencil;
+    public ToggleButton toggleToolSlice;
     public BorderPane bodyBorderPane;
     public AnchorPane root;
     public VBox toolBarRoot;
@@ -199,8 +203,22 @@ public class Editor {
         // Initialize tool bar buttons ---------------------------------------------------------------------------------
         {
             ToggleGroup tools = new ToggleGroup();
+            tools.getToggles().add(toggleToolPlayhead);
             tools.getToggles().add(toggleToolSelect);
             tools.getToggles().add(toggleToolPencil);
+            tools.getToggles().add(toggleToolSlice);
+
+            toggleToolPlayhead.setOnAction(event -> noteMidiEditor.setTool(
+                    new PlayheadTool()));
+
+            toggleToolSelect.setOnAction(event -> noteMidiEditor.setTool(
+                    new SelectTool(noteMidiEditor, noteMidiEditor.getWorld(), context)));
+
+            toggleToolPencil.setOnAction(event -> noteMidiEditor.setTool(
+                    new PencilTool(noteMidiEditor, context)));
+
+            toggleToolSlice.setOnAction(event -> noteMidiEditor.setTool(
+                    new SliceTool()));
         }
 
         // Ensure that the split pane fills the entire window ----------------------------------------------------------
@@ -218,10 +236,6 @@ public class Editor {
         }
 
         context.getPlayback().play();
-
-
-//        // Scroll the screen halfway down initially
-        verticalScrollBar.scrollTo(-200);
     }
 
     public void scaleGrid(double deltaX, double deltaY) {
@@ -233,14 +247,6 @@ public class Editor {
 
         var newGi = gi.withCellWidth(newCellWidth).withCellHeight(newCellHeight);
         context.getViewSettings().setGridInfo(newGi);
-    }
-
-    public void changeToSelect(ActionEvent actionEvent) {
-        noteMidiEditor.setTool(new SelectTool(noteMidiEditor, noteMidiEditor.getWorld(), context));
-    }
-
-    public void changeToPencil(ActionEvent actionEvent) {
-        noteMidiEditor.setTool(new PencilTool(noteMidiEditor, context));
     }
 
     public void scaleUpX() {
