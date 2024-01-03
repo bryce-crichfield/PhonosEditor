@@ -16,6 +16,7 @@ public class Handle extends Rectangle {
     Runnable onBottomHandleDragged;
     private double rectangleStartX;
     private double rectangleStartY;
+    private boolean interactionEnabled = true;
 
     public Handle(double x, double y, double width, double height, Group group) {
         super(x, y, width, height);
@@ -33,12 +34,20 @@ public class Handle extends Rectangle {
         group.getChildren().add(centerHandle);
 
         centerHandle.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
+            if (!interactionEnabled) {
+                return;
+            }
+
             centerHandle.getParent().setCursor(Cursor.MOVE);
         });
 
         centerHandle.setFill(Color.TRANSPARENT);
 
         centerHandle.addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> {
+            if (!interactionEnabled) {
+                return;
+            }
+
             rectangleStartX = super.getX();
             rectangleStartY = super.getY();
             double offsetX = event.getX() - rectangleStartX;
@@ -72,12 +81,20 @@ public class Handle extends Rectangle {
         group.getChildren().add(topHandle);
 
         topHandle.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
+            if (!interactionEnabled) {
+                return;
+            }
+
             topHandle.getParent().setCursor(Cursor.N_RESIZE);
         });
 
         topHandle.setFill(Color.TRANSPARENT);
 
         topHandle.addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> {
+            if (!interactionEnabled) {
+                return;
+            }
+
             rectangleStartY = super.getY();
             double offsetY = event.getY() - rectangleStartY;
             double newY = super.getY() + offsetY;
@@ -93,6 +110,10 @@ public class Handle extends Rectangle {
         });
     }
 
+    public void setInteractionEnabled(boolean interactionEnabled) {
+        this.interactionEnabled = interactionEnabled;
+    }
+
     private void makeBottomHandle(Group group) {
         Rectangle bottomHandle = new Rectangle();
         bottomHandle.xProperty().bind(super.xProperty().add(10));
@@ -103,12 +124,20 @@ public class Handle extends Rectangle {
         group.getChildren().add(bottomHandle);
 
         bottomHandle.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
+            if (!interactionEnabled) {
+                return;
+            }
+
             bottomHandle.getParent().setCursor(Cursor.S_RESIZE);
         });
 
         bottomHandle.setFill(Color.TRANSPARENT);
 
         bottomHandle.addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> {
+            if (!interactionEnabled) {
+                return;
+            }
+
             rectangleStartY = super.getY();
             double offsetY = event.getY() - rectangleStartY;
             if (offsetY >= 0 && offsetY <= super.getY() + super.getHeight() - (bottomHandle.getHeight() / 2)) {
@@ -132,12 +161,20 @@ public class Handle extends Rectangle {
         group.getChildren().add(leftHandle);
 
         leftHandle.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
+            if (!interactionEnabled) {
+                return;
+            }
+
             leftHandle.getParent().setCursor(Cursor.W_RESIZE);
         });
 
         leftHandle.setFill(Color.TRANSPARENT);
 
         leftHandle.addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> {
+            if (!interactionEnabled) {
+                return;
+            }
+
             rectangleStartX = super.getX();
             double offsetX = event.getX() - rectangleStartX;
             double newX = super.getX() + offsetX;
@@ -163,12 +200,20 @@ public class Handle extends Rectangle {
         group.getChildren().add(rightHandle);
 
         rightHandle.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
+            if (!interactionEnabled) {
+                return;
+            }
+
             rightHandle.getParent().setCursor(Cursor.E_RESIZE);
         });
 
         rightHandle.setFill(Color.TRANSPARENT);
 
         rightHandle.addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> {
+            if (!interactionEnabled) {
+                return;
+            }
+
             rectangleStartX = super.getX();
             double offsetX = event.getX() - rectangleStartX;
             if (offsetX >= 0 && offsetX <= super.getX() + super.getWidth() - (rightHandle.getWidth() / 2)) {

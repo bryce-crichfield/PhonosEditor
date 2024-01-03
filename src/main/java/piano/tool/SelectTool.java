@@ -77,6 +77,10 @@ public class SelectTool implements EditorTool {
     }
 
     public void onSelectionUpdate(Point3D point) {
+        if (anchorPoint == null) {
+            return;
+        }
+
         double x = Math.min(point.getX(), anchorPoint.getX());
         double y = Math.min(point.getY(), anchorPoint.getY());
         double width = Math.abs(point.getX() - anchorPoint.getX());

@@ -73,7 +73,7 @@ public class NoteMidiEditor extends AnchorPane {
         });
 
         // Not a fan of how this just adds itself to the world, but it's the only way I could get it to work
-        PlaybackView playbackView = new PlaybackView(context, world, background.heightProperty());
+        PlaybackView playbackView = new PlaybackView(context, world, background.heightProperty(), currentTool);
     }
 
     public ImagePattern createGridLineFill() {

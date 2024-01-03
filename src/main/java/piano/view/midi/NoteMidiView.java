@@ -11,10 +11,10 @@ import piano.EditorContext;
 import piano.model.GridInfo;
 import piano.model.NoteData;
 import piano.model.NoteEntry;
-import piano.tool.EditorTool;
-import piano.tool.PencilTool;
+import piano.tool.*;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class NoteMidiView extends StackPane {
     private final EditorContext context;
@@ -24,15 +24,13 @@ public class NoteMidiView extends StackPane {
     private final NoteMidiHandle.Left leftHandle;
     private final NoteMidiHandle.Right rightHandle;
     private final NoteMidiHandle.Body bodyHandle;
-    ObjectProperty<Optional<EditorTool>> currentTool;
     private Optional<NoteMidiHandle> selectedHandle;
-    private NoteMidiController selfController = new PencilNoteMidiController();
+    private Optional<NoteMidiController> controller = Optional.empty();
 
     public NoteMidiView(NoteEntry noteEntry, EditorContext context, ObjectProperty<Optional<EditorTool>> currentTool) {
         super();
         this.context = context;
         this.noteEntry = noteEntry;
-        this.currentTool = currentTool;
 
         label = new Text("");
         rectangle = new Rectangle();
@@ -62,26 +60,32 @@ public class NoteMidiView extends StackPane {
             rectangle.setHeight(height);
         });
 
-        currentTool.addListener((observable, oldValue, newValue) -> {
-            if (newValue.isEmpty()) {
-                return;
-            }
+        // When the tool changes, we need to update the controller
+        {
+            Consumer<Optional<EditorTool>> bindTool = tool -> {
+                if (tool.isEmpty()) {
+                    return;
+                }
 
-            if (newValue.get() instanceof PencilTool) {
-                System.out.println("Pencil tool");
-                selfController = new PencilNoteMidiController();
-            } else {
-                System.out.println("Unknown tool");
-                selfController = new NoteMidiController() {
-                };
-            }
-        });
+                if (tool.get() instanceof PencilTool) {
+                    controller = Optional.of(new NoteMidiController());
+                } else {
+                    controller = Optional.empty();
+                }
+            };
+
+            bindTool.accept(currentTool.get());
+
+            currentTool.addListener((observable, oldValue, newValue) -> {
+                bindTool.accept(newValue);
+            });
+        }
 
         // Set handle on mouse hover
-        rectangle.setOnMouseMoved(event -> selfController.rectangleOnMouseMoved(event));
+        rectangle.setOnMouseMoved(event -> controller.ifPresent(c -> c.rectangleOnMouseMoved(event)));
 
         // Delegate the drag event to the selected handle
-        this.setOnMouseDragged(event -> selfController.stackPaneOnMouseDragged(event));
+        this.setOnMouseDragged(event -> controller.ifPresent(c -> c.stackPaneOnMouseDragged(event)));
 
         // Update the view rectangle when the note data model changes
         noteEntry.addListener((observable, oldValue, newValue) -> {
@@ -151,9 +155,7 @@ public class NoteMidiView extends StackPane {
         return noteEntry;
     }
 
-
-    private class PencilNoteMidiController implements NoteMidiController {
-        @Override
+    private class NoteMidiController {
         public void stackPaneOnMouseDragged(MouseEvent event) {
             double deltaX = event.getX();
             double deltaY = event.getY();
@@ -166,9 +168,10 @@ public class NoteMidiView extends StackPane {
             if (selectedHandle != null) {
                 selectedHandle.ifPresent(handle -> handle.onDragged(cellX, cellY));
             }
+
+            event.consume();
         }
 
-        @Override
         public void rectangleOnMouseMoved(MouseEvent event) {
             double mouseX = event.getX();
 
@@ -184,6 +187,8 @@ public class NoteMidiView extends StackPane {
 
             // Change the cursor to indicate the handle that will be selected
             selectedHandle.ifPresent(handle -> setCursor(handle.getCursor()));
+
+            event.consume();
         }
     }
 }
