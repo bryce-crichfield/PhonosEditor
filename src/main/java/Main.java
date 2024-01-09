@@ -1,33 +1,22 @@
 import atlantafx.base.theme.PrimerDark;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import piano.Editor;
+
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.BiFunction;
 
 public class Main {
-    private static void setStageOnSecondMonitor(Stage stage) {
-        // Get the list of screens (monitors)
-        Screen secondScreen = null;
-        for (Screen screen : Screen.getScreens()) {
-            if (!screen.equals(Screen.getPrimary())) {
-                secondScreen = screen;
-                break;
-            }
-        }
-
-        if (secondScreen != null) {
-            // Get the bounds of the second screen
-            Rectangle2D bounds = secondScreen.getBounds();
-
-            // Set the stage position to be on the second screen
-            stage.setX(bounds.getMinX());
-            stage.setY(bounds.getMinY());
-        }
-    }
-
     public static void main(String[] args) {
         Application.launch(App.class, args);
     }
@@ -39,13 +28,16 @@ public class Main {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Main.class.getResource("PianoRoll.fxml"));
             Parent root = loader.load();
+            Editor editor = loader.getController();
+
             Scene scene = new Scene(root);
+
+            KeybindingsLoader keybindingsLoader = new KeybindingsLoader(scene, editor);
+            keybindingsLoader.load();
+
             stage.setScene(scene);
             stage.show();
 
-            // maximize the window
-//            stage.setMaximized(true);
-            setStageOnSecondMonitor(stage);
             stage.setHeight(800);
             stage.setWidth(1200);
         }

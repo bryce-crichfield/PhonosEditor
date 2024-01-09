@@ -1,0 +1,6 @@
+{
+  "midiEditor.selectSelect": "Ctrl + 2",
+  "midiEditor.selectPlayhead": "Ctrl + 1",
+  "midiEditor.selectPencil": "Ctrl + 3",
+  "midiEditor.selectSlice": "Ctrl + 4"
+}
