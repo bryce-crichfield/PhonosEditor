@@ -12,9 +12,11 @@ import javafx.scene.shape.Rectangle;
 import piano.EditorContext;
 import piano.model.GridInfo;
 import piano.tool.EditorTool;
+import piano.tool.PencilTool;
 import piano.view.playlist.PlaybackView;
 import piano.view.settings.Theme;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 
@@ -22,10 +24,11 @@ public class NoteMidiEditor extends AnchorPane {
     private final EditorContext context;
     private final Rectangle background;
     private final Group world;
-    private final ObjectProperty<Optional<EditorTool>> currentTool = new SimpleObjectProperty<>(Optional.empty());
+    private final ObjectProperty<Optional<EditorTool>> currentTool;
 
-    public NoteMidiEditor(EditorContext context) {
+    public NoteMidiEditor(EditorContext context, ObjectProperty<Optional<EditorTool>> currentTool) {
         this.context = context;
+        this.currentTool = currentTool;
 
         // Create the background grid surface --------------------------------------------------------------------------
         var gridInfo = context.getViewSettings().gridInfoProperty();
@@ -59,7 +62,11 @@ public class NoteMidiEditor extends AnchorPane {
         subScene.setOnMousePressed(mouseEvent -> currentTool.get().ifPresent(tool -> tool.onMouseEvent(mouseEvent)));
         subScene.setOnMouseMoved(mouseEvent -> currentTool.get().ifPresent(tool -> tool.onMouseEvent(mouseEvent)));
         subScene.setOnMouseDragged(mouseEvent -> currentTool.get().ifPresent(tool -> tool.onMouseEvent(mouseEvent)));
-        subScene.setOnMouseReleased(mouseEvent -> currentTool.get().ifPresent(tool -> tool.onMouseEvent(mouseEvent)));
+        subScene.setOnMouseReleased(mouseEvent -> {
+            Optional<EditorTool> nextTool = currentTool.get().map(tool -> tool.onMouseEvent(mouseEvent));
+            currentTool.set(nextTool);
+        });
+
 
         // Bind view to model ------------------------------------------------------------------------------------------
         context.getNotes().onCreate((entry, oldData, newData) -> {

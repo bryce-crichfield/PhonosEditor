@@ -6,6 +6,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ResizableRectangle extends Rectangle {
     private static final int HANDLE_MIN_WIDTH = 10;
     private static final int HANDLE_MIN_HEIGHT = 10;
@@ -17,11 +20,13 @@ public class ResizableRectangle extends Rectangle {
     private double rectangleStartX;
     private double rectangleStartY;
     private boolean interactionEnabled = true;
+    private List<Rectangle> handles = new ArrayList<>();
 
     public ResizableRectangle(double x, double y, double width, double height, Group group) {
         super(x, y, width, height);
 
         group.getChildren().add(this);
+        handles.add(this);
     }
 
     private void makeCenterHandle(Group group, boolean horizontal, boolean vertical) {
@@ -32,6 +37,7 @@ public class ResizableRectangle extends Rectangle {
         centerHandle.heightProperty().bind(super.heightProperty().subtract(HANDLE_MIN_HEIGHT * 2));
 
         group.getChildren().add(centerHandle);
+        handles.add(centerHandle);
 
         centerHandle.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
             if (!interactionEnabled) {
@@ -79,6 +85,7 @@ public class ResizableRectangle extends Rectangle {
         topHandle.setHeight(HANDLE_MIN_HEIGHT);
 
         group.getChildren().add(topHandle);
+        handles.add(topHandle);
 
         topHandle.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
             if (!interactionEnabled) {
@@ -110,8 +117,12 @@ public class ResizableRectangle extends Rectangle {
         });
     }
 
+    // Use this to disable the entire resizable rectangle (since we aren't allowed to override the setDisable method)
     public void setInteractionEnabled(boolean interactionEnabled) {
         this.interactionEnabled = interactionEnabled;
+        for (Rectangle handle : handles) {
+            handle.setDisable(!interactionEnabled);
+        }
     }
 
     private void makeBottomHandle(Group group) {
@@ -122,6 +133,7 @@ public class ResizableRectangle extends Rectangle {
         bottomHandle.setHeight(HANDLE_MIN_HEIGHT);
 
         group.getChildren().add(bottomHandle);
+        handles.add(bottomHandle);
 
         bottomHandle.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
             if (!interactionEnabled) {
@@ -159,6 +171,7 @@ public class ResizableRectangle extends Rectangle {
         leftHandle.heightProperty().bind(super.heightProperty());
 
         group.getChildren().add(leftHandle);
+        handles.add(leftHandle);
 
         leftHandle.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
             if (!interactionEnabled) {
@@ -198,6 +211,7 @@ public class ResizableRectangle extends Rectangle {
         rightHandle.heightProperty().bind(super.heightProperty());
 
         group.getChildren().add(rightHandle);
+        handles.add(rightHandle);
 
         rightHandle.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
             if (!interactionEnabled) {

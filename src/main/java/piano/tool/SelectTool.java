@@ -9,17 +9,110 @@ import javafx.scene.input.PickResult;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import piano.EditorContext;
+import piano.model.NoteData;
 import piano.model.NoteEntry;
 import piano.view.midi.NoteMidiEditor;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 public class SelectTool implements EditorTool {
+    // Two Modes:
+    // 1. Window Selection - Only those notes that are completely inside the selection box are selected
+    //      (Drag to the right, blue box)
+    // 2. Cross Selection - All notes that intersect the selection box are selected
+    //      (Drag to the left, green box)
+
+    abstract class SelectionBox extends Rectangle {
+        protected final Point3D anchorPoint;
+
+        public SelectionBox(Point3D anchorPoint, Color color) {
+            this.anchorPoint = anchorPoint;
+
+            setFill(color.deriveColor(0, 1, 1, 0.5));
+            setStroke(color);
+            setStrokeWidth(1);
+
+            // Don't allow the selection box to receive mouse events
+            setDisable(true);
+        }
+
+
+        public void onDragged(Point3D point) {
+            // Update the selection box
+            double x = Math.min(anchorPoint.getX(), point.getX());
+            double y = Math.min(anchorPoint.getY(), point.getY());
+            double width = Math.abs(anchorPoint.getX() - point.getX());
+            double height = Math.abs(anchorPoint.getY() - point.getY());
+            setX(x);
+            setY(y);
+            setWidth(width);
+            setHeight(height);
+
+
+            context.getNotes().clearSelection();
+            Collection<NoteEntry> noteEntries = context.getNotes().query(noteEntry -> isNoteSelected(noteEntry.get()));
+            noteEntries.forEach(note -> context.getNotes().select(note));
+        }
+
+        protected abstract boolean isNoteSelected(NoteData data);
+    }
+
+    private class WindowSelectionBox extends SelectionBox {
+
+        public WindowSelectionBox(Point3D anchorPoint) {
+            super(anchorPoint, Color.BLUE);
+        }
+
+        @Override
+        protected boolean isNoteSelected(NoteData data) {
+            var gi = context.getViewSettings().getGridInfo();
+            double noteX = data.calcXPosOnGrid(gi);
+            double noteY = data.calcYPosOnGrid(gi);
+            double noteWidth = gi.getCellWidth() * data.getDuration();
+            double noteHeight = gi.getCellHeight();
+
+            double boxX = getX();
+            double boxY = getY();
+            double boxWidth = getWidth();
+            double boxHeight = getHeight();
+
+            // The note needs to be completely inside the box
+            return noteX >= boxX && noteX + noteWidth <= boxX + boxWidth
+                    && noteY >= boxY && noteY + noteHeight <= boxY + boxHeight;
+        }
+    }
+
+    private class CrossSelectionBox extends SelectionBox {
+
+        public CrossSelectionBox(Point3D anchorPoint) {
+            super(anchorPoint, Color.GREEN);
+        }
+
+        @Override
+        protected boolean isNoteSelected(NoteData data) {
+            var gi = context.getViewSettings().getGridInfo();
+            double noteX = data.calcXPosOnGrid(gi);
+            double noteY = data.calcYPosOnGrid(gi);
+            double noteWidth = gi.getCellWidth() * data.getDuration();
+            double noteHeight = gi.getCellHeight();
+
+            double boxX = getX();
+            double boxY = getY();
+            double boxWidth = getWidth();
+            double boxHeight = getHeight();
+
+            // The note just needs to intersect the box not be completely inside it
+            return noteX + noteWidth >= boxX && noteX <= boxX + boxWidth
+                    && noteY + noteHeight >= boxY && noteY <= boxY + boxHeight;
+        }
+    }
+
     private final EditorContext context;
     private final Group world;
     private final NoteMidiEditor editor;
-    Rectangle selectionBox;
-    Point2D anchorPoint;
+    private Optional<SelectionBox> currentBox;
 
     public SelectTool(NoteMidiEditor editor, Group world, EditorContext context) {
         this.world = world;
@@ -34,80 +127,58 @@ public class SelectTool implements EditorTool {
 
     @Override
     public EditorTool onMouseEvent(MouseEvent event) {
+        // Selection Press
         if (event.getEventType() == MouseEvent.MOUSE_PRESSED && event.isPrimaryButtonDown()) {
             PickResult pickResult = event.getPickResult();
             Node node = pickResult.getIntersectedNode();
             if (node.equals(editor.getBackgroundSurface())) {
-                onSelectionStart(pickResult.getIntersectedPoint());
+                Point3D point = pickResult.getIntersectedPoint();
+                currentBox = Optional.of(new CrossSelectionBox(point));
+                world.getChildren().add(currentBox.get());
             }
         }
 
+        // Selection Drag
         if (event.getEventType() == MouseEvent.MOUSE_DRAGGED && event.isPrimaryButtonDown()) {
             PickResult pickResult = event.getPickResult();
             Node node = pickResult.getIntersectedNode();
             if (node.equals(editor.getBackgroundSurface())) {
-                onSelectionUpdate(pickResult.getIntersectedPoint());
+                Point3D point = pickResult.getIntersectedPoint();
+
+                if (currentBox.isPresent()) {
+                    SelectionBox box = currentBox.get();
+                    boolean leftOfAnchor = point.getX() < box.anchorPoint.getX();
+                    boolean rightOfAnchor = point.getX() > box.anchorPoint.getX();
+                    if (box instanceof WindowSelectionBox && leftOfAnchor) {
+                        Point3D anchorPoint = box.anchorPoint;
+                        world.getChildren().remove(box);
+                        currentBox = Optional.of(new CrossSelectionBox(anchorPoint));
+                        world.getChildren().add(currentBox.get());
+                    }
+
+                    if (box instanceof CrossSelectionBox && rightOfAnchor) {
+                        Point3D anchorPoint = box.anchorPoint;
+                        world.getChildren().remove(box);
+                        currentBox = Optional.of(new WindowSelectionBox(anchorPoint));
+                        world.getChildren().add(currentBox.get());
+                    }
+                }
+
+                currentBox.ifPresent(box -> box.onDragged(point));
             }
         }
 
+        // Selection Release
         if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
-            onSelectionEnd(null);
-            return new PencilTool(editor, context);
+            currentBox.ifPresent(box -> world.getChildren().remove(box));
+
+            // Return to pencil if selection is non-empty
+            if (!context.getNotes().getSelectedEntries().isEmpty()) {
+                return new PencilTool(editor, context);
+            }
         }
+
 
         return this;
-    }
-
-    public void onSelectionStart(Point3D point) {
-        selectionBox = new Rectangle();
-        selectionBox.setTranslateX(point.getX());
-        selectionBox.setTranslateY(point.getY());
-        selectionBox.setTranslateZ(point.getZ());
-        selectionBox.setWidth(0);
-        selectionBox.setHeight(0);
-        selectionBox.setMouseTransparent(true);
-        selectionBox.setFill(Color.BLUE.deriveColor(0, 1, 1, 0.25));
-        selectionBox.setStrokeWidth(2);
-        selectionBox.setStroke(Color.WHITE);
-        selectionBox.setArcHeight(10);
-        selectionBox.setArcWidth(10);
-        world.getChildren().add(selectionBox);
-
-        anchorPoint = new Point2D(point.getX(), point.getY());
-    }
-
-    public void onSelectionUpdate(Point3D point) {
-        if (anchorPoint == null) {
-            return;
-        }
-
-        double x = Math.min(point.getX(), anchorPoint.getX());
-        double y = Math.min(point.getY(), anchorPoint.getY());
-        double width = Math.abs(point.getX() - anchorPoint.getX());
-        double height = Math.abs(point.getY() - anchorPoint.getY());
-        selectionBox.setTranslateX(x);
-        selectionBox.setTranslateY(y);
-        selectionBox.setWidth(width);
-        selectionBox.setHeight(height);
-
-        var gridInfo = context.getViewSettings().gridInfoProperty();
-
-        Collection<NoteEntry> hoveredNotes = context.getNotes().query(entry -> {
-            double entryX = entry.get().calcXPosOnGrid(gridInfo.get());
-            double entryY = entry.get().calcYPosOnGrid(gridInfo.get());
-            double entryWidth = entry.get().getEnd() - entry.get().getStart();
-            double entryHeight = 1;
-            return entryX < x + width && entryX + entryWidth > x && entryY < y + height && entryY + entryHeight > y;
-        });
-
-        context.getNotes().clearSelection();
-        for (NoteEntry entry : hoveredNotes) {
-            context.getNotes().select(entry);
-        }
-    }
-
-    public void onSelectionEnd(Point3D point) {
-        // Find all the nodes that are inside the selection box
-        world.getChildren().remove(selectionBox);
     }
 }

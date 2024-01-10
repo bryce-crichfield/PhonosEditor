@@ -69,6 +69,7 @@ public class PlaybackView {
             }
 
             resizableRectangle.setInteractionEnabled(newValue.get() instanceof PlayheadTool);
+            playHeadView.setVisible(false);
         });
     }
 

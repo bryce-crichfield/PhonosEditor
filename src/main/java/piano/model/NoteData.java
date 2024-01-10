@@ -82,4 +82,8 @@ public class NoteData {
         NotePitch pitch = NotePitch.from(rowStart);
         return new NoteData(pitch, colStart, colEnd, 100);
     }
+
+    public double getDuration() {
+        return end - start;
+    }
 }

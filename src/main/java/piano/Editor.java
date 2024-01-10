@@ -3,6 +3,7 @@ package piano;
 import component.HorizontalScrollBar;
 import component.ScrollBar;
 import component.VerticalScrollBar;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -21,10 +22,7 @@ import piano.model.NoteEntry;
 import piano.model.NoteRegistry;
 import piano.playback.BasePlaybackService;
 import piano.playback.PlaybackState;
-import piano.tool.PencilTool;
-import piano.tool.PlayheadTool;
-import piano.tool.SelectTool;
-import piano.tool.SliceTool;
+import piano.tool.*;
 import piano.view.midi.NoteMidiEditor;
 import piano.view.parameter.NoteParameterEditor;
 import piano.view.piano.NoteEditorPianoView;
@@ -32,6 +30,7 @@ import piano.view.settings.ViewSettings;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 public class Editor {
     // FXML (Tool bar)
@@ -49,6 +48,9 @@ public class Editor {
     private NoteParameterEditor noteParameterEditor;
     private NoteEditorPianoView pianoView;
     private EditorContext context;
+    private final ObjectProperty<Optional<EditorTool>> currentTool = new SimpleObjectProperty<>(Optional.empty());
+    ToggleGroup tools = new ToggleGroup();
+
 
     public Editor() {
         super();
@@ -79,7 +81,7 @@ public class Editor {
         {
             // The pattern editor represents the world as a large rectangle with a grid drawn on it.  The large
             // rectangle is the background surface, and the grid is drawn on top of it.
-            noteMidiEditor = new NoteMidiEditor(context);
+            noteMidiEditor = new NoteMidiEditor(context, currentTool);
             bodyBorderPane.setCenter(noteMidiEditor);
 
             noteParameterEditor = new NoteParameterEditor(context);
@@ -159,6 +161,23 @@ public class Editor {
             }
         });
 
+
+        currentTool.addListener((observable, oldValue, newValue) -> {
+            // if there is a tool toggle the corresponding button
+            if (newValue.isPresent()) {
+                EditorTool tool = newValue.get();
+                if (tool instanceof PencilTool) {
+                    tools.selectToggle(toggleToolPencil);
+                } else if (tool instanceof SelectTool) {
+                    tools.selectToggle(toggleToolSelect);
+                } else if (tool instanceof PlayheadTool) {
+                    tools.selectToggle(toggleToolPlayhead);
+                } else if (tool instanceof SliceTool) {
+                    tools.selectToggle(toggleToolSlice);
+                }
+            }
+        });
+
         root.setOnKeyPressed(event -> {
             if (event.isControlDown() && event.getCode().toString().equals("Z")) {
                 context.getNotes().undo();
@@ -206,7 +225,6 @@ public class Editor {
 
         // Initialize tool bar buttons ---------------------------------------------------------------------------------
         {
-            ToggleGroup tools = new ToggleGroup();
             tools.getToggles().add(toggleToolPlayhead);
             tools.getToggles().add(toggleToolSelect);
             tools.getToggles().add(toggleToolPencil);
@@ -223,6 +241,7 @@ public class Editor {
 
             toggleToolSlice.setOnAction(event -> noteMidiEditor.setTool(
                     new SliceTool()));
+
         }
 
         // Ensure that the split pane fills the entire window ----------------------------------------------------------
