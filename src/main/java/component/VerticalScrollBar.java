@@ -96,7 +96,7 @@ public class VerticalScrollBar extends ScrollBar {
     private void updateY(double newY) {
         // NOTE: The GRE proved to be important to solve a bug where the handle would go past the track
         if (newY >= track.getHeight() - handle.getHeight()) {
-            return;
+            newY = track.getHeight() - handle.getHeight() - 1;
         }
 
         newY = Util.clamp(newY, 0, track.getHeight() - handle.getHeight());

@@ -99,7 +99,7 @@ public class HorizontalScrollBar extends ScrollBar {
     private void updateX(double newX) {
         // NOTE: The GRE proved to be important to solve a bug where the handle would go past the track
         if (newX >= track.getWidth() - handle.getWidth()) {
-            return;
+            newX = track.getWidth() - handle.getWidth() - 1;
         }
 
         newX = Util.clamp(newX, 0, track.getWidth() - handle.getWidth());
