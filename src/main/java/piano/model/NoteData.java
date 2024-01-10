@@ -26,6 +26,18 @@ public class NoteData {
             end = temp;
         }
 
+        // end must be greater than start
+        if (end < start) {
+            int temp = end;
+            end = start;
+            start = temp;
+        }
+
+        // duration must be at least 1
+        if (end - start < 1) {
+            end = start + 1;
+        }
+
         this.pitch = pitch;
         this.start = start;
         this.end = end;
