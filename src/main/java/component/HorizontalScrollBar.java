@@ -136,7 +136,11 @@ public class HorizontalScrollBar extends ScrollBar {
 
     @Override
     public double getRelativePosition() {
-        return handle.getX() / track.getWidth();
+        // We have to consider the total scrollable length (which considers handle's width)
+        double totalScrollableLength = track.getWidth() - handle.getWidth();
+        double totalRelativeScrollableLength = totalScrollableLength / track.getWidth();
+        double relativePosition = handle.getX() / track.getWidth();
+        return Util.map(relativePosition, 0, totalRelativeScrollableLength, 0, 1);
     }
 
     private static class Handle extends Rectangle {

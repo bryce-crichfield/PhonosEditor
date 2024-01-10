@@ -24,6 +24,8 @@ public class NotePitch {
     public static String indexToString(int note) {
         // piano notes are indexed from 1 to 88
         note -= 1;
+        // Clamp the note to the range 0 to 88
+        note = Math.max(0, Math.min(88, note));
         // index 0 represents A0 on the piano
         // index 88 represents C8 on the piano
 
@@ -63,6 +65,8 @@ public class NotePitch {
         }
 
         int index = (octave * 12) + noteIndex + 1;
+        // Clamp the index to the range 1 to 88
+        index = Math.max(1, Math.min(88, index));
         return index;
     }
 
