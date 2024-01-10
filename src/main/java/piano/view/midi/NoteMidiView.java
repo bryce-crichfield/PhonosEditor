@@ -11,6 +11,7 @@ import piano.EditorContext;
 import piano.model.GridInfo;
 import piano.model.NoteData;
 import piano.model.NoteEntry;
+import piano.model.NotePitch;
 import piano.tool.*;
 
 import java.util.Optional;
@@ -140,7 +141,7 @@ public class NoteMidiView extends StackPane {
             this.setLayoutY(newValue.doubleValue());
 
             NoteData noteData = this.noteEntry.get();
-            String noteString = NoteData.noteToString(88 - noteData.getNote());
+            String noteString = noteData.getPitch().getNoteName();
             label.setText(noteString);
         });
 

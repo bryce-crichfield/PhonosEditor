@@ -21,6 +21,11 @@ public class Util {
         return (value - min) * (newMax - newMin) / (max - min) + newMin;
     }
 
+    // Takes a value in the range [min, max] and returns a value in the range [max, min]
+    public static double reverse(double value, double min, double max) {
+        return max - (value - min);
+    }
+
     public static double lerp(double a, double b, double t) {
         double result = a + (b - a) * t;
         // Clamp if close to b

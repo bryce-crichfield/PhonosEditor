@@ -13,7 +13,7 @@ import piano.Util;
 import java.util.function.Consumer;
 
 public class HorizontalScrollBar extends ScrollBar {
-    public static final int SIZE = 25;
+    public static final int SIZE = 30;
     private final Pane container;
     private final Button negativeButton;
     private final AnchorPane track;
@@ -54,7 +54,7 @@ public class HorizontalScrollBar extends ScrollBar {
             track.setPrefHeight(25);
             HBox.setHgrow(track, Priority.ALWAYS);
 
-            handle = new Handle(SIZE * 2, SIZE, Color.GRAY);
+            handle = new Handle(SIZE * 3, SIZE, Color.DARKGRAY.darker().darker().darker().darker().darker());
 
             track.getChildren().add(handle);
 
@@ -170,9 +170,7 @@ public class HorizontalScrollBar extends ScrollBar {
                 setFill(getFill(color));
             });
 
-            setArcHeight(10);
-            setArcWidth(10);
-            setStroke(Color.BLACK);
+            setStroke(color.brighter().brighter().brighter().brighter().brighter());
             setStrokeWidth(1);
         }
 

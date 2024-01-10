@@ -68,6 +68,10 @@ public class Editor {
             var playbackService = new BasePlaybackService(new SimpleObjectProperty<>(playbackState));
             var noteService = new BaseNoteService(noteRegistry);
             context = new EditorContext(playbackService, noteService, viewSettings);
+
+            playbackService.observe((String noteName) -> {
+                System.out.println("Triggering note: " + noteName);
+            });
         }
 
 
@@ -183,7 +187,7 @@ public class Editor {
 
                     int newStart = data.getStart() + length;
                     int newEnd = data.getEnd() + length;
-                    NoteData newData = new NoteData(data.getNote(), newStart, newEnd, data.getVelocity());
+                    NoteData newData = new NoteData(data.getPitch(), newStart, newEnd, data.getVelocity());
                     newNotes.add(newData);
                 }
 

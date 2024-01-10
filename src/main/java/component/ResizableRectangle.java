@@ -6,7 +6,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-public class Handle extends Rectangle {
+public class ResizableRectangle extends Rectangle {
     private static final int HANDLE_MIN_WIDTH = 10;
     private static final int HANDLE_MIN_HEIGHT = 10;
     Runnable onCenterHandleDragged;
@@ -18,7 +18,7 @@ public class Handle extends Rectangle {
     private double rectangleStartY;
     private boolean interactionEnabled = true;
 
-    public Handle(double x, double y, double width, double height, Group group) {
+    public ResizableRectangle(double x, double y, double width, double height, Group group) {
         super(x, y, width, height);
 
         group.getChildren().add(this);
@@ -291,30 +291,30 @@ public class Handle extends Rectangle {
             return this;
         }
 
-        public Handle build(double x, double y, double width, double height, Group group) {
-            Handle handle = new Handle(x, y, width, height, group);
+        public ResizableRectangle build(double x, double y, double width, double height, Group group) {
+            ResizableRectangle resizableRectangle = new ResizableRectangle(x, y, width, height, group);
 
             if (shouldMakeCenterHandle) {
-                handle.makeCenterHandle(group, centerHandleHorizontal, centerHandleVertical);
+                resizableRectangle.makeCenterHandle(group, centerHandleHorizontal, centerHandleVertical);
             }
 
             if (shouldMakeTopHandle) {
-                handle.makeTopHandle(group);
+                resizableRectangle.makeTopHandle(group);
             }
 
             if (shouldMakeBottomHandle) {
-                handle.makeBottomHandle(group);
+                resizableRectangle.makeBottomHandle(group);
             }
 
             if (shouldMakeLeftHandle) {
-                handle.makeLeftHandle(group);
+                resizableRectangle.makeLeftHandle(group);
             }
 
             if (shouldMakeRightHandle) {
-                handle.makeRightHandle(group);
+                resizableRectangle.makeRightHandle(group);
             }
 
-            return handle;
+            return resizableRectangle;
         }
     }
 }

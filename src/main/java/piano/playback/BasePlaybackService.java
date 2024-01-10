@@ -2,10 +2,14 @@ package piano.playback;
 
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.ObjectProperty;
+import piano.model.NoteData;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BasePlaybackService implements PlaybackService {
+    private List<NoteTriggerObserver> noteTriggerObservers = new ArrayList<>();
     private final ObjectProperty<PlaybackState> playbackState;
 
     public BasePlaybackService(ObjectProperty<PlaybackState> playbackState) {
@@ -68,10 +72,22 @@ public class BasePlaybackService implements PlaybackService {
     }
 
     @Override
+    public void triggerNote(String noteName) {
+        for (NoteTriggerObserver observer : noteTriggerObservers) {
+            observer.accept(noteName);
+        }
+    }
+
+    @Override
     public void observe(PlaybackObserver observer) {
         playbackState.addListener((observable, oldValue, newValue) -> {
             observer.accept(oldValue, newValue);
         });
+    }
+
+    @Override
+    public void observe(NoteTriggerObserver observer) {
+        noteTriggerObservers.add(observer);
     }
 
     @Override

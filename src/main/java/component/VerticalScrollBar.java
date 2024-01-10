@@ -1,5 +1,6 @@
 package component;
 
+import javafx.css.Size;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -13,7 +14,7 @@ import piano.Util;
 import java.util.function.Consumer;
 
 public class VerticalScrollBar extends ScrollBar {
-    public static final int SIZE = 25;
+    public static final int SIZE = 35;
     private final Pane container;
     private final Button negativeButton;
     private final AnchorPane track;
@@ -50,7 +51,7 @@ public class VerticalScrollBar extends ScrollBar {
             track = new AnchorPane();
             track.setPrefWidth(25);
             VBox.setVgrow(track, Priority.ALWAYS);
-            handle = new Handle(25, 50, Color.GRAY);
+            handle = new Handle(SIZE, SIZE*3, Color.DARKGRAY.darker().darker().darker().darker().darker());
 
             var centerVertically = container.widthProperty().subtract(handle.widthProperty()).divide(2);
             handle.xProperty().bind(centerVertically);
@@ -169,9 +170,7 @@ public class VerticalScrollBar extends ScrollBar {
                 setFill(getFill(color));
             });
 
-            setArcHeight(10);
-            setArcWidth(10);
-            setStroke(Color.BLACK);
+            setStroke(color.brighter().brighter().brighter().brighter().brighter());
             setStrokeWidth(1);
         }
 

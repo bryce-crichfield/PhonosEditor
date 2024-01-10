@@ -6,8 +6,10 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import piano.EditorContext;
+import piano.Util;
 import piano.model.GridInfo;
 import piano.model.NoteData;
+import piano.model.NotePitch;
 import piano.util.GridMath;
 import piano.view.midi.NoteMidiEditor;
 import piano.view.midi.NoteMidiView;
@@ -39,7 +41,10 @@ public class PencilTool implements EditorTool {
 
                 int cellX = (int) (GridMath.snapToGridX(gi, point.getX()) / gi.getCellWidth());
                 int cellY = (int) (GridMath.snapToGridY(gi, point.getY()) / gi.getCellHeight());
-                NoteData data = new NoteData(cellY, cellX, cellX + 1, 100);
+
+                int mappedIndex = (int) Util.reverse(cellY, 0, 87);
+                NotePitch pitch = NotePitch.from(mappedIndex + 1);
+                NoteData data = new NoteData(pitch, cellX, cellX + 1, 100);
 
                 context.getNotes().clearSelection();
                 context.getNotes().create(data);

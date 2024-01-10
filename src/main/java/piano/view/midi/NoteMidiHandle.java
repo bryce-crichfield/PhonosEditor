@@ -5,6 +5,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import piano.EditorContext;
 import piano.model.NoteEntry;
+import piano.model.NotePitch;
 
 
 abstract class NoteMidiHandle {
@@ -84,9 +85,10 @@ abstract class NoteMidiHandle {
             context.getNotes().modify(noteEntry, noteData -> {
                 int newStart = (int) (noteData.getStart() + cellsX);
                 int newEnd = (int) (noteData.getEnd() + cellsX);
-                int newNote = (int) (noteData.getNote() + cellsY);
+                int newNoteIndex = (int) (noteData.getPitch().getNoteIndex() + cellsY);
+                NotePitch newPitch = NotePitch.from(newNoteIndex);
 
-                return noteData.withStart(newStart).withEnd(newEnd).withNote(newNote);
+                return noteData.withStart(newStart).withEnd(newEnd).withPitch(newPitch);
             });
         }
 
