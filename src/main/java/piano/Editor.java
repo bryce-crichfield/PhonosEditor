@@ -113,7 +113,6 @@ public class Editor {
             // When scrolled, move the note pattern editor and note parameter editor by the same amount as along the
             // width of the background surface as the percentage scrolled along the scroll bar
             horizontalScrollBar.onScroll(scroll -> {
-                System.out.println("Relative Horizontal Scroll: " + scroll.getRelativePosition());
                 double newTranslateX = scroll.getRelativePosition() * noteMidiEditor.getBackgroundSurface().getWidth();
                 newTranslateX = Util.map(newTranslateX, 0, noteMidiEditor.getBackgroundSurface().getWidth(), 0,
                                          noteMidiEditor.getBackgroundSurface().getWidth() - noteMidiEditor.getWidth()

@@ -15,8 +15,8 @@ public class NoteData {
 
     public NoteData(NotePitch pitch, int start, int end, int velocity) {
         // Enforce invariants
-        start = (int) Util.clamp(start, 0, 127);
-        end = (int) Util.clamp(end, 0, 127);
+        start = Math.max(start, 0);
+        end = Math.max(end, 0);
         velocity = (int) Util.clamp(velocity, 0, 100);
 
         // start must be less than end
