@@ -3,14 +3,18 @@ package piano;
 import component.HorizontalScrollBar;
 import component.ScrollBar;
 import component.VerticalScrollBar;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -42,6 +46,7 @@ public class Editor {
     public AnchorPane root;
     public VBox toolBarRoot;
     public BorderPane rootBorderPane;
+    public ComboBox<String> comboZoomLevel;
     // Non-FXML (Note editor)
     private SplitPane splitPane;
     private NoteMidiEditor noteMidiEditor;
@@ -128,9 +133,7 @@ public class Editor {
 
         // Initialize scrolling ---------------------------------------------------------------------------------------
         noteMidiEditor.setOnScroll((EventHandler<? super ScrollEvent>) event -> {
-            if (event.isAltDown() && !event.isControlDown()) {
-                scaleGrid(event.getDeltaX(), event.getDeltaY());
-            } else if (!event.isAltDown() && event.isControlDown()) {
+            if (!event.isAltDown() && event.isControlDown()) {
                 horizontalScrollBar.scrollBy(-event.getDeltaY());
             } else {
                 verticalScrollBar.scrollBy(-event.getDeltaY());
@@ -258,34 +261,28 @@ public class Editor {
             rootBorderPane.setCenter(splitPane);
         }
 
+        // Add options to Zoom Level Combo Box -------------------------------------------------------------------------
+        ChangeListener<String> comboZoomLevelListener = (observable, oldValue, newValue) -> {
+            String zoomLevel = comboZoomLevel.getSelectionModel().getSelectedItem().toString();
+            double percentage = Double.parseDouble(zoomLevel.replaceAll("[^0-9]", "")) / 100;
+            double cellWidth = GridInfo.MAX_CELL_WIDTH * percentage;
+            double cellHeight = GridInfo.MAX_CELL_HEIGHT * percentage;
+            var gi = context.getViewSettings().gridInfoProperty().get();
+            var newGi = gi.withCellWidth(cellWidth).withCellHeight(cellHeight);
+            context.getViewSettings().setGridInfo(newGi);
+            horizontalScrollBar.scrollBy(0);
+            verticalScrollBar.scrollBy(0);
+        };
+
+        {
+            comboZoomLevel.valueProperty().addListener(comboZoomLevelListener);
+            comboZoomLevel.getItems().addAll("50%", "75%", "100%", "125%", "150%", "200%");
+        }
+
         context.getPlayback().play();
-    }
+        comboZoomLevel.setValue("100%");
 
-    public void scaleGrid(double deltaX, double deltaY) {
-        var gi = context.getViewSettings().gridInfoProperty().get();
-        double newCellWidth = gi.getCellWidth() + deltaX;
-        newCellWidth = Util.clamp(newCellWidth, 10, 48);
-        double newCellHeight = gi.getCellHeight() + deltaY;
-        newCellHeight = Util.clamp(newCellHeight, 10, 48);
-
-        var newGi = gi.withCellWidth(newCellWidth).withCellHeight(newCellHeight);
-        context.getViewSettings().setGridInfo(newGi);
-    }
-
-    public void scaleUpX() {
-        scaleGrid(1, 0);
-    }
-
-    public void scaleDownX() {
-        scaleGrid(-1, 0);
-    }
-
-    public void scaleUpY() {
-        scaleGrid(0, 1);
-    }
-
-    public void scaleDownY() {
-        scaleGrid(0, -1);
+        tools.selectToggle(toggleToolPlayhead);
     }
 
     public void playlistPause(ActionEvent actionEvent) {

@@ -85,7 +85,7 @@ abstract class NoteMidiHandle {
             context.getNotes().modify(noteEntry, noteData -> {
                 int newStart = (int) (noteData.getStart() + cellsX);
                 int newEnd = (int) (noteData.getEnd() + cellsX);
-                int newNoteIndex = (int) (noteData.getPitch().getNoteIndex() + cellsY);
+                int newNoteIndex = (int) (noteData.getPitch().getNoteIndex() - cellsY) + 1;
                 NotePitch newPitch = NotePitch.from(newNoteIndex);
 
                 return noteData.withStart(newStart).withEnd(newEnd).withPitch(newPitch);

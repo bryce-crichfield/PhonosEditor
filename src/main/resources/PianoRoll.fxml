@@ -3,6 +3,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.*?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<?import javafx.util.Callback?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:id="root"
@@ -35,35 +38,8 @@
 
                     <Separator orientation="VERTICAL"/>
 
-                    <Label text="X: "/>
-
-                    <Button onAction="#scaleDownX">
-                        <graphic>
-                            <FontIcon iconLiteral="mdi-arrow-left-bold-circle"/>
-                        </graphic>
-                    </Button>
-
-                    <Button onAction="#scaleUpX">
-                        <graphic>
-                            <FontIcon iconLiteral="mdi-arrow-right-bold-circle"/>
-                        </graphic>
-                    </Button>
-
-                    <Separator orientation="VERTICAL"/>
-
-                    <Label text="Y: "/>
-
-                    <Button onAction="#scaleUpY">
-                        <graphic>
-                            <FontIcon iconLiteral="mdi-arrow-up-bold-circle"/>
-                        </graphic>
-                    </Button>
-
-                    <Button onAction="#scaleDownY">
-                        <graphic>
-                            <FontIcon iconLiteral="mdi-arrow-down-bold-circle"/>
-                        </graphic>
-                    </Button>
+                    <ComboBox fx:id="comboZoomLevel">
+                    </ComboBox>
 
                     <Separator orientation="VERTICAL"/>
 

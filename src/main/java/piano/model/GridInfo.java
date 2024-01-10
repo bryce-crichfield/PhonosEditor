@@ -8,6 +8,11 @@ import lombok.With;
 @With
 @Getter
 public class GridInfo {
+    public static final double MIN_CELL_WIDTH = 10;
+    public static final double MAX_CELL_WIDTH = 24;
+    public static final double MIN_CELL_HEIGHT = 10;
+    public static final double MAX_CELL_HEIGHT = 24;
+
     private int rows;
     private int columns;
     private double cellWidth;
