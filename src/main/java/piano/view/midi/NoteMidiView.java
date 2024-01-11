@@ -70,8 +70,10 @@ public class NoteMidiView extends StackPane {
 
                 if (tool.get() instanceof PencilTool) {
                     controller = Optional.of(new NoteMidiController());
+                    this.setDisable(false);
                 } else {
                     controller = Optional.empty();
+                    this.setDisable(true);
                 }
             };
 
