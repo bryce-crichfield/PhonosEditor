@@ -15,7 +15,7 @@ import piano.Util;
 import java.util.function.Consumer;
 
 public class VerticalScrollBar extends ScrollBar {
-    public static final int SIZE = 18;
+    public static final int SIZE = 15;
     private final Pane container;
     private final Node negativeButton;
     private final AnchorPane track;
@@ -48,7 +48,7 @@ public class VerticalScrollBar extends ScrollBar {
             track = new AnchorPane();
             track.setPrefWidth(SIZE);
             VBox.setVgrow(track, Priority.ALWAYS);
-            handle = new Handle(SIZE, SIZE*3, Color.DARKGRAY.darker().darker().darker().darker().darker());
+            handle = new Handle(SIZE, SIZE*5, Color.DARKGRAY.darker().darker().darker().darker().darker());
 
             var centerVertically = container.widthProperty().subtract(handle.widthProperty()).divide(2);
             handle.xProperty().bind(centerVertically);
@@ -171,18 +171,21 @@ public class VerticalScrollBar extends ScrollBar {
                 setFill(getFill(color));
             });
 
-            setStroke(color.brighter().brighter().brighter().brighter().brighter());
+            setStroke(color.brighter().brighter().brighter());
+            setArcWidth(SIZE);
+            setArcHeight(SIZE);
             setStrokeWidth(1);
         }
 
         private static Paint getFill(Color color) {
-            LinearGradient gradient = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
-                                                         new Stop(0, color),
-                                                         new Stop(0.5, color.brighter()),
-                                                         new Stop(1, color)
-            );
+//            LinearGradient gradient = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
+//                                                         new Stop(0, color),
+//                                                         new Stop(0.5, color.brighter()),
+//                                                         new Stop(1, color)
+//            );
 
-            return gradient;
+//            return gradient;
+            return color;
         }
 
         public void setTargetVal(float targetVal) {

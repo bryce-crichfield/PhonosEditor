@@ -18,6 +18,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -97,8 +98,12 @@ public class Editor {
         }
 
         ScrollBar verticalScrollBar = new VerticalScrollBar();
+        HBox rightBox = new HBox();
         // Initialize vertical scroll bar ------------------------------------------------------------------------------
         {
+            Rectangle leftSpacer = new Rectangle(1, 0);
+            leftSpacer.setFill(Color.TRANSPARENT);
+            rightBox.getChildren().add(leftSpacer);
 
             // When scrolled, move the note pattern editor and piano roll by the same amount as along the height of the
             // background surface as the percentage scrolled along the scroll bar
@@ -111,15 +116,16 @@ public class Editor {
                 pianoView.scrollY(-newTranslateY);
             });
 
-            bodyBorderPane.setRight(verticalScrollBar);
+            rightBox.getChildren().add(verticalScrollBar);
 
+            bodyBorderPane.setRight(rightBox);
         }
 
         ScrollBar horizontalScrollBar = new HorizontalScrollBar();
         VBox topBox = new VBox();
         // Initialize horizontal scroll bar ----------------------------------------------------------------------------
         {
-            Rectangle topSpacer = new Rectangle(0, 2);
+            Rectangle topSpacer = new Rectangle(0, 1);
             topSpacer.setFill(Color.TRANSPARENT);
             topBox.getChildren().add(topSpacer);
 
