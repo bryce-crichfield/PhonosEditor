@@ -53,7 +53,7 @@ public class NoteEditorPianoKeyView extends Rectangle {
         context.getViewSettings().gridInfoProperty().addListener((observable, oldValue, newValue) -> {
             var newHeight = newValue.getCellHeight();
             setHeight(newHeight);
-            setTranslateY(finalIndex * newHeight);
+            setTranslateY(index * newHeight);
         });
 
         String finalNote = note;
