@@ -6,6 +6,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import piano.EditorContext;
+import piano.model.NoteData;
+import piano.model.NoteEntry;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class NoteParameterEditor extends AnchorPane {
@@ -55,12 +60,44 @@ public class NoteParameterEditor extends AnchorPane {
         context.getNotes().onCreate((entry, oldData, newData) -> {
             var notePropertyView = new NoteParameterView(this, entry, context);
             world.getChildren().add(notePropertyView);
+            zOrderParameterViews();
         });
 
         context.getNotes().onDelete((entry, oldData, newData) -> {
             world.getChildren().removeIf(
                     node -> node instanceof NoteParameterView view && view.getNoteEntry().equals(entry));
+            zOrderParameterViews();
         });
+
+        // Perform z-ordering by using toFront() and toBack() on the NoteParameterViews
+
+        context.getNotes().onModify((entry, oldData, newData) -> {
+            zOrderParameterViews();
+        });
+    }
+
+    private void zOrderParameterViews() {
+        // Collect all the NoteParameterViews
+        var views = world.getChildren().stream()
+                .filter(node -> node instanceof NoteParameterView)
+                .map(node -> (NoteParameterView) node)
+                .toList();
+
+        // Sort the NoteParameterViews by velocity such that higher velocity notes are rendered on top of lower velocity notes
+        Map<Integer, Double> velocityMap = new HashMap<>();
+
+        for (NoteParameterView view : views) {
+            NoteEntry noteEntry = view.getNoteEntry();
+            NoteData noteData = noteEntry.get();
+            int index = noteData.getStart();
+            double velocity = noteData.getVelocity();
+            double currentLowestVelocity = velocityMap.getOrDefault(index, 100.0);
+
+            if (velocity < currentLowestVelocity) {
+                velocityMap.put(index, velocity);
+                view.toFront();
+            }
+        }
     }
 
     public static Paint createGridLineFill() {

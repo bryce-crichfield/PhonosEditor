@@ -4,11 +4,13 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import org.jetbrains.annotations.NotNull;
 import piano.EditorContext;
 import piano.Util;
 import piano.control.NoteService;
 import piano.model.NoteEntry;
 
+import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicReference;
 
 class NoteParameterView extends Rectangle {
@@ -47,19 +49,17 @@ class NoteParameterView extends Rectangle {
             // otherwise, we are in the body
             double y = event.getY();
             double height = this.getHeight();
-
-
             // Change the cursor to indicate which handle we are over
             this.getScene().setCursor(javafx.scene.Cursor.N_RESIZE);
         });
 
         this.setOnMouseEntered(event -> {
-            this.setStroke(Color.BLACK);
+            this.setStrokeWidth(1);
         });
 
         this.setOnMouseExited(event -> {
-            this.setStroke(Color.TRANSPARENT);
             this.getScene().setCursor(javafx.scene.Cursor.DEFAULT);
+            this.setStrokeWidth(2);
         });
 
 
@@ -85,6 +85,8 @@ class NoteParameterView extends Rectangle {
 
         this.setArcHeight(10);
         this.setArcWidth(10);
+        this.setStrokeWidth(2);
+        this.setStroke(Color.BLACK);
 
         // When the note is selected, change the color of the rectangle
         NoteService noteService = context.getNotes();
@@ -114,4 +116,6 @@ class NoteParameterView extends Rectangle {
     public NoteEntry getNoteEntry() {
         return noteEntry;
     }
+
+
 }

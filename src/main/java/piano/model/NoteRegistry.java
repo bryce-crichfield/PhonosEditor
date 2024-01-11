@@ -1,64 +1,55 @@
 package piano.model;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
+import javafx.collections.*;
 import piano.control.NoteObserver;
 
-import java.util.Collection;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class NoteRegistry {
-    private final ObservableList<NoteEntry> notes;
+    private final List<NoteEntry> notes;
+    private final List<Consumer<NoteEntry>> onAddedCallbacks;
+    private final List<Consumer<NoteEntry>> onRemovedCallbacks;
+    private final List<NoteObserver> onUpdatedCallbacks;
 
     public NoteRegistry() {
-        notes = FXCollections.observableArrayList();
+        notes = new LinkedList<>();
+        onAddedCallbacks = FXCollections.observableArrayList();
+        onRemovedCallbacks = FXCollections.observableArrayList();
+        onUpdatedCallbacks = FXCollections.observableArrayList();
     }
 
     public NoteEntry register(NoteData note) {
         var entry = new NoteEntry(note);
         notes.add(entry);
+        onAddedCallbacks.forEach(callback -> callback.accept(entry));
+        entry.addListener((observable, oldValue, newValue) -> {
+            if (notes.contains(entry)) {
+                onUpdatedCallbacks.forEach(callback -> callback.accept(entry, oldValue, newValue));
+            }
+        });
+
         return entry;
     }
 
     public void unregister(NoteEntry note) {
+        boolean isContained = notes.contains(note);
+        if (isContained) {
+            onRemovedCallbacks.forEach(callback -> callback.accept(note));
+        }
         notes.remove(note);
     }
 
     public void onAdded(Consumer<NoteEntry> callback) {
-        notes.addListener((ListChangeListener<NoteEntry>) change -> {
-            while (change.next()) {
-                if (change.wasAdded()) {
-                    for (NoteEntry noteEntry : change.getAddedSubList()) {
-                        callback.accept(noteEntry);
-                    }
-                }
-            }
-        });
+        onAddedCallbacks.add(callback);
     }
 
     public void onUpdated(NoteObserver observer) {
-        notes.addListener((ListChangeListener<NoteEntry>) change -> {
-            while (change.next()) {
-                if (change.wasUpdated()) {
-                    for (NoteEntry noteEntry : change.getList()) {
-                        observer.accept(noteEntry, noteEntry.get(), noteEntry.get());
-                    }
-                }
-            }
-        });
+        onUpdatedCallbacks.add(observer);
     }
 
     public void onRemoved(Consumer<NoteEntry> callback) {
-        notes.addListener((ListChangeListener<NoteEntry>) change -> {
-            while (change.next()) {
-                if (change.wasRemoved()) {
-                    for (NoteEntry noteEntry : change.getRemoved()) {
-                        callback.accept(noteEntry);
-                    }
-                }
-            }
-        });
+        onRemovedCallbacks.add(callback);
     }
 
     public Collection<NoteEntry> getEntries() {
