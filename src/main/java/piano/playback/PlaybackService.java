@@ -16,4 +16,6 @@ public interface PlaybackService {
     void setHead(double head);
 
     void setTail(double tail);
+
+    PlaybackState getState();
 }

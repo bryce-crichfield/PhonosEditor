@@ -1,23 +1,24 @@
 package component;
 
-import javafx.scene.control.Button;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
+import javafx.geometry.Insets;
+import javafx.scene.control.Label;
+import javafx.scene.layout.*;
 import javafx.scene.paint.*;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
-import org.kordamp.ikonli.javafx.FontIcon;
+import javafx.scene.shape.Shape;
+import javafx.scene.transform.Scale;
+import javafx.scene.transform.Transform;
 import piano.Util;
 
 import java.util.function.Consumer;
 
 public class HorizontalScrollBar extends ScrollBar {
-    public static final int SIZE = 30;
+    public static final int SIZE = 18;
     private final Pane container;
-    private final Button negativeButton;
+    private final Label negativeButton;
     private final AnchorPane track;
-    private final Button positiveButton;
+    private final Label positiveButton;
     private final Handle handle;
     private Consumer<ScrollBar> onScroll = (scrollBar) -> {
     };
@@ -33,25 +34,17 @@ public class HorizontalScrollBar extends ScrollBar {
 
         // Initialize the scroll bar buttons
         {
-            negativeButton = new Button();
-            negativeButton.setPrefWidth(SIZE);
-            negativeButton.setPrefHeight(SIZE);
-            negativeButton.setGraphic(new FontIcon("mdi-arrow-left"));
-            negativeButton.setFocusTraversable(false);
-            negativeButton.setStyle("-fx-background-radius: 0;");
+            Polygon leftFacingTriangle = new Polygon(SIZE, 0, SIZE, SIZE, 0, SIZE / 2);
+            negativeButton = (Label) createButton(leftFacingTriangle, SIZE);
 
-            positiveButton = new Button();
-            positiveButton.setPrefWidth(SIZE);
-            positiveButton.setPrefHeight(SIZE);
-            positiveButton.setGraphic(new FontIcon("mdi-arrow-right"));
-            positiveButton.setFocusTraversable(false);
-            positiveButton.setStyle("-fx-background-radius: 0;");
+            Polygon rightFacingTriangle = new Polygon(0, 0, 0, SIZE, SIZE, SIZE / 2);
+            positiveButton = (Label) createButton(rightFacingTriangle, SIZE);
         }
 
         // Initialize the scroll bar track and handle
         {
             track = new AnchorPane();
-            track.setPrefHeight(25);
+            track.setPrefHeight(SIZE);
             HBox.setHgrow(track, Priority.ALWAYS);
 
             handle = new Handle(SIZE * 3, SIZE, Color.DARKGRAY.darker().darker().darker().darker().darker());
@@ -174,18 +167,12 @@ public class HorizontalScrollBar extends ScrollBar {
                 setFill(getFill(color));
             });
 
-            setStroke(color.brighter().brighter().brighter().brighter().brighter());
+            setStroke(color.brighter().brighter().brighter());
             setStrokeWidth(1);
         }
 
         private static Paint getFill(Color color) {
-            LinearGradient gradient = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
-                                                         new Stop(0, color),
-                                                         new Stop(0.5, color.brighter()),
-                                                         new Stop(1, color)
-            );
-
-            return gradient;
+            return color;
         }
     }
 }

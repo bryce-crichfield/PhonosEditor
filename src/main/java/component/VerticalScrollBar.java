@@ -1,24 +1,25 @@
 package component;
 
-import javafx.css.Size;
-import javafx.scene.control.Button;
+import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.*;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
-import org.kordamp.ikonli.javafx.FontIcon;
 import piano.Util;
 
 import java.util.function.Consumer;
 
 public class VerticalScrollBar extends ScrollBar {
-    public static final int SIZE = 35;
+    public static final int SIZE = 18;
     private final Pane container;
-    private final Button negativeButton;
+    private final Node negativeButton;
     private final AnchorPane track;
-    private final Button positiveButton;
+    private final Node positiveButton;
     private final Handle handle;
     private Consumer<ScrollBar> onScroll = (scrollBar) -> {
     };
@@ -35,21 +36,17 @@ public class VerticalScrollBar extends ScrollBar {
 
         // Create the scroll bar buttons
         {
-            negativeButton = new Button();
-            negativeButton.setGraphic(new FontIcon("mdi-arrow-up"));
-            negativeButton.setFocusTraversable(false);
-            negativeButton.setStyle("-fx-background-radius: 0;");
+            Polygon updwardFacingTriangle = new Polygon(0, SIZE, SIZE, SIZE, SIZE / 2, 0);
+            negativeButton = createButton(updwardFacingTriangle, SIZE);
 
-            positiveButton = new Button();
-            positiveButton.setGraphic(new FontIcon("mdi-arrow-down"));
-            positiveButton.setFocusTraversable(false);
-            positiveButton.setStyle("-fx-background-radius: 0;");
+            Polygon downwardFacingTriangle = new Polygon(0, 0, SIZE, 0, SIZE / 2, SIZE);
+            positiveButton = createButton(downwardFacingTriangle, SIZE);
         }
 
         // Create the scroll bar track and handle
         {
             track = new AnchorPane();
-            track.setPrefWidth(25);
+            track.setPrefWidth(SIZE);
             VBox.setVgrow(track, Priority.ALWAYS);
             handle = new Handle(SIZE, SIZE*3, Color.DARKGRAY.darker().darker().darker().darker().darker());
 

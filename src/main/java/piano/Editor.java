@@ -19,6 +19,8 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import piano.control.BaseNoteService;
 import piano.model.GridInfo;
 import piano.model.NoteData;
@@ -70,7 +72,7 @@ public class Editor {
             var viewSettings = new ViewSettings(gridInfo);
 
             var noteRegistry = new NoteRegistry();
-            var playbackState = new PlaybackState(0, gridInfo.getColumns(), 120, false);
+            var playbackState = new PlaybackState(0, 4, 120, false);
 
             var playbackService = new BasePlaybackService(new SimpleObjectProperty<>(playbackState));
             var noteService = new BaseNoteService(noteRegistry);
@@ -114,8 +116,12 @@ public class Editor {
         }
 
         ScrollBar horizontalScrollBar = new HorizontalScrollBar();
+        VBox topBox = new VBox();
         // Initialize horizontal scroll bar ----------------------------------------------------------------------------
         {
+            Rectangle topSpacer = new Rectangle(0, 2);
+            topSpacer.setFill(Color.TRANSPARENT);
+            topBox.getChildren().add(topSpacer);
 
             // When scrolled, move the note pattern editor and note parameter editor by the same amount as along the
             // width of the background surface as the percentage scrolled along the scroll bar
@@ -127,8 +133,13 @@ public class Editor {
                 noteMidiEditor.scrollToX(-newTranslateX);
                 noteParameterEditor.scrollX(-newTranslateX);
             });
+            topBox.getChildren().add(horizontalScrollBar);
 
-            bodyBorderPane.setTop(horizontalScrollBar);
+            Rectangle bottomSpacer = new Rectangle(0, 2);
+            bottomSpacer.setFill(Color.TRANSPARENT);
+            topBox.getChildren().add(bottomSpacer);
+
+            bodyBorderPane.setTop(topBox);
         }
 
         // Initialize scrolling ---------------------------------------------------------------------------------------

@@ -26,14 +26,13 @@ public class PlaybackView {
         playHeadView.setManaged(false);
         group.getChildren().add(playHeadView);
 
-        resizableRectangle = ResizableRectangle.builder().makeCenterMovableHorizontally().makeLeftHandle().makeRightHandle().build(0, 0, 100,
+        resizableRectangle = ResizableRectangle.builder().makeCenterMovableHorizontally().makeRightHandle().build(0, 0, 100,
                                                                                                                                    100, group
         );
 
         resizableRectangle.setFill(Color.CYAN.deriveColor(1, 1, 1, 0.25));
 
         resizableRectangle.heightProperty().bind(heightProp);
-
 
         resizableRectangle.setOnCenterHandleDragged(() -> {
             var gi = context.getViewSettings().getGridInfo();
@@ -56,13 +55,6 @@ public class PlaybackView {
             playback.setTail((resizableRectangle.getX() + newWidth) / gi.getCellWidth());
         });
 
-        resizableRectangle.setOnLeftHandleDragged(() -> {
-            var gi = context.getViewSettings().getGridInfo();
-            double newX = GridMath.snapToGridX(gi, resizableRectangle.getX());
-            double newWidth = GridMath.snapToGridX(gi, resizableRectangle.getWidth());
-        });
-
-
         currentTool.addListener((observable, oldValue, newValue) -> {
             if (newValue.isEmpty()) {
                 return;
@@ -70,6 +62,15 @@ public class PlaybackView {
 
             resizableRectangle.setInteractionEnabled(newValue.get() instanceof PlayheadTool);
             playHeadView.setVisible(false);
+        });
+
+        context.getViewSettings().gridInfoProperty().addListener((observable, oldValue, newValue) -> {
+            var gi = newValue;
+            var playback = context.getPlayback().getState();
+            double x = playback.getHead() * gi.getCellWidth();
+            double width = (playback.getTail() - playback.getHead()) * gi.getCellWidth();
+            resizableRectangle.setX(x);
+            resizableRectangle.setWidth(width);
         });
     }
 

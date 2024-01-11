@@ -101,4 +101,9 @@ public class BasePlaybackService implements PlaybackService {
         PlaybackState state = playbackState.get();
         playbackState.set(state.withTail(tail));
     }
+
+    @Override
+    public PlaybackState getState() {
+        return playbackState.get();
+    }
 }
