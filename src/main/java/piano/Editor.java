@@ -9,7 +9,10 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleButton;
@@ -22,6 +25,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 import piano.control.BaseNoteService;
 import piano.model.GridInfo;
 import piano.model.NoteData;
@@ -34,7 +38,9 @@ import piano.view.midi.NoteMidiEditor;
 import piano.view.parameter.NoteParameterEditor;
 import piano.view.piano.NoteEditorPianoView;
 import piano.view.settings.ViewSettings;
+import piano.view.settings.ViewSettingsController;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
@@ -312,5 +318,19 @@ public class Editor {
 
     public void playlistStop(ActionEvent actionEvent) {
         context.getPlayback().stop();
+    }
+
+    public void viewSettingsDialog(ActionEvent actionEvent) throws IOException {
+        // Load the ViewSettings.fxml file and create a new stage for the popup dialog
+
+        FXMLLoader loader = new FXMLLoader();
+        loader.setController(new ViewSettingsController(context));
+        loader.setLocation(Editor.class.getResource("/ViewSettings.fxml"));
+        Parent root = loader.load();
+
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.show();
     }
 }

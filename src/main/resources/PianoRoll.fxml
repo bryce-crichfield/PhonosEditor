@@ -59,6 +59,14 @@
                             <FontIcon iconLiteral="mdi-stop"/>
                         </graphic>
                     </Button>
+
+                    <Separator orientation="VERTICAL"/>
+
+                    <Button onAction="#viewSettingsDialog">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-settings"/>
+                        </graphic>
+                    </Button>
                 </ToolBar>
             </VBox>
         </top>
