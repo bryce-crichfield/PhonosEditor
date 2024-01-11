@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicReference;
 
 class NoteParameterView extends Rectangle {
+    private Color currentColor;
     private final EditorContext context;
     private final Pane parent;
     private final NoteEntry noteEntry;
@@ -23,8 +24,8 @@ class NoteParameterView extends Rectangle {
         this.context = context;
         this.parent = parent;
         this.noteEntry = note;
+        calculateColor();
 
-        this.setFill(Color.WHITE);
 
         // when note changes, update the circle's position
         note.addListener((observable, oldValue, newValue) -> {
@@ -81,10 +82,7 @@ class NoteParameterView extends Rectangle {
         });
 
         // Sheet Metal gradient
-        this.setFill(Color.DARKGREEN.darker());
 
-        this.setArcHeight(10);
-        this.setArcWidth(10);
         this.setStrokeWidth(2);
         this.setStroke(Color.BLACK);
 
@@ -111,11 +109,20 @@ class NoteParameterView extends Rectangle {
         this.setTranslateY(y);
         this.setWidth(gridInfo.getCellWidth());
         this.setHeight(parent.getHeight());
+
+        calculateColor();
     }
 
     public NoteEntry getNoteEntry() {
         return noteEntry;
     }
 
-
+    public void calculateColor() {
+        double velocity = noteEntry.get().getVelocityAsPercentage();
+        velocity = Util.Easing.easeInCubic(velocity);
+        double hue = Util.map(velocity, 0, 1, 0, 150);
+        hue = Util.reverse(hue, 0, 150);
+        currentColor = Color.hsb(hue, 0.75, 0.9);
+        setFill(currentColor);
+    }
 }
