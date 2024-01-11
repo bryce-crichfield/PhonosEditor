@@ -70,7 +70,7 @@ public class Editor {
         // Create the editor context -----------------------------------------------------------------------------------
         {
             var gridInfo = new GridInfo(88, 16 * 16, 32, 16);
-            var viewSettings = new ViewSettings(gridInfo);
+            var viewSettings = new ViewSettings(gridInfo, true);
 
             var noteRegistry = new NoteRegistry();
             var playbackState = new PlaybackState(0, 4, 120, false);

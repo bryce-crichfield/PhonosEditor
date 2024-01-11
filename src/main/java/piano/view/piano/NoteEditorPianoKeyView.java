@@ -93,6 +93,12 @@ public class NoteEditorPianoKeyView extends StackPane {
             double cellHeight = context.getViewSettings().gridInfoProperty().get().getCellHeight();
             label.setFont(label.getFont().font(cellHeight * 0.35));
         });
+
+        context.getViewSettings().showPianoRollNoteLettersProperty().addListener((observable, oldValue, newValue) -> {
+            label.setVisible(newValue);
+        });
+        boolean shouldShow = context.getViewSettings().showPianoRollNoteLettersProperty().get();
+        label.setVisible(shouldShow);
     }
 
     private void bindPaneToRectangle(Rectangle rectangle, Label label) {
