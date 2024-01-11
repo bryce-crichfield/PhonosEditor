@@ -1,4 +1,4 @@
-package piano.animation;
+package animation;
 
 @FunctionalInterface
 public interface Interpolator {
