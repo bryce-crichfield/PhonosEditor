@@ -111,7 +111,7 @@ public class Editor {
 
             // When scrolled, move the note pattern editor and piano roll by the same amount as along the height of the
             // background surface as the percentage scrolled along the scroll bar
-            verticalScrollBar.onScroll(scroll -> {
+            verticalScrollBar.setOnHandleScroll(scroll -> {
                 double newTranslateY = scroll.getRelativePosition() * noteMidiEditor.getBackgroundSurface().getHeight();
                 newTranslateY = Util.map(newTranslateY, 0, noteMidiEditor.getBackgroundSurface().getHeight(), 0,
                                          noteMidiEditor.getBackgroundSurface().getHeight() - noteMidiEditor.getHeight()
@@ -139,7 +139,7 @@ public class Editor {
 
             // When scrolled, move the note pattern editor and note parameter editor by the same amount as along the
             // width of the background surface as the percentage scrolled along the scroll bar
-            horizontalScrollBar.onScroll(scroll -> {
+            horizontalScrollBar.setOnHandleScroll(scroll -> {
                 double newTranslateX = scroll.getRelativePosition() * noteMidiEditor.getBackgroundSurface().getWidth();
                 newTranslateX = Util.map(newTranslateX, 0, noteMidiEditor.getBackgroundSurface().getWidth(), 0,
                                          noteMidiEditor.getBackgroundSurface().getWidth() - noteMidiEditor.getWidth()

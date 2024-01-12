@@ -14,15 +14,6 @@ import piano.Util;
 import java.util.function.Consumer;
 
 public class HorizontalScrollBar extends ScrollBar {
-    public static final int SIZE = 15;
-    private final Pane container;
-    private final Label negativeButton;
-    private final AnchorPane track;
-    private final Label positiveButton;
-    private final Handle handle;
-    private Consumer<ScrollBar> onScroll = (scrollBar) -> {
-    };
-
     public HorizontalScrollBar() {
         super();
 
@@ -47,7 +38,7 @@ public class HorizontalScrollBar extends ScrollBar {
             track.setPrefHeight(SIZE);
             HBox.setHgrow(track, Priority.ALWAYS);
 
-            handle = new Handle(SIZE * 7, SIZE, Color.DARKGRAY.darker().darker().darker().darker().darker());
+            handle = new Handle(SIZE * 7, SIZE);
 
             track.getChildren().add(handle);
 
@@ -85,6 +76,7 @@ public class HorizontalScrollBar extends ScrollBar {
                 updateX(newX);
             });
         }
+
         container.getChildren().addAll(negativeButton, track, positiveButton);
         getChildren().add(container);
     }
@@ -98,11 +90,6 @@ public class HorizontalScrollBar extends ScrollBar {
         newX = Util.clamp(newX, 0, track.getWidth() - handle.getWidth());
         handle.setX(newX);
         onScroll.accept(this);
-    }
-
-    @Override
-    public void onScroll(Consumer<ScrollBar> callback) {
-        onScroll = callback;
     }
 
     @Override
@@ -134,47 +121,6 @@ public class HorizontalScrollBar extends ScrollBar {
         double totalRelativeScrollableLength = totalScrollableLength / track.getWidth();
         double relativePosition = handle.getX() / track.getWidth();
         return Util.map(relativePosition, 0, totalRelativeScrollableLength, 0, 1);
-    }
-
-    private static class Handle extends Rectangle {
-        private final Color color;
-        boolean isPressed = false;
-
-        public Handle(double width, double height, Color color) {
-            super(width, height, getFill(color));
-            this.color = color;
-
-            setOnMouseEntered(event -> {
-                setFill(color.brighter().brighter());
-
-            });
-
-            setOnMousePressed(event -> {
-                isPressed = true;
-                setFill(getFill(color.brighter().brighter()));
-
-            });
-
-            setOnMouseReleased(event -> {
-                isPressed = false;
-                setFill(getFill(color));
-            });
-
-            setOnMouseExited(event -> {
-                if (isPressed) {
-                    return;
-                }
-                setFill(getFill(color));
-            });
-
-            setArcWidth(SIZE);
-            setArcHeight(SIZE);
-            setStrokeWidth(1);
-        }
-
-        private static Paint getFill(Color color) {
-            return color;
-        }
     }
 }
 

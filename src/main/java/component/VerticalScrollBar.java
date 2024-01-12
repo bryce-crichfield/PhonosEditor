@@ -15,20 +15,12 @@ import piano.Util;
 import java.util.function.Consumer;
 
 public class VerticalScrollBar extends ScrollBar {
-    public static final int SIZE = 15;
-    private final Pane container;
-    private final Node negativeButton;
-    private final AnchorPane track;
-    private final Node positiveButton;
-    private final Handle handle;
-    private Consumer<ScrollBar> onScroll = (scrollBar) -> {
-    };
+
 
     public VerticalScrollBar() {
         super();
 
         container = new VBox();
-
         AnchorPane.setTopAnchor(container, 0.0);
         AnchorPane.setBottomAnchor(container, 0.0);
         AnchorPane.setRightAnchor(container, 0.0);
@@ -48,7 +40,7 @@ public class VerticalScrollBar extends ScrollBar {
             track = new AnchorPane();
             track.setPrefWidth(SIZE);
             VBox.setVgrow(track, Priority.ALWAYS);
-            handle = new Handle(SIZE, SIZE*5, Color.DARKGRAY.darker().darker().darker().darker().darker());
+            handle = new Handle(SIZE, SIZE*5);
 
             var centerVertically = container.widthProperty().subtract(handle.widthProperty()).divide(2);
             handle.xProperty().bind(centerVertically);
@@ -86,6 +78,7 @@ public class VerticalScrollBar extends ScrollBar {
                 updateY(newY);
             });
         }
+
         container.getChildren().addAll(negativeButton, track, positiveButton);
         getChildren().add(container);
     }
@@ -101,10 +94,7 @@ public class VerticalScrollBar extends ScrollBar {
         onScroll.accept(this);
     }
 
-    @Override
-    public void onScroll(Consumer<ScrollBar> callback) {
-        onScroll = callback;
-    }
+
 
     @Override
     public void scrollBy(double delta) {
@@ -125,7 +115,6 @@ public class VerticalScrollBar extends ScrollBar {
 
     @Override
     public double getAbsolutePosition() {
-
         return handle.getY();
     }
 
@@ -136,61 +125,6 @@ public class VerticalScrollBar extends ScrollBar {
         double relativeScrollableLength = totalScrollableLength / track.getHeight();
         double relativePosition = handle.getY() / track.getHeight();
         return Util.map(relativePosition, 0, relativeScrollableLength, 0, 1);
-    }
-
-    private static class Handle extends Rectangle {
-        private final Color color;
-        boolean isPressed = false;
-        float currentVal = 0;
-        float targetVal = 0;
-
-        public Handle(double width, double height, Color color) {
-            super(width, height, getFill(color));
-            this.color = color;
-
-            setOnMouseEntered(event -> {
-                setFill(color.brighter().brighter());
-
-            });
-
-            setOnMousePressed(event -> {
-                isPressed = true;
-                setFill(getFill(color.brighter().brighter()));
-
-            });
-
-            setOnMouseReleased(event -> {
-                isPressed = false;
-                setFill(getFill(color));
-            });
-
-            setOnMouseExited(event -> {
-                if (isPressed) {
-                    return;
-                }
-                setFill(getFill(color));
-            });
-
-            setStroke(color);
-            setArcWidth(SIZE);
-            setArcHeight(SIZE);
-            setStrokeWidth(1);
-        }
-
-        private static Paint getFill(Color color) {
-//            LinearGradient gradient = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
-//                                                         new Stop(0, color),
-//                                                         new Stop(0.5, color.brighter()),
-//                                                         new Stop(1, color)
-//            );
-
-//            return gradient;
-            return color;
-        }
-
-        public void setTargetVal(float targetVal) {
-            this.targetVal = targetVal;
-        }
     }
 }
 
