@@ -167,7 +167,6 @@ public class HorizontalScrollBar extends ScrollBar {
                 setFill(getFill(color));
             });
 
-            setStroke(color.brighter().brighter().brighter());
             setArcWidth(SIZE);
             setArcHeight(SIZE);
             setStrokeWidth(1);

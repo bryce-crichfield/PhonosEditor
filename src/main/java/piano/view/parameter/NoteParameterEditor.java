@@ -28,6 +28,7 @@ public class NoteParameterEditor extends AnchorPane {
         camera.setTranslateZ(-100);
 
         // Create the background surface which spans the entire grid area
+        setHeight(100);
         var gridInfo = context.getViewSettings().gridInfoProperty();
         background = gridInfo.get().createRectangle();
         background.setFill(createGridLineFill());
@@ -100,8 +101,23 @@ public class NoteParameterEditor extends AnchorPane {
         }
     }
 
-    public static Paint createGridLineFill() {
-        return Color.TRANSPARENT;
+    public Paint createGridLineFill() {
+        double cellWidth = context.getViewSettings().getGridInfo().getCellWidth();
+        double backgroundWidth = context.getViewSettings().getGridInfo().getColumns() * cellWidth;
+        double backgroundHeight = this.getHeight();
+
+        var canvas = new javafx.scene.canvas.Canvas(backgroundWidth, backgroundHeight);
+        var gc = canvas.getGraphicsContext2D();
+        gc.setFill(Color.DARKGRAY.darker().darker().darker().darker().darker());
+        gc.fillRect(0, 0, backgroundWidth, backgroundHeight);
+        gc.setStroke(Color.DARKGRAY.darker().darker().darker().darker());
+
+        for (int i = 0; i < backgroundWidth / cellWidth; i++) {
+            gc.strokeLine(i * cellWidth, 0, i * cellWidth, backgroundHeight);
+        }
+
+        var image = canvas.snapshot(null, null);
+        return new javafx.scene.paint.ImagePattern(image);
     }
 
     public void scrollX(double v) {

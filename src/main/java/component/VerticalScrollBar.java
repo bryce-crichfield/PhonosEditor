@@ -171,7 +171,7 @@ public class VerticalScrollBar extends ScrollBar {
                 setFill(getFill(color));
             });
 
-            setStroke(color.brighter().brighter().brighter());
+            setStroke(color);
             setArcWidth(SIZE);
             setArcHeight(SIZE);
             setStrokeWidth(1);
