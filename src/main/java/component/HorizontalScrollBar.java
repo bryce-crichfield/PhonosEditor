@@ -36,6 +36,7 @@ public class HorizontalScrollBar extends ScrollBar {
         {
             track = new AnchorPane();
             track.setPrefHeight(SIZE);
+            track.setBackground(new Background(new BackgroundFill(TRACK_COLOR, CornerRadii.EMPTY, Insets.EMPTY)));
             HBox.setHgrow(track, Priority.ALWAYS);
 
             handle = new Handle(SIZE * 7, SIZE);

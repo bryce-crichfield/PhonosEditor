@@ -1,10 +1,8 @@
 package component;
 
+import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -39,6 +37,7 @@ public class VerticalScrollBar extends ScrollBar {
         {
             track = new AnchorPane();
             track.setPrefWidth(SIZE);
+            track.setBackground(new Background(new BackgroundFill(TRACK_COLOR, CornerRadii.EMPTY, Insets.EMPTY)));
             VBox.setVgrow(track, Priority.ALWAYS);
             handle = new Handle(SIZE, SIZE*5);
 

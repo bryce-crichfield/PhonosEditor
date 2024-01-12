@@ -90,9 +90,9 @@ class NoteParameterView extends Rectangle {
         NoteService noteService = context.getNotes();
         noteService.getSelectedEntries().addListener((ListChangeListener<? super NoteEntry>) c -> {
             if (noteService.getSelectedEntries().contains(noteEntry)) {
-                this.setFill(Color.BLUE);
+                this.setStroke(Color.CYAN.desaturate());
             } else {
-                this.setFill(Color.DARKGREEN.darker());
+                this.setStroke(Color.BLACK);
             }
         });
     }

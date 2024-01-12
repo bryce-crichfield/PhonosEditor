@@ -1,5 +1,6 @@
 package piano.view.playlist;
 
+import component.ScrollBar;
 import javafx.scene.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
@@ -75,7 +76,7 @@ public class TimelineView extends AnchorPane {
         scene.setCamera(camera);
         scene.setManaged(false);
         scene.setRoot(world);
-        scene.setFill(Color.TRANSPARENT);
+        scene.setFill(ScrollBar.TRACK_COLOR);
 
         this.getChildren().add(scene);
 

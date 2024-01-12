@@ -16,6 +16,7 @@ public abstract class ScrollBar extends AnchorPane {
     public static final int SIZE = 15;
     public static final Color DEFAULT_COLOR = Color.DARKGRAY.darker().darker().darker();
     public static final Color HOVER_COLOR = Color.DARKGRAY;
+    public static final Color TRACK_COLOR = DEFAULT_COLOR.darker().darker().darker();
 
     protected Pane container;
     protected Node negativeButton;
@@ -51,13 +52,10 @@ public abstract class ScrollBar extends AnchorPane {
         button.setPrefWidth(size);
         button.setPrefHeight(size);
         button.setFocusTraversable(false);
-        button.setStyle("-fx-background-radius: 0;");
         button.setGraphic(icon);
 
-
-        javafx.scene.paint.Color defaultColor = Color.DARKGRAY.darker().darker().darker().darker().darker();
-        Background defaultBackground = new Background(new BackgroundFill(defaultColor, CornerRadii.EMPTY, javafx.geometry.Insets.EMPTY));
-        Background hoverBackground = new Background(new BackgroundFill(defaultColor.brighter().brighter(), CornerRadii.EMPTY, Insets.EMPTY));
+        Background defaultBackground = new Background(new BackgroundFill(TRACK_COLOR, CornerRadii.EMPTY, javafx.geometry.Insets.EMPTY));
+        Background hoverBackground = new Background(new BackgroundFill(HOVER_COLOR, CornerRadii.EMPTY, Insets.EMPTY));
 
         button.setBackground(defaultBackground);
 

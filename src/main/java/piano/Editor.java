@@ -16,10 +16,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -126,16 +123,13 @@ public class Editor {
         }
 
         ScrollBar horizontalScrollBar = new HorizontalScrollBar();
-        VBox topBox = new VBox();
         // Initialize horizontal scroll bar ----------------------------------------------------------------------------
         {
-            Rectangle topSpacer = new Rectangle(0, 1);
-            topSpacer.setFill(Color.TRANSPARENT);
-            topBox.getChildren().add(topSpacer);
 
             TimelineView timelineView = new TimelineView(context);
             timelineView.setMinHeight(15);
             timelineView.setMaxHeight(15);
+            bodyBorderPane.setTop(timelineView);
 
             // When scrolled, move the note pattern editor and note parameter editor by the same amount as along the
             // width of the background surface as the percentage scrolled along the scroll bar
@@ -149,15 +143,14 @@ public class Editor {
                 timelineView.scrollX(-newTranslateX);
 
             });
-            topBox.getChildren().add(horizontalScrollBar);
 
-            Rectangle bottomSpacer = new Rectangle(0, 2);
-            bottomSpacer.setFill(Color.TRANSPARENT);
-            topBox.getChildren().add(bottomSpacer);
-
-            topBox.getChildren().add(timelineView);
-
-            bodyBorderPane.setTop(topBox);
+            HBox bottomBox = new HBox();
+            Rectangle pianoWidthSpacer = new Rectangle(125, 1);
+            pianoWidthSpacer.setFill(Color.TRANSPARENT);
+            bottomBox.getChildren().add(pianoWidthSpacer);
+            bottomBox.getChildren().add(horizontalScrollBar);
+            HBox.setHgrow(horizontalScrollBar, Priority.ALWAYS);
+            bodyBorderPane.setBottom(bottomBox);
         }
 
         // Initialize scrolling ---------------------------------------------------------------------------------------
