@@ -120,8 +120,8 @@ class NoteParameterView extends Rectangle {
     public void calculateColor() {
         double velocity = noteEntry.get().getVelocityAsPercentage();
         velocity = Util.Easing.easeInCubic(velocity);
-        double hue = Util.map(velocity, 0, 1, 0, 90);
-        hue = Util.reverse(hue, 0, 90);
+        double hue = Util.map(velocity, 0, 1, 0, 130);
+        hue = Util.reverse(hue, 0, 130);
         currentColor = Color.hsb(hue, 0.85, 0.65);
         setFill(currentColor);
     }

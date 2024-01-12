@@ -43,6 +43,7 @@ public class NoteParameterEditor extends AnchorPane {
 
         SubScene scene = new SubScene(world, 0, 0, true, SceneAntialiasing.BALANCED);
 
+        // 125 is accounting for the width of the piano roll (not dynamic)
         scene.layoutXProperty().bind(this.layoutXProperty().add(125));
         scene.layoutYProperty().bind(this.layoutYProperty());
         scene.widthProperty().bind(this.widthProperty().subtract(125));
@@ -70,7 +71,6 @@ public class NoteParameterEditor extends AnchorPane {
         });
 
         // Perform z-ordering by using toFront() and toBack() on the NoteParameterViews
-
         context.getNotes().onModify((entry, oldData, newData) -> {
             zOrderParameterViews();
         });

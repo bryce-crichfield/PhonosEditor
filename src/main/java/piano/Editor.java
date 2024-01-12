@@ -3,7 +3,6 @@ package piano;
 import component.HorizontalScrollBar;
 import component.ScrollBar;
 import component.VerticalScrollBar;
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -11,13 +10,11 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.*;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -37,6 +34,7 @@ import piano.tool.*;
 import piano.view.midi.NoteMidiEditor;
 import piano.view.parameter.NoteParameterEditor;
 import piano.view.piano.NoteEditorPianoView;
+import piano.view.playlist.TimelineView;
 import piano.view.settings.ViewSettings;
 import piano.view.settings.ViewSettingsController;
 
@@ -135,6 +133,10 @@ public class Editor {
             topSpacer.setFill(Color.TRANSPARENT);
             topBox.getChildren().add(topSpacer);
 
+            TimelineView timelineView = new TimelineView(context);
+            timelineView.setMinHeight(15);
+            timelineView.setMaxHeight(15);
+
             // When scrolled, move the note pattern editor and note parameter editor by the same amount as along the
             // width of the background surface as the percentage scrolled along the scroll bar
             horizontalScrollBar.onScroll(scroll -> {
@@ -144,12 +146,16 @@ public class Editor {
                 );
                 noteMidiEditor.scrollToX(-newTranslateX);
                 noteParameterEditor.scrollX(-newTranslateX);
+                timelineView.scrollX(-newTranslateX);
+
             });
             topBox.getChildren().add(horizontalScrollBar);
 
             Rectangle bottomSpacer = new Rectangle(0, 2);
             bottomSpacer.setFill(Color.TRANSPARENT);
             topBox.getChildren().add(bottomSpacer);
+
+            topBox.getChildren().add(timelineView);
 
             bodyBorderPane.setTop(topBox);
         }
