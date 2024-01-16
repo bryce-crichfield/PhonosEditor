@@ -5,7 +5,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import piano.EditorContext;
+import piano.MidiEditorContext;
 import piano.tool.EditorTool;
 
 import java.util.Optional;
@@ -13,9 +13,9 @@ import java.util.Optional;
 public class PlaybackView {
     private final Rectangle rectangle;
     private final PlayHeadView playHeadView;
-    private final EditorContext context;
+    private final MidiEditorContext context;
 
-    public PlaybackView(EditorContext context, Group group, DoubleProperty heightProp,
+    public PlaybackView(MidiEditorContext context, Group group, DoubleProperty heightProp,
             ObjectProperty<Optional<EditorTool>> currentTool
     ) {
         this.context = context;

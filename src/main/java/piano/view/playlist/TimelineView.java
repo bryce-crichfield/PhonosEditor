@@ -11,18 +11,18 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import piano.EditorContext;
+import piano.MidiEditorContext;
 import piano.Util;
 import piano.util.GridMath;
 
 
 public class TimelineView extends AnchorPane {
-    private final EditorContext context;
+    private final MidiEditorContext context;
     Rectangle background;
     Camera camera;
     Group world;
 
-    public TimelineView(EditorContext context) {
+    public TimelineView(MidiEditorContext context) {
         this.context = context;
 
         // Create a camera to view the 3D shapes
@@ -74,10 +74,18 @@ public class TimelineView extends AnchorPane {
         world.getChildren().add(playheadHandle);
     }
 
+    public static Paint createGridLineFill() {
+        return Color.TRANSPARENT;
+    }
+
+    public void scrollX(double v) {
+        world.setTranslateX(v);
+    }
+
     private static class PlayheadHandle extends Rectangle {
         private static final int HANDLE_WIDTH = 15;
-        private final EditorContext context;
-        private StringProperty currentHandle = new SimpleStringProperty("None");
+        private final MidiEditorContext context;
+        private final StringProperty currentHandle = new SimpleStringProperty("None");
         private boolean isDragging = false;
 
         private double unsnappedX = 0;
@@ -85,7 +93,8 @@ public class TimelineView extends AnchorPane {
 
         private double lastX = 0;
         private double deltaX = 0;
-        public PlayheadHandle(EditorContext context) {
+
+        public PlayheadHandle(MidiEditorContext context) {
 
             this.setFill(Color.CYAN.deriveColor(1, 1, 1, 0.75));
             this.setTranslateZ(0);
@@ -227,19 +236,11 @@ public class TimelineView extends AnchorPane {
         }
     }
 
-    public static Paint createGridLineFill() {
-        return Color.TRANSPARENT;
-    }
-
-    public void scrollX(double v) {
-        world.setTranslateX(v);
-    }
-
     class TimelineMarker extends StackPane {
         Text text;
         int columnIndex;
 
-        TimelineMarker(int columnIndex, EditorContext context) {
+        TimelineMarker(int columnIndex, MidiEditorContext context) {
             this.columnIndex = columnIndex;
 
             text = new Text(Integer.toString(columnIndex + 1));

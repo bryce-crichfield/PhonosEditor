@@ -3,18 +3,18 @@ package piano.view.midi;
 import javafx.scene.Cursor;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
-import piano.EditorContext;
+import piano.MidiEditorContext;
 import piano.model.NoteEntry;
 import piano.model.NotePitch;
 
 
 abstract class NoteMidiHandle {
     protected final Pane pane;
-    protected final EditorContext context;
+    protected final MidiEditorContext context;
     protected final NoteEntry noteEntry;
     protected final Rectangle rectangle;
 
-    public NoteMidiHandle(Pane pane, EditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
+    public NoteMidiHandle(Pane pane, MidiEditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
         this.pane = pane;
         this.context = context;
         this.noteEntry = noteEntry;
@@ -28,7 +28,7 @@ abstract class NoteMidiHandle {
     public abstract boolean isHovered(double mouseX);
 
     static class Left extends NoteMidiHandle {
-        public Left(Pane pane, EditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
+        public Left(Pane pane, MidiEditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
             super(pane, context, noteEntry, rectangle);
         }
 
@@ -52,7 +52,7 @@ abstract class NoteMidiHandle {
     }
 
     static class Right extends NoteMidiHandle {
-        public Right(Pane pane, EditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
+        public Right(Pane pane, MidiEditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
             super(pane, context, noteEntry, rectangle);
         }
 
@@ -76,7 +76,7 @@ abstract class NoteMidiHandle {
     }
 
     static class Body extends NoteMidiHandle {
-        public Body(Pane pane, EditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
+        public Body(Pane pane, MidiEditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
             super(pane, context, noteEntry, rectangle);
         }
 

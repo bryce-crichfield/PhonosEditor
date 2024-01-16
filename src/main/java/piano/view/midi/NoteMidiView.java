@@ -7,18 +7,18 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import piano.EditorContext;
+import piano.MidiEditorContext;
 import piano.model.GridInfo;
 import piano.model.NoteData;
 import piano.model.NoteEntry;
-import piano.model.NotePitch;
-import piano.tool.*;
+import piano.tool.EditorTool;
+import piano.tool.PencilTool;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 
 public class NoteMidiView extends StackPane {
-    private final EditorContext context;
+    private final MidiEditorContext context;
     private final NoteEntry noteEntry;
     private final Rectangle rectangle;
     private final Text label;
@@ -28,7 +28,9 @@ public class NoteMidiView extends StackPane {
     private Optional<NoteMidiHandle> selectedHandle;
     private Optional<NoteMidiController> controller = Optional.empty();
 
-    public NoteMidiView(NoteEntry noteEntry, EditorContext context, ObjectProperty<Optional<EditorTool>> currentTool) {
+    public NoteMidiView(NoteEntry noteEntry, MidiEditorContext context,
+            ObjectProperty<Optional<EditorTool>> currentTool
+    ) {
         super();
         this.context = context;
         this.noteEntry = noteEntry;

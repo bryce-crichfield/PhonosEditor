@@ -1,44 +1,38 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCombination;
-import piano.Editor;
+import piano.MidiEditor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public class KeybindingsLoader {
     Scene scene;
-    Editor editor;
+    MidiEditor midiEditor;
     Map<String, KeyCombination> keybindings;
 
-    public KeybindingsLoader(Scene scene, Editor editor) {
+    public KeybindingsLoader(Scene scene, MidiEditor midiEditor) {
         this.scene = scene;
-        this.editor = editor;
+        this.midiEditor = midiEditor;
     }
 
     public void load() {
         keybindings = loadKeybindings();
 
         get("midiEditor.selectPencil", keyCombination -> {
-            scene.getAccelerators().put(keyCombination, () -> editor.toggleToolPencil.fire());
+            scene.getAccelerators().put(keyCombination, () -> midiEditor.toggleToolPencil.fire());
         });
 
         get("midiEditor.selectSelect", keyCombination -> {
-            scene.getAccelerators().put(keyCombination, () -> editor.toggleToolSelect.fire());
-        });
-
-        get("midiEditor.selectPlayhead", keyCombination -> {
-            scene.getAccelerators().put(keyCombination, () -> editor.toggleToolPlayhead.fire());
+            scene.getAccelerators().put(keyCombination, () -> midiEditor.toggleToolSelect.fire());
         });
 
         get("midiEditor.selectSlice", keyCombination -> {
-            scene.getAccelerators().put(keyCombination, () -> editor.toggleToolSlice.fire());
+            scene.getAccelerators().put(keyCombination, () -> midiEditor.toggleToolSlice.fire());
         });
     }
 

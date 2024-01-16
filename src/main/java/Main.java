@@ -1,20 +1,10 @@
 import atlantafx.base.theme.PrimerDark;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCombination;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
-import piano.Editor;
-
-import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.BiFunction;
+import piano.MidiEditor;
 
 public class Main {
     public static void main(String[] args) {
@@ -26,13 +16,13 @@ public class Main {
         public void start(Stage stage) throws Exception {
             Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(Main.class.getResource("PianoRoll.fxml"));
+            loader.setLocation(Main.class.getResource("MidiEditor.fxml"));
             Parent root = loader.load();
-            Editor editor = loader.getController();
+            MidiEditor midiEditor = loader.getController();
 
             Scene scene = new Scene(root);
 
-            KeybindingsLoader keybindingsLoader = new KeybindingsLoader(scene, editor);
+            KeybindingsLoader keybindingsLoader = new KeybindingsLoader(scene, midiEditor);
             keybindingsLoader.load();
 
             stage.setScene(scene);

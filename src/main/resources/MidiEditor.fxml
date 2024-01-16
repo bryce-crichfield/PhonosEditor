@@ -1,24 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.*?>
-<?import javafx.collections.FXCollections?>
-<?import java.lang.String?>
-<?import javafx.util.Callback?>
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            xmlns="http://javafx.com/javafx"
             fx:id="root"
-            fx:controller="piano.Editor">
+            fx:controller="piano.MidiEditor">
     <BorderPane fx:id="rootBorderPane">
         <top>
             <VBox fx:id="toolBarRoot">
                 <ToolBar>
-                    <ToggleButton fx:id="toggleToolPlayhead">
-                        <graphic>
-                            <FontIcon iconLiteral="mdi-textbox"/>
-                        </graphic>
-                    </ToggleButton>
                     <ToggleButton fx:id="toggleToolSelect">
                         <graphic>
                             <FontIcon iconLiteral="mdi-selection"/>

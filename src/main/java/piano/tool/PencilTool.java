@@ -1,18 +1,12 @@
 package piano.tool;
 
-import animation.particle.Particle;
-import animation.particle.ParticleSystem;
-import animation.particle.component.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Point3D;
 import javafx.scene.Node;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
-import javafx.scene.paint.Color;
-import piano.EditorContext;
+import piano.MidiEditorContext;
 import piano.Util;
-import animation.Animation;
 import piano.model.GridInfo;
 import piano.model.NoteData;
 import piano.model.NotePitch;
@@ -20,14 +14,11 @@ import piano.util.GridMath;
 import piano.view.midi.NoteMidiEditor;
 import piano.view.midi.NoteMidiView;
 
-import java.net.URL;
-import java.time.Duration;
-
 public class PencilTool implements EditorTool {
     private final NoteMidiEditor view;
-    private final EditorContext context;
+    private final MidiEditorContext context;
 
-    public PencilTool(NoteMidiEditor view, EditorContext context) {
+    public PencilTool(NoteMidiEditor view, MidiEditorContext context) {
         super();
         this.view = view;
         this.context = context;

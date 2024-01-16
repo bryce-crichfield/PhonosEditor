@@ -2,29 +2,75 @@ package piano.view.piano;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import piano.EditorContext;
+import piano.MidiEditorContext;
 import piano.Util;
 import piano.model.GridInfo;
-import piano.model.NoteData;
 import piano.model.NotePitch;
-import piano.playback.PlaybackService;
-
 
 
 public class NoteEditorPianoKeyView extends StackPane {
     private String noteString;
 
-    public class KeyBody extends Rectangle {
-        private Color defaultFill;
+    public NoteEditorPianoKeyView(int index, MidiEditorContext context) {
+        super();
+        Label label = new Label();
+        label.setAlignment(Pos.BASELINE_RIGHT);
+        KeyBody keyBody = new KeyBody(index, context);
+        label.setText(noteString);
+        bindPaneToRectangle(keyBody, label);
+        getChildren().add(keyBody);
+        getChildren().add(label);
 
-        public KeyBody(int index, EditorContext context) {
+        // When the grid changes, we need to update the view
+        context.getViewSettings().gridInfoProperty().addListener((observable1, oldValue1, newValue1) -> {
+            GridInfo grid = newValue1;
+            double y = index * grid.getCellHeight();
+            double height = grid.getCellHeight();
+
+            keyBody.setX(0);
+            keyBody.setY(y);
+            keyBody.setWidth(keyBody.getDefaultWidth());
+            keyBody.setHeight(height);
+
+            // The font height should be 80% of the cell height
+            double cellHeight = context.getViewSettings().gridInfoProperty().get().getCellHeight();
+            label.setFont(label.getFont().font(cellHeight * 0.35));
+        });
+
+        context.getViewSettings().showPianoRollNoteLettersProperty().addListener((observable, oldValue, newValue) -> {
+            label.setVisible(newValue);
+        });
+        boolean shouldShow = context.getViewSettings().showPianoRollNoteLettersProperty().get();
+        label.setVisible(shouldShow);
+    }
+
+    private void bindPaneToRectangle(Rectangle rectangle, Label label) {
+        // Whenever the rectangle's position or size changes, update the pane's position or size, as well as the label's position and text
+        rectangle.xProperty().addListener((observable, oldValue, newValue) -> {
+            label.setLayoutX(newValue.doubleValue());
+            this.setLayoutX(newValue.doubleValue());
+        });
+
+        rectangle.yProperty().addListener((observable, oldValue, newValue) -> {
+            label.setLayoutY(
+                    newValue.doubleValue() + rectangle.getHeight() / 2 + label.getLayoutBounds().getHeight() / 2);
+            this.setLayoutY(newValue.doubleValue());
+            label.setText(noteString);
+        });
+
+        rectangle.widthProperty().addListener((observable, oldValue, newValue) -> {
+            label.setPrefWidth(newValue.doubleValue());
+            label.setText(noteString);
+        });
+    }
+
+    public class KeyBody extends Rectangle {
+        private final Color defaultFill;
+
+        public KeyBody(int index, MidiEditorContext context) {
             super();
 
             // Reverse the order of the indices bottom to top like a piano instead of top to bottom like a grid
@@ -66,57 +112,5 @@ public class NoteEditorPianoKeyView extends StackPane {
         public double getDefaultWidth() {
             return 125;
         }
-    }
-
-    public NoteEditorPianoKeyView(int index, EditorContext context) {
-        super();
-        Label label = new Label();
-        label.setAlignment(Pos.BASELINE_RIGHT);
-        KeyBody keyBody = new KeyBody(index, context);
-        label.setText(noteString);
-        bindPaneToRectangle(keyBody, label);
-        getChildren().add(keyBody);
-        getChildren().add(label);
-
-        // When the grid changes, we need to update the view
-        context.getViewSettings().gridInfoProperty().addListener((observable1, oldValue1, newValue1) -> {
-            GridInfo grid = newValue1;
-            double y = index * grid.getCellHeight();
-            double height = grid.getCellHeight();
-
-            keyBody.setX(0);
-            keyBody.setY(y);
-            keyBody.setWidth(keyBody.getDefaultWidth());
-            keyBody.setHeight(height);
-
-            // The font height should be 80% of the cell height
-            double cellHeight = context.getViewSettings().gridInfoProperty().get().getCellHeight();
-            label.setFont(label.getFont().font(cellHeight * 0.35));
-        });
-
-        context.getViewSettings().showPianoRollNoteLettersProperty().addListener((observable, oldValue, newValue) -> {
-            label.setVisible(newValue);
-        });
-        boolean shouldShow = context.getViewSettings().showPianoRollNoteLettersProperty().get();
-        label.setVisible(shouldShow);
-    }
-
-    private void bindPaneToRectangle(Rectangle rectangle, Label label) {
-        // Whenever the rectangle's position or size changes, update the pane's position or size, as well as the label's position and text
-        rectangle.xProperty().addListener((observable, oldValue, newValue) -> {
-            label.setLayoutX(newValue.doubleValue());
-            this.setLayoutX(newValue.doubleValue());
-        });
-
-        rectangle.yProperty().addListener((observable, oldValue, newValue) -> {
-            label.setLayoutY(newValue.doubleValue() + rectangle.getHeight() / 2 + label.getLayoutBounds().getHeight() / 2);
-            this.setLayoutY(newValue.doubleValue());
-            label.setText(noteString);
-        });
-
-        rectangle.widthProperty().addListener((observable, oldValue, newValue) -> {
-            label.setPrefWidth(newValue.doubleValue());
-            label.setText(noteString);
-        });
     }
 }

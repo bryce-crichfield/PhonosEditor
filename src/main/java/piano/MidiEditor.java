@@ -5,13 +5,9 @@ import component.ScrollBar;
 import component.VerticalScrollBar;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
-import javafx.scene.*;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
@@ -19,7 +15,6 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Stage;
 import piano.control.BaseNoteService;
 import piano.model.GridInfo;
 import piano.model.NoteData;
@@ -27,22 +22,23 @@ import piano.model.NoteEntry;
 import piano.model.NoteRegistry;
 import piano.playback.BasePlaybackService;
 import piano.playback.PlaybackState;
-import piano.tool.*;
+import piano.tool.EditorTool;
+import piano.tool.PencilTool;
+import piano.tool.SelectTool;
+import piano.tool.SliceTool;
 import piano.view.midi.NoteMidiEditor;
 import piano.view.parameter.NoteParameterEditor;
 import piano.view.piano.NoteEditorPianoView;
 import piano.view.playlist.TimelineView;
 import piano.view.settings.ViewSettings;
-import piano.view.settings.ViewSettingsController;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
-public class Editor {
+public class MidiEditor {
+    private final ObjectProperty<Optional<EditorTool>> currentTool = new SimpleObjectProperty<>(Optional.empty());
     // FXML (Tool bar)
-    public ToggleButton toggleToolPlayhead;
     public ToggleButton toggleToolSelect;
     public ToggleButton toggleToolPencil;
     public ToggleButton toggleToolSlice;
@@ -50,17 +46,16 @@ public class Editor {
     public AnchorPane root;
     public VBox toolBarRoot;
     public BorderPane rootBorderPane;
+    ToggleGroup tools = new ToggleGroup();
     // Non-FXML (Note editor)
     private SplitPane splitPane;
     private NoteMidiEditor noteMidiEditor;
     private NoteParameterEditor noteParameterEditor;
     private NoteEditorPianoView pianoView;
-    private EditorContext context;
-    private final ObjectProperty<Optional<EditorTool>> currentTool = new SimpleObjectProperty<>(Optional.empty());
-    ToggleGroup tools = new ToggleGroup();
+    private MidiEditorContext context;
 
 
-    public Editor() {
+    public MidiEditor() {
         super();
     }
 
@@ -77,7 +72,7 @@ public class Editor {
 
             var playbackService = new BasePlaybackService(new SimpleObjectProperty<>(playbackState));
             var noteService = new BaseNoteService(noteRegistry);
-            context = new EditorContext(playbackService, noteService, viewSettings);
+            context = new MidiEditorContext(playbackService, noteService, viewSettings);
 
             playbackService.observe((String noteName) -> {
                 System.out.println("Triggering note: " + noteName);
@@ -194,8 +189,6 @@ public class Editor {
                     tools.selectToggle(toggleToolPencil);
                 } else if (tool instanceof SelectTool) {
                     tools.selectToggle(toggleToolSelect);
-                } else if (tool instanceof PlayheadTool) {
-                    tools.selectToggle(toggleToolPlayhead);
                 } else if (tool instanceof SliceTool) {
                     tools.selectToggle(toggleToolSlice);
                 }
@@ -249,13 +242,9 @@ public class Editor {
 
         // Initialize tool bar buttons ---------------------------------------------------------------------------------
         {
-            tools.getToggles().add(toggleToolPlayhead);
             tools.getToggles().add(toggleToolSelect);
             tools.getToggles().add(toggleToolPencil);
             tools.getToggles().add(toggleToolSlice);
-
-            toggleToolPlayhead.setOnAction(event -> noteMidiEditor.setTool(
-                    new PlayheadTool()));
 
             toggleToolSelect.setOnAction(event -> noteMidiEditor.setTool(
                     new SelectTool(noteMidiEditor, noteMidiEditor.getWorld(), context)));
@@ -283,7 +272,11 @@ public class Editor {
         }
 
         context.getPlayback().play();
-        tools.selectToggle(toggleToolPlayhead);
+
+        // Force grid info to 100% (this triggers all the views to initialize)
+        var oldGi = context.getViewSettings().getGridInfo();
+        context.getViewSettings().gridInfoProperty().set(oldGi.withRows(0));
+        context.getViewSettings().gridInfoProperty().set(oldGi);
     }
 
     public void playlistPause(ActionEvent actionEvent) {

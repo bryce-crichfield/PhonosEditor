@@ -1,7 +1,6 @@
 package piano.view.midi;
 
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
@@ -9,24 +8,22 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
-import piano.EditorContext;
+import piano.MidiEditorContext;
 import piano.model.GridInfo;
 import piano.tool.EditorTool;
-import piano.tool.PencilTool;
 import piano.view.playlist.PlaybackView;
 import piano.view.settings.Theme;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 
 public class NoteMidiEditor extends AnchorPane {
-    private final EditorContext context;
+    private final MidiEditorContext context;
     private final Rectangle background;
     private final Group world;
     private final ObjectProperty<Optional<EditorTool>> currentTool;
 
-    public NoteMidiEditor(EditorContext context, ObjectProperty<Optional<EditorTool>> currentTool) {
+    public NoteMidiEditor(MidiEditorContext context, ObjectProperty<Optional<EditorTool>> currentTool) {
         this.context = context;
         this.currentTool = currentTool;
 

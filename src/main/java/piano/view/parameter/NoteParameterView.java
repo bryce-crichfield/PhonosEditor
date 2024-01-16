@@ -4,22 +4,20 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import org.jetbrains.annotations.NotNull;
-import piano.EditorContext;
+import piano.MidiEditorContext;
 import piano.Util;
 import piano.control.NoteService;
 import piano.model.NoteEntry;
 
-import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicReference;
 
 class NoteParameterView extends Rectangle {
-    private Color currentColor;
-    private final EditorContext context;
+    private final MidiEditorContext context;
     private final Pane parent;
     private final NoteEntry noteEntry;
+    private Color currentColor;
 
-    public NoteParameterView(Pane parent, NoteEntry note, EditorContext context) {
+    public NoteParameterView(Pane parent, NoteEntry note, MidiEditorContext context) {
         super();
         this.context = context;
         this.parent = parent;
@@ -113,10 +111,6 @@ class NoteParameterView extends Rectangle {
         calculateColor();
     }
 
-    public NoteEntry getNoteEntry() {
-        return noteEntry;
-    }
-
     public void calculateColor() {
         double velocity = noteEntry.get().getVelocityAsPercentage();
         velocity = Util.Easing.easeInCubic(velocity);
@@ -124,5 +118,9 @@ class NoteParameterView extends Rectangle {
         hue = Util.reverse(hue, 0, 130);
         currentColor = Color.hsb(hue, 0.85, 0.65);
         setFill(currentColor);
+    }
+
+    public NoteEntry getNoteEntry() {
+        return noteEntry;
     }
 }

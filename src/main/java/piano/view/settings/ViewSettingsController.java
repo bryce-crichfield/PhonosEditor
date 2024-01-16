@@ -1,18 +1,18 @@
 package piano.view.settings;
 
 import javafx.scene.control.RadioButton;
-import piano.EditorContext;
+import piano.MidiEditorContext;
 
 public class ViewSettingsController {
+    private final MidiEditorContext context;
     public RadioButton showPianoRollNoteLetters;
 
-    private final EditorContext context;
-
-    public ViewSettingsController(EditorContext context) {
+    public ViewSettingsController(MidiEditorContext context) {
         this.context = context;
     }
 
     public void initialize() {
-        showPianoRollNoteLetters.selectedProperty().bindBidirectional(context.getViewSettings().showPianoRollNoteLettersProperty());
+        showPianoRollNoteLetters.selectedProperty().bindBidirectional(
+                context.getViewSettings().showPianoRollNoteLettersProperty());
     }
 }

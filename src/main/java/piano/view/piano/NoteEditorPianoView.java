@@ -2,18 +2,16 @@ package piano.view.piano;
 
 import javafx.scene.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.paint.Color;
-import piano.EditorContext;
+import piano.MidiEditorContext;
 
 public class NoteEditorPianoView extends AnchorPane {
-    private final EditorContext context;
+    private final MidiEditorContext context;
     private final Camera camera;
     private final SubScene subScene;
     private final Group world;
 
-    public NoteEditorPianoView(EditorContext context) {
+    public NoteEditorPianoView(MidiEditorContext context) {
         this.context = context;
 
         // Create a camera to view the 3D shapes

@@ -4,12 +4,12 @@ import piano.control.NoteService;
 import piano.playback.PlaybackService;
 import piano.view.settings.ViewSettings;
 
-public class EditorContext {
+public class MidiEditorContext {
     private final PlaybackService playback;
     private final NoteService notes;
     private final ViewSettings viewSettings;
 
-    public EditorContext(PlaybackService playback, NoteService notes, ViewSettings settings) {
+    public MidiEditorContext(PlaybackService playback, NoteService notes, ViewSettings settings) {
         this.playback = playback;
         this.notes = notes;
         this.viewSettings = settings;

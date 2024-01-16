@@ -2,21 +2,21 @@ package piano.view.parameter;
 
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.layout.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
-import piano.Editor;
-import piano.EditorContext;
+import piano.MidiEditor;
+import piano.MidiEditorContext;
 import piano.model.GridInfo;
 import piano.model.NoteData;
 import piano.model.NoteEntry;
@@ -28,12 +28,12 @@ import java.util.Map;
 
 
 public class NoteParameterEditor extends AnchorPane {
-    private final EditorContext context;
+    private final MidiEditorContext context;
     Rectangle background;
     Camera camera;
     Group world;
 
-    public NoteParameterEditor(EditorContext context) {
+    public NoteParameterEditor(MidiEditorContext context) {
         this.context = context;
 
         // Create a camera to view the 3D shapes
@@ -153,7 +153,7 @@ public class NoteParameterEditor extends AnchorPane {
         comboZoomLevel.getItems().addAll("50%", "75%", "100%", "125%", "150%", "200%");
         comboZoomLevel.setValue("100%");
         ChangeListener<String> comboZoomLevelListener = (observable, oldValue, newValue) -> {
-            String zoomLevel = comboZoomLevel.getSelectionModel().getSelectedItem().toString();
+            String zoomLevel = comboZoomLevel.getSelectionModel().getSelectedItem();
             double percentage = Double.parseDouble(zoomLevel.replaceAll("[^0-9]", "")) / 100;
             double cellWidth = GridInfo.MAX_CELL_WIDTH * percentage;
             double cellHeight = GridInfo.MAX_CELL_HEIGHT * percentage;
@@ -180,7 +180,7 @@ public class NoteParameterEditor extends AnchorPane {
             // Load the ViewSettings.fxml file and create a new stage for the popup dialog
             FXMLLoader loader = new FXMLLoader();
             loader.setController(new ViewSettingsController(context));
-            loader.setLocation(Editor.class.getResource("/ViewSettings.fxml"));
+            loader.setLocation(MidiEditor.class.getResource("/ViewSettings.fxml"));
             Parent root = null;
             try {
                 root = loader.load();
