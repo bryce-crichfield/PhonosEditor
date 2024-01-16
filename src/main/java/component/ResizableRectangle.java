@@ -20,7 +20,7 @@ public class ResizableRectangle extends Rectangle {
     private double rectangleStartX;
     private double rectangleStartY;
     private boolean interactionEnabled = true;
-    private List<Rectangle> handles = new ArrayList<>();
+    private final List<Rectangle> handles = new ArrayList<>();
 
     public ResizableRectangle(double x, double y, double width, double height, Group group) {
         super(x, y, width, height);

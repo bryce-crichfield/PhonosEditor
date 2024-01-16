@@ -3,15 +3,8 @@ package component;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
-import javafx.scene.paint.*;
 import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
-import javafx.scene.transform.Scale;
-import javafx.scene.transform.Transform;
 import piano.Util;
-
-import java.util.function.Consumer;
 
 public class HorizontalScrollBar extends ScrollBar {
     public HorizontalScrollBar() {
@@ -26,10 +19,10 @@ public class HorizontalScrollBar extends ScrollBar {
         // Initialize the scroll bar buttons
         {
             Polygon leftFacingTriangle = new Polygon(SIZE, 0, SIZE, SIZE, 0, SIZE / 2);
-            negativeButton = (Label) createButton(leftFacingTriangle, SIZE);
+            negativeButton = createButton(leftFacingTriangle, SIZE);
 
             Polygon rightFacingTriangle = new Polygon(0, 0, 0, SIZE, SIZE, SIZE / 2);
-            positiveButton = (Label) createButton(rightFacingTriangle, SIZE);
+            positiveButton = createButton(rightFacingTriangle, SIZE);
         }
 
         // Initialize the scroll bar track and handle

@@ -54,7 +54,8 @@ public abstract class ScrollBar extends AnchorPane {
         button.setFocusTraversable(false);
         button.setGraphic(icon);
 
-        Background defaultBackground = new Background(new BackgroundFill(TRACK_COLOR, CornerRadii.EMPTY, javafx.geometry.Insets.EMPTY));
+        Background defaultBackground = new Background(
+                new BackgroundFill(TRACK_COLOR, CornerRadii.EMPTY, javafx.geometry.Insets.EMPTY));
         Background hoverBackground = new Background(new BackgroundFill(HOVER_COLOR, CornerRadii.EMPTY, Insets.EMPTY));
 
         button.setBackground(defaultBackground);

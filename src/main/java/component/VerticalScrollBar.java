@@ -1,16 +1,9 @@
 package component;
 
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.layout.*;
-import javafx.scene.paint.*;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Rectangle;
 import piano.Util;
-
-import java.util.function.Consumer;
 
 public class VerticalScrollBar extends ScrollBar {
 
@@ -39,7 +32,7 @@ public class VerticalScrollBar extends ScrollBar {
             track.setPrefWidth(SIZE);
             track.setBackground(new Background(new BackgroundFill(TRACK_COLOR, CornerRadii.EMPTY, Insets.EMPTY)));
             VBox.setVgrow(track, Priority.ALWAYS);
-            handle = new Handle(SIZE, SIZE*5);
+            handle = new Handle(SIZE, SIZE * 5);
 
             var centerVertically = container.widthProperty().subtract(handle.widthProperty()).divide(2);
             handle.xProperty().bind(centerVertically);
@@ -92,7 +85,6 @@ public class VerticalScrollBar extends ScrollBar {
         handle.setY(newY);
         onScroll.accept(this);
     }
-
 
 
     @Override

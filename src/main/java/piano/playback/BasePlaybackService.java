@@ -2,15 +2,14 @@ package piano.playback;
 
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.ObjectProperty;
-import piano.model.NoteData;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BasePlaybackService implements PlaybackService {
-    private List<NoteTriggerObserver> noteTriggerObservers = new ArrayList<>();
     private final ObjectProperty<PlaybackState> playbackState;
+    private final List<NoteTriggerObserver> noteTriggerObservers = new ArrayList<>();
 
     public BasePlaybackService(ObjectProperty<PlaybackState> playbackState) {
         this.playbackState = playbackState;

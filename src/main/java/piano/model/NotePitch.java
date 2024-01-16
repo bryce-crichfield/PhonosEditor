@@ -12,31 +12,16 @@ public class NotePitch {
         this.noteIndex = noteIndex;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof NotePitch other) {
+            return noteIndex == other.noteIndex;
+        }
+        return false;
+    }
+
     public static NotePitch from(String noteName) {
         return new NotePitch(noteName, stringToNote(noteName));
-    }
-
-    public static NotePitch from(int noteIndex) {
-        return new NotePitch(indexToString(noteIndex), noteIndex);
-    }
-
-
-    public static String indexToString(int note) {
-        // piano notes are indexed from 1 to 88
-        note -= 1;
-        // Clamp the note to the range 0 to 88
-        note = Math.max(0, Math.min(88, note));
-        // index 0 represents A0 on the piano
-        // index 88 represents C8 on the piano
-
-        // note is the index of the note on the piano
-        String notes[] = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F",
-                "F#", "G", "G#"};
-
-        // octave is the octave of the note
-        int noteIndex = note % 12;
-        int octave = note <= 2 ? 0 : (int) Math.ceil((note - 2) / 12.0);
-        return notes[noteIndex] + octave;
     }
 
     public static int stringToNote(String note) {
@@ -70,11 +55,25 @@ public class NotePitch {
         return index;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof NotePitch other) {
-            return noteIndex == other.noteIndex;
-        }
-        return false;
+    public static NotePitch from(int noteIndex) {
+        return new NotePitch(indexToString(noteIndex), noteIndex);
+    }
+
+    public static String indexToString(int note) {
+        // piano notes are indexed from 1 to 88
+        note -= 1;
+        // Clamp the note to the range 0 to 88
+        note = Math.max(0, Math.min(88, note));
+        // index 0 represents A0 on the piano
+        // index 88 represents C8 on the piano
+
+        // note is the index of the note on the piano
+        String[] notes = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F",
+                "F#", "G", "G#"};
+
+        // octave is the octave of the note
+        int noteIndex = note % 12;
+        int octave = note <= 2 ? 0 : (int) Math.ceil((note - 2) / 12.0);
+        return notes[noteIndex] + octave;
     }
 }

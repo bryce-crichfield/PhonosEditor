@@ -1,9 +1,11 @@
 package piano.model;
 
-import javafx.collections.*;
+import javafx.collections.FXCollections;
 import piano.control.NoteObserver;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class NoteRegistry {

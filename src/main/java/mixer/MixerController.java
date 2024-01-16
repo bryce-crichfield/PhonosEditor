@@ -1,7 +1,6 @@
 package mixer;
 
 import component.VerticalScrollBar;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.ParallelCamera;
@@ -11,8 +10,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
-import java.util.function.Consumer;
 
 public class MixerController {
     public BorderPane rootBorderPane;

@@ -5,7 +5,7 @@ import animation.particle.ParticleComponent;
 import java.time.Duration;
 
 public class GrowthComponent extends ParticleComponent {
-    private double rate;
+    private final double rate;
 
     public GrowthComponent(double rate) {
         this.rate = rate;

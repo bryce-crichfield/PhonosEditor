@@ -75,15 +75,15 @@ public class NoteData {
         return false;
     }
 
+    public double getDuration() {
+        return end - start;
+    }
+
     public static NoteData from(double x, double y, double width, double height, GridInfo gridInfo) {
         int colStart = (int) Math.floor(x / gridInfo.getCellWidth());
         int colEnd = (int) Math.floor((x + width) / gridInfo.getCellWidth());
         int rowStart = (int) Math.floor(y / gridInfo.getCellHeight());
         NotePitch pitch = NotePitch.from(rowStart);
         return new NoteData(pitch, colStart, colEnd, 100);
-    }
-
-    public double getDuration() {
-        return end - start;
     }
 }
