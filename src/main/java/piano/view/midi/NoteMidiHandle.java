@@ -4,8 +4,8 @@ import javafx.scene.Cursor;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import piano.MidiEditorContext;
-import piano.model.note.NoteEntry;
-import piano.model.note.NotePitch;
+import piano.note.model.NoteEntry;
+import piano.note.model.NotePitch;
 
 
 abstract class NoteMidiHandle {
@@ -34,7 +34,7 @@ abstract class NoteMidiHandle {
 
         @Override
         public void onDragged(double cellsX, double cellsY) {
-            context.getNotes().modify(noteEntry, noteData -> {
+            context.getNoteService().modify(noteEntry, noteData -> {
                 int x = (int) (noteData.getStart() + cellsX);
                 return noteData.withStart(x);
             });
@@ -58,7 +58,7 @@ abstract class NoteMidiHandle {
 
         @Override
         public void onDragged(double cellsX, double cellsY) {
-            context.getNotes().modify(noteEntry, noteData -> {
+            context.getNoteService().modify(noteEntry, noteData -> {
                 int x = (int) (noteData.getStart() + cellsX);
                 return noteData.withEnd(x);
             });
@@ -82,7 +82,7 @@ abstract class NoteMidiHandle {
 
         @Override
         public void onDragged(double cellsX, double cellsY) {
-            context.getNotes().modify(noteEntry, noteData -> {
+            context.getNoteService().modify(noteEntry, noteData -> {
                 int newStart = (int) (noteData.getStart() + cellsX);
                 int newEnd = (int) (noteData.getEnd() + cellsX);
                 int newNoteIndex = (int) (noteData.getPitch().getNoteIndex() - cellsY) + 1;

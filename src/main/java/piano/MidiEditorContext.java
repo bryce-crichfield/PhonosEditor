@@ -1,6 +1,6 @@
 package piano;
 
-import piano.control.NoteService;
+import piano.note.NoteService;
 import piano.playback.PlaybackService;
 import piano.view.settings.ViewSettings;
 
@@ -19,7 +19,7 @@ public class MidiEditorContext {
         return playback;
     }
 
-    public NoteService getNotes() {
+    public NoteService getNoteService() {
         return notes;
     }
 

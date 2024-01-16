@@ -7,9 +7,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import piano.MidiEditorContext;
 import piano.Util;
-import piano.model.GridInfo;
-import piano.model.note.NoteData;
-import piano.model.note.NotePitch;
+import piano.view.settings.GridInfo;
+import piano.note.model.NoteData;
+import piano.note.model.NotePitch;
 import piano.util.GridMath;
 import piano.view.midi.NoteMidiEditor;
 import piano.view.midi.NoteMidiView;
@@ -46,8 +46,8 @@ public class PencilTool implements EditorTool {
                 NotePitch pitch = NotePitch.from(mappedIndex + 1);
                 NoteData data = new NoteData(pitch, cellX, cellX + 1, 100);
 
-                context.getNotes().clearSelection();
-                context.getNotes().create(data);
+                context.getNoteService().getSelection().clear();
+                context.getNoteService().create(data);
             }
         }
 
@@ -74,7 +74,7 @@ public class PencilTool implements EditorTool {
             }
 
             if (noteMidiView != null) {
-                context.getNotes().delete(noteMidiView.getNoteEntry());
+                context.getNoteService().delete(noteMidiView.getNoteEntry());
             }
         }
 

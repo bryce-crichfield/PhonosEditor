@@ -1,4 +1,4 @@
-package piano.model;
+package piano.view.settings;
 
 import javafx.scene.shape.Rectangle;
 import lombok.Getter;

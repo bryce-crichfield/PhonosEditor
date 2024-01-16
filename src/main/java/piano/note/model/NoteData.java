@@ -1,9 +1,9 @@
-package piano.model.note;
+package piano.note.model;
 
 import lombok.Getter;
 import lombok.With;
 import piano.Util;
-import piano.model.GridInfo;
+import piano.view.settings.GridInfo;
 import piano.util.GridMath;
 
 @With
@@ -13,6 +13,7 @@ public class NoteData {
     private int start;
     private int end;
     private int velocity;
+
     public NoteData(NotePitch pitch, int start, int end, int velocity) {
         // Enforce invariants
         start = Math.max(start, 0);

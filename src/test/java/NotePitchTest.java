@@ -1,6 +1,6 @@
 
 import org.junit.jupiter.api.Test;
-import piano.model.note.NotePitch;
+import piano.note.model.NotePitch;
 
 import java.util.ArrayList;
 import java.util.List;

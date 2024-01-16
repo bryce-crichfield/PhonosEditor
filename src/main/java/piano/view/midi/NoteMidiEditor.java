@@ -2,14 +2,10 @@ package piano.view.midi;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.*;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import piano.MidiEditorContext;
-import piano.model.GridInfo;
 import piano.tool.EditorTool;
 import piano.view.playlist.PlaybackView;
 import piano.view.settings.Theme;
@@ -65,12 +61,12 @@ public class NoteMidiEditor extends AnchorPane {
 
 
         // Bind view to model ------------------------------------------------------------------------------------------
-        context.getNotes().onCreate((entry, oldData, newData) -> {
+        context.getNoteService().getRegistry().onCreatedListener((entry, oldData, newData) -> {
             var noteMidiView = new NoteMidiView(entry, context, currentTool);
             world.getChildren().add(noteMidiView);
         });
 
-        context.getNotes().onDelete((entry, oldData, newData) -> {
+        context.getNoteService().getRegistry().onDeletedListener((entry, oldData, newData) -> {
             world.getChildren().removeIf(
                     node -> node instanceof NoteMidiView view && view.getNoteEntry().equals(entry));
         });

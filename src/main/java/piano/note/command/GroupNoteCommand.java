@@ -1,12 +1,14 @@
-package piano.control.command;
+package piano.note.command;
 
-import piano.model.note.NoteEntry;
-import piano.model.note.NoteGroup;
-import piano.model.note.NoteRegistry;
+import piano.note.model.NoteEntry;
+import piano.note.model.NoteGroup;
+import piano.note.model.NoteRegistry;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GroupNoteCommand implements NoteCommand {
     private final Set<NoteCommand> actions;

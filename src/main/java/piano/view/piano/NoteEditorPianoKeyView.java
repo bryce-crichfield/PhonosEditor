@@ -7,8 +7,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import piano.MidiEditorContext;
 import piano.Util;
-import piano.model.GridInfo;
-import piano.model.note.NotePitch;
+import piano.view.settings.GridInfo;
+import piano.note.model.NotePitch;
 
 
 public class NoteEditorPianoKeyView extends StackPane {

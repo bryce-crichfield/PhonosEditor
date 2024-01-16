@@ -1,6 +1,6 @@
-package piano.control.command;
+package piano.note.command;
 
-import piano.model.note.NoteRegistry;
+import piano.note.model.NoteRegistry;
 
 public interface NoteCommand {
     void execute(NoteRegistry registry);

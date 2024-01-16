@@ -15,8 +15,8 @@ import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
 import piano.MidiEditor;
 import piano.MidiEditorContext;
-import piano.model.note.NoteData;
-import piano.model.note.NoteEntry;
+import piano.note.model.NoteData;
+import piano.note.model.NoteEntry;
 import piano.view.settings.Theme;
 import piano.view.settings.ViewSettingsController;
 
@@ -74,22 +74,24 @@ public class NoteParameterEditor extends AnchorPane {
         this.getChildren().add(hbox);
 
         // Spawn a NoteParameterView for each note in the registry
-        context.getNotes().onCreate((entry, oldData, newData) -> {
+        context.getNoteService().getRegistry().onCreatedListener((entry, oldData, newData) -> {
             var notePropertyView = new NoteParameterView(this, entry, context);
             world.getChildren().add(notePropertyView);
             zOrderParameterViews();
         });
 
-        context.getNotes().onDelete((entry, oldData, newData) -> {
+        // Perform z-ordering by using toFront() and toBack() on the NoteParameterViews
+        context.getNoteService().getRegistry().onModifiedListener((entry, oldData, newData) -> {
+            zOrderParameterViews();
+        });
+
+        // Remove the NoteParameterView from the world when the note is deleted
+        context.getNoteService().getRegistry().onDeletedListener((entry, oldData, newData) -> {
             world.getChildren().removeIf(
                     node -> node instanceof NoteParameterView view && view.getNoteEntry().equals(entry));
             zOrderParameterViews();
         });
 
-        // Perform z-ordering by using toFront() and toBack() on the NoteParameterViews
-        context.getNotes().onModify((entry, oldData, newData) -> {
-            zOrderParameterViews();
-        });
     }
 
     private void zOrderParameterViews() {

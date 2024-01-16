@@ -6,8 +6,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import piano.MidiEditorContext;
 import piano.Util;
-import piano.control.NoteService;
-import piano.model.note.NoteEntry;
+import piano.note.NoteService;
+import piano.note.model.NoteEntry;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -76,7 +76,7 @@ class NoteParameterView extends Rectangle {
             double ty = this.getTranslateY() + dy;
             double velocity = Util.clamp(1 - (ty / parent.getHeight()), 0, 1);
 
-            context.getNotes().modify(noteEntry, data -> data.withVelocity((int) (velocity * 100)));
+            context.getNoteService().modify(noteEntry, data -> data.withVelocity((int) (velocity * 100)));
         });
 
         // Sheet Metal gradient
@@ -85,9 +85,9 @@ class NoteParameterView extends Rectangle {
         this.setStroke(Color.BLACK);
 
         // When the note is selected, change the color of the rectangle
-        NoteService noteService = context.getNotes();
-        noteService.getSelectedEntries().addListener((ListChangeListener<? super NoteEntry>) c -> {
-            if (noteService.getSelectedEntries().contains(noteEntry)) {
+        NoteService noteService = context.getNoteService();
+        noteService.getSelection().addListener((ListChangeListener<? super NoteEntry>) c -> {
+            if (noteService.getSelection().contains(noteEntry)) {
                 this.setStroke(Color.CYAN.desaturate());
             } else {
                 this.setStroke(Color.BLACK);

@@ -1,8 +1,8 @@
-package piano.control.command;
+package piano.note.command;
 
-import piano.model.note.NoteData;
-import piano.model.note.NoteEntry;
-import piano.model.note.NoteRegistry;
+import piano.note.model.NoteData;
+import piano.note.model.NoteEntry;
+import piano.note.model.NoteRegistry;
 
 import java.util.Optional;
 

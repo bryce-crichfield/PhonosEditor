@@ -8,9 +8,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import piano.MidiEditorContext;
-import piano.model.GridInfo;
-import piano.model.note.NoteData;
-import piano.model.note.NoteEntry;
+import piano.view.settings.GridInfo;
+import piano.note.model.NoteData;
+import piano.note.model.NoteEntry;
 import piano.tool.EditorTool;
 import piano.tool.PencilTool;
 
@@ -119,7 +119,7 @@ public class NoteMidiView extends StackPane {
         });
 
         // Update the view rectangle when the selected entries change
-        context.getNotes().getSelectedEntries().addListener((ListChangeListener<NoteEntry>) c -> {
+        context.getNoteService().getSelection().addListener((ListChangeListener<NoteEntry>) c -> {
             if (c.getList().contains(noteEntry)) {
                 rectangle.setFill(Color.BLUE);
             } else {

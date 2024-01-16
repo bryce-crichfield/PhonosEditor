@@ -15,12 +15,12 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import piano.control.BaseNoteService;
-import piano.model.GridInfo;
-import piano.model.note.NoteData;
-import piano.model.note.NoteEntry;
-import piano.model.note.NoteGroup;
-import piano.model.note.NoteRegistry;
+import piano.note.NoteService;
+import piano.view.settings.GridInfo;
+import piano.note.model.NoteData;
+import piano.note.model.NoteEntry;
+import piano.note.model.NoteGroup;
+import piano.note.model.NoteRegistry;
 import piano.playback.BasePlaybackService;
 import piano.playback.PlaybackState;
 import piano.tool.EditorTool;
@@ -72,7 +72,7 @@ public class MidiEditor {
             var playbackState = new PlaybackState(0, 4, 120, false);
 
             var playbackService = new BasePlaybackService(new SimpleObjectProperty<>(playbackState));
-            var noteService = new BaseNoteService(noteRegistry);
+            var noteService = new NoteService(noteRegistry);
             context = new MidiEditorContext(playbackService, noteService, viewSettings);
 
             playbackService.observe((String noteName) -> {
@@ -243,15 +243,15 @@ public class MidiEditor {
 
         root.setOnKeyPressed(event -> {
             if (event.isControlDown() && event.getCode().toString().equals("Z")) {
-                context.getNotes().undo();
+                context.getNoteService().undo();
             }
 
             if (event.isControlDown() && event.getCode().toString().equals("Y")) {
-                context.getNotes().redo();
+                context.getNoteService().redo();
             }
 
             if (event.isControlDown() && event.getCode().toString().equals("B")) {
-                Collection<NoteEntry> selected = context.getNotes().getSelectedEntries();
+                Collection<NoteEntry> selected = context.getNoteService().getSelection();
 
                 // Find the lowest start and highest end to determine the length of the pattern to create
                 int lowestStart = Integer.MAX_VALUE;
@@ -273,12 +273,12 @@ public class MidiEditor {
                     newNotes.add(newData);
                 }
 
-                context.getNotes().createMany(newNotes);
+                context.getNoteService().create(newNotes);
             }
 
             if (event.isControlDown() && event.getCode().toString().equals("G")) {
-                System.out.println("Grouping n notes: " + context.getNotes().getSelectedEntries().size());
-                Collection<NoteEntry> selected = context.getNotes().getSelectedEntries();
+                System.out.println("Grouping n notes: " + context.getNoteService().getSelection().size());
+                Collection<NoteEntry> selected = context.getNoteService().getSelection();
                 // create group
                 NoteGroup group = new NoteGroup();
                 for (NoteEntry entry : selected) {

@@ -8,8 +8,8 @@ import javafx.scene.input.PickResult;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import piano.MidiEditorContext;
-import piano.model.note.NoteData;
-import piano.model.note.NoteEntry;
+import piano.note.model.NoteData;
+import piano.note.model.NoteEntry;
 import piano.view.midi.NoteMidiEditor;
 
 import java.util.Collection;
@@ -34,7 +34,7 @@ public class SelectTool implements EditorTool {
 
     @Override
     public void onEnter() {
-        context.getNotes().clearSelection();
+        context.getNoteService().getSelection().clear();
     }
 
     @Override
@@ -85,7 +85,7 @@ public class SelectTool implements EditorTool {
             currentBox.ifPresent(box -> world.getChildren().remove(box));
 
             // Return to pencil if selection is non-empty
-            if (!context.getNotes().getSelectedEntries().isEmpty()) {
+            if (!context.getNoteService().getSelection().isEmpty()) {
                 return new PencilTool(editor, context);
             }
         }
@@ -121,9 +121,9 @@ public class SelectTool implements EditorTool {
             setHeight(height);
 
 
-            context.getNotes().clearSelection();
-            Collection<NoteEntry> noteEntries = context.getNotes().query(noteEntry -> isNoteSelected(noteEntry.get()));
-            noteEntries.forEach(note -> context.getNotes().select(note));
+            context.getNoteService().getSelection().clear();
+            Collection<NoteEntry> noteEntries = context.getNoteService().query(noteEntry -> isNoteSelected(noteEntry.get()));
+            noteEntries.forEach(note -> context.getNoteService().getSelection().add(note));
         }
 
         protected abstract boolean isNoteSelected(NoteData data);
