@@ -1,28 +1,20 @@
 package piano.view.parameter;
 
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
+import javafx.fxml.*;
+import javafx.geometry.*;
 import javafx.scene.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.stage.Stage;
-import org.kordamp.ikonli.javafx.FontIcon;
-import piano.MidiEditor;
-import piano.MidiEditorContext;
-import piano.note.model.NoteData;
-import piano.note.model.NoteEntry;
-import piano.view.settings.Theme;
-import piano.view.settings.ViewSettingsController;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.scene.paint.*;
+import javafx.scene.shape.*;
+import javafx.stage.*;
+import org.kordamp.ikonli.javafx.*;
+import piano.*;
+import piano.note.model.*;
+import piano.view.settings.*;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 
 public class NoteParameterEditor extends AnchorPane {

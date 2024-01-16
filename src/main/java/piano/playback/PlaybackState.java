@@ -1,7 +1,6 @@
 package piano.playback;
 
-import lombok.Data;
-import lombok.With;
+import lombok.*;
 
 @Data
 @With

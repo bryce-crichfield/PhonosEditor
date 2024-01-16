@@ -1,25 +1,16 @@
 package piano.note.command;
 
-import piano.note.model.NoteEntry;
-import piano.note.model.NoteGroup;
-import piano.note.model.NoteRegistry;
+import piano.note.model.*;
 
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.*;
 
 public class GroupNoteCommand implements NoteCommand {
     private final Set<NoteCommand> actions;
 
     public GroupNoteCommand(Set<NoteCommand> actions) {
         this.actions = actions;
-    }
-
-    public static GroupNoteCommand fromFactory(NoteGroup group, Function<NoteEntry, NoteCommand> factory) {
-        Set<NoteCommand> actions = group.stream().map(factory).collect(Collectors.toSet());
-        return new GroupNoteCommand(actions);
     }
 
     @Override
@@ -32,5 +23,11 @@ public class GroupNoteCommand implements NoteCommand {
         for (NoteCommand action : actions) {
             action.undo(registry);
         }
+    }
+
+    public static GroupNoteCommand fromFactory(NoteGroup group, Function<NoteEntry, NoteCommand> factory
+    ) {
+        Set<NoteCommand> actions = group.stream().map(factory).collect(Collectors.toSet());
+        return new GroupNoteCommand(actions);
     }
 }

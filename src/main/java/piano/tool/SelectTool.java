@@ -1,21 +1,17 @@
 package piano.tool;
 
-import javafx.geometry.Point3D;
-import javafx.scene.Group;
+import javafx.geometry.*;
 import javafx.scene.Node;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.PickResult;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import piano.MidiEditorContext;
-import piano.note.model.NoteData;
-import piano.note.model.NoteEntry;
-import piano.note.model.NoteRegistry;
-import piano.view.midi.NoteMidiEditor;
+import javafx.scene.*;
+import javafx.scene.input.*;
+import javafx.scene.paint.*;
+import javafx.scene.shape.*;
+import piano.*;
+import piano.note.model.*;
+import piano.view.midi.*;
 
-import java.util.Collection;
-import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.*;
+import java.util.stream.*;
 
 public class SelectTool implements EditorTool {
     // Two Modes:
@@ -28,6 +24,7 @@ public class SelectTool implements EditorTool {
     private final Group world;
     private final NoteMidiEditor editor;
     private Optional<SelectionBox> currentBox;
+
     public SelectTool(NoteMidiEditor editor, Group world, MidiEditorContext context) {
         this.world = world;
         this.editor = editor;

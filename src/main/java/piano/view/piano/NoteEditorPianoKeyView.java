@@ -1,14 +1,13 @@
 package piano.view.piano;
 
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import piano.MidiEditorContext;
-import piano.Util;
-import piano.view.settings.GridInfo;
-import piano.note.model.NotePitch;
+import javafx.geometry.*;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.scene.paint.*;
+import javafx.scene.shape.*;
+import piano.*;
+import piano.note.model.*;
+import piano.view.settings.*;
 
 
 public class NoteEditorPianoKeyView extends StackPane {

@@ -1,7 +1,7 @@
 package piano.view.settings;
 
-import javafx.scene.control.RadioButton;
-import piano.MidiEditorContext;
+import javafx.scene.control.*;
+import piano.*;
 
 public class ViewSettingsController {
     private final MidiEditorContext context;

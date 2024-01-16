@@ -1,9 +1,6 @@
 package piano.view.settings;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 
 public class ViewSettings {
     private final ObjectProperty<GridInfo> gridInfo;

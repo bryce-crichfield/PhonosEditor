@@ -1,10 +1,10 @@
 package animation.particle.component;
 
-import animation.particle.ParticleComponent;
-import javafx.scene.image.Image;
-import javafx.scene.paint.ImagePattern;
+import animation.particle.*;
+import javafx.scene.image.*;
+import javafx.scene.paint.*;
 
-import java.time.Duration;
+import java.time.*;
 
 public class TextureComponent extends ParticleComponent {
     private final Image image;

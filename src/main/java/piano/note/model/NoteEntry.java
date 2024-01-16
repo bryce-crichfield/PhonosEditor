@@ -1,11 +1,12 @@
 package piano.note.model;
 
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 
-import java.util.Optional;
+import java.util.*;
 
 public class NoteEntry extends SimpleObjectProperty<NoteData> {
     private Optional<NoteGroup> group = Optional.empty();
+
     public NoteEntry(NoteData note) {
         super(note);
     }

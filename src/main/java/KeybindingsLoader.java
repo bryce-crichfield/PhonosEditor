@@ -1,14 +1,11 @@
-import com.fasterxml.jackson.databind.ObjectMapper;
-import javafx.scene.Scene;
-import javafx.scene.input.KeyCombination;
-import piano.MidiEditor;
+import com.fasterxml.jackson.databind.*;
+import javafx.scene.*;
+import javafx.scene.input.*;
+import piano.*;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
+import java.io.*;
+import java.util.*;
+import java.util.function.*;
 
 public class KeybindingsLoader {
     Scene scene;

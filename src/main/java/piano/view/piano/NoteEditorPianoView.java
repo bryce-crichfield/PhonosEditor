@@ -1,9 +1,9 @@
 package piano.view.piano;
 
 import javafx.scene.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
-import piano.MidiEditorContext;
+import javafx.scene.layout.*;
+import javafx.scene.paint.*;
+import piano.*;
 
 public class NoteEditorPianoView extends AnchorPane {
     private final MidiEditorContext context;

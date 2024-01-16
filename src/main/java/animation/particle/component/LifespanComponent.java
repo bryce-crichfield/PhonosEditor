@@ -1,8 +1,8 @@
 package animation.particle.component;
 
-import animation.particle.ParticleComponent;
+import animation.particle.*;
 
-import java.time.Duration;
+import java.time.*;
 
 public class LifespanComponent extends ParticleComponent {
     private final Duration duration;

@@ -1,21 +1,19 @@
 package piano.view.midi;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.collections.ListChangeListener;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
-import piano.MidiEditorContext;
-import piano.view.settings.GridInfo;
-import piano.note.model.NoteData;
-import piano.note.model.NoteEntry;
-import piano.tool.EditorTool;
-import piano.tool.PencilTool;
+import javafx.beans.property.*;
+import javafx.collections.*;
+import javafx.scene.input.*;
+import javafx.scene.layout.*;
+import javafx.scene.paint.*;
+import javafx.scene.shape.*;
+import javafx.scene.text.*;
+import piano.*;
+import piano.note.model.*;
+import piano.tool.*;
+import piano.view.settings.*;
 
-import java.util.Optional;
-import java.util.function.Consumer;
+import java.util.*;
+import java.util.function.*;
 
 public class NoteMidiView extends StackPane {
     private final MidiEditorContext context;

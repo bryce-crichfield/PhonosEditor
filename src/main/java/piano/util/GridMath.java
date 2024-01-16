@@ -1,6 +1,6 @@
 package piano.util;
 
-import piano.view.settings.GridInfo;
+import piano.view.settings.*;
 
 
 public class GridMath {

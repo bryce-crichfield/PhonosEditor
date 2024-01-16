@@ -1,16 +1,16 @@
 package piano.view.midi;
 
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.*;
 import javafx.scene.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import piano.MidiEditorContext;
-import piano.tool.EditorTool;
-import piano.view.playlist.PlaybackView;
-import piano.view.settings.Theme;
+import javafx.scene.layout.*;
+import javafx.scene.paint.*;
+import javafx.scene.shape.*;
+import piano.*;
+import piano.tool.*;
+import piano.view.playlist.*;
+import piano.view.settings.*;
 
-import java.util.Optional;
+import java.util.*;
 
 
 public class NoteMidiEditor extends AnchorPane {

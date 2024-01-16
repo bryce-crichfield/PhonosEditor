@@ -1,10 +1,8 @@
 package piano.note.command;
 
-import piano.note.model.NoteData;
-import piano.note.model.NoteEntry;
-import piano.note.model.NoteRegistry;
+import piano.note.model.*;
 
-import java.util.Optional;
+import java.util.*;
 
 public class DeleteNoteCommand implements NoteCommand {
     private NoteEntry entry;

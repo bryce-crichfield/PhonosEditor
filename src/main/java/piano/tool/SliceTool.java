@@ -1,6 +1,6 @@
 package piano.tool;
 
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 
 public class SliceTool implements EditorTool {
     @Override

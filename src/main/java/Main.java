@@ -1,10 +1,9 @@
-import atlantafx.base.theme.PrimerDark;
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import piano.MidiEditor;
+import atlantafx.base.theme.*;
+import javafx.application.*;
+import javafx.fxml.*;
+import javafx.scene.*;
+import javafx.stage.*;
+import piano.*;
 
 public class Main {
     public static void main(String[] args) {

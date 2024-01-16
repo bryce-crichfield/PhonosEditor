@@ -1,17 +1,16 @@
 package component;
 
-import javafx.scene.Cursor;
-import javafx.scene.Group;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.*;
+import javafx.scene.input.*;
+import javafx.scene.paint.*;
+import javafx.scene.shape.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class ResizableRectangle extends Rectangle {
     private static final int HANDLE_MIN_WIDTH = 10;
     private static final int HANDLE_MIN_HEIGHT = 10;
+    private final List<Rectangle> handles = new ArrayList<>();
     Runnable onCenterHandleDragged;
     Runnable onLeftHandleDragged;
     Runnable onRightHandleDragged;
@@ -20,7 +19,6 @@ public class ResizableRectangle extends Rectangle {
     private double rectangleStartX;
     private double rectangleStartY;
     private boolean interactionEnabled = true;
-    private final List<Rectangle> handles = new ArrayList<>();
 
     public ResizableRectangle(double x, double y, double width, double height, Group group) {
         super(x, y, width, height);

@@ -1,7 +1,6 @@
 package piano.note;
 
-import piano.note.model.NoteData;
-import piano.note.model.NoteEntry;
+import piano.note.model.*;
 
 @FunctionalInterface
 public interface NoteObserver {

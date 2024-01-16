@@ -1,10 +1,9 @@
 package component;
 
-import javafx.geometry.Insets;
-import javafx.scene.control.Label;
+import javafx.geometry.*;
 import javafx.scene.layout.*;
-import javafx.scene.shape.Polygon;
-import piano.Util;
+import javafx.scene.shape.*;
+import piano.*;
 
 public class HorizontalScrollBar extends ScrollBar {
     public HorizontalScrollBar() {

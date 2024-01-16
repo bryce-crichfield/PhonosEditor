@@ -1,6 +1,6 @@
 package piano.view.settings;
 
-import javafx.scene.paint.Color;
+import javafx.scene.paint.*;
 
 public class Theme {
     public static final Color BACKGROUND = Color.web("#282828").darker();

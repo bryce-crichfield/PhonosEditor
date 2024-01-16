@@ -1,9 +1,9 @@
 package piano.view.playlist;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.scene.shape.Rectangle;
-import piano.MidiEditorContext;
-import piano.view.settings.GridInfo;
+import javafx.beans.property.*;
+import javafx.scene.shape.*;
+import piano.*;
+import piano.view.settings.*;
 
 public class PlayHeadView extends Rectangle {
     public PlayHeadView(DoubleProperty height, MidiEditorContext context) {

@@ -1,14 +1,13 @@
 package piano.view.playlist;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.scene.Group;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import piano.MidiEditorContext;
-import piano.tool.EditorTool;
+import javafx.beans.property.*;
+import javafx.scene.*;
+import javafx.scene.paint.*;
+import javafx.scene.shape.*;
+import piano.*;
+import piano.tool.*;
 
-import java.util.Optional;
+import java.util.*;
 
 public class PlaybackView {
     private final Rectangle rectangle;

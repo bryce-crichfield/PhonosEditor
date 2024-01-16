@@ -1,8 +1,8 @@
 package animation.particle.component;
 
-import animation.particle.ParticleComponent;
+import animation.particle.*;
 
-import java.time.Duration;
+import java.time.*;
 
 public class GrowthComponent extends ParticleComponent {
     private final double rate;

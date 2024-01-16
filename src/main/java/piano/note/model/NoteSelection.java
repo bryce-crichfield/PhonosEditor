@@ -1,10 +1,10 @@
 package piano.note.model;
 
 
-import com.sun.javafx.collections.ObservableListWrapper;
-import javafx.beans.property.SimpleListProperty;
+import com.sun.javafx.collections.*;
+import javafx.beans.property.*;
 
-import java.util.LinkedList;
+import java.util.*;
 
 public class NoteSelection extends SimpleListProperty<NoteEntry> {
     public NoteSelection() {

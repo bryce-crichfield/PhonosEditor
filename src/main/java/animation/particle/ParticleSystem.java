@@ -1,11 +1,10 @@
 package animation.particle;
 
-import animation.Animation;
-import javafx.scene.Group;
+import animation.*;
+import javafx.scene.*;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.*;
+import java.util.*;
 
 public class ParticleSystem implements Animation {
     private final List<Particle> particles;

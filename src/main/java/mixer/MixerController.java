@@ -1,15 +1,12 @@
 package mixer;
 
-import component.VerticalScrollBar;
-import javafx.geometry.Pos;
-import javafx.scene.Group;
-import javafx.scene.ParallelCamera;
-import javafx.scene.SubScene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import component.*;
+import javafx.geometry.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.paint.*;
+import javafx.scene.shape.*;
 
 public class MixerController {
     public BorderPane rootBorderPane;

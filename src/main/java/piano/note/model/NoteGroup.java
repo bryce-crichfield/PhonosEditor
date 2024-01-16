@@ -1,6 +1,6 @@
 package piano.note.model;
 
-import java.util.HashSet;
+import java.util.*;
 
 public class NoteGroup extends HashSet<NoteEntry> {
     public NoteGroup() {

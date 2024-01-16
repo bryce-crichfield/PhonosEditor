@@ -1,9 +1,8 @@
 package piano.view.settings;
 
-import javafx.scene.shape.Rectangle;
-import lombok.Getter;
-import lombok.With;
-import piano.Util;
+import javafx.scene.shape.*;
+import lombok.*;
+import piano.*;
 
 
 @With

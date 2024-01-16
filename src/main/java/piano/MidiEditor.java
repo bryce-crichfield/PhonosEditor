@@ -1,41 +1,26 @@
 package piano;
 
-import component.HorizontalScrollBar;
 import component.ScrollBar;
-import component.VerticalScrollBar;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Orientation;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.input.ScrollEvent;
+import component.*;
+import javafx.beans.property.*;
+import javafx.event.*;
+import javafx.geometry.*;
+import javafx.scene.control.*;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import piano.note.NoteService;
-import piano.view.settings.GridInfo;
-import piano.note.model.NoteData;
-import piano.note.model.NoteEntry;
-import piano.note.model.NoteGroup;
-import piano.note.model.NoteRegistry;
-import piano.playback.BasePlaybackService;
-import piano.playback.PlaybackState;
-import piano.tool.EditorTool;
-import piano.tool.PencilTool;
-import piano.tool.SelectTool;
-import piano.tool.SliceTool;
-import piano.view.midi.NoteMidiEditor;
-import piano.view.parameter.NoteParameterEditor;
-import piano.view.piano.NoteEditorPianoView;
-import piano.view.playlist.TimelineView;
-import piano.view.settings.ViewSettings;
+import javafx.scene.paint.*;
+import javafx.scene.shape.*;
+import piano.note.*;
+import piano.note.model.*;
+import piano.playback.*;
+import piano.tool.*;
+import piano.view.midi.*;
+import piano.view.parameter.*;
+import piano.view.piano.*;
+import piano.view.playlist.*;
+import piano.view.settings.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 
 public class MidiEditor {
     private final ObjectProperty<Optional<EditorTool>> currentTool = new SimpleObjectProperty<>(Optional.empty());
@@ -238,7 +223,6 @@ public class MidiEditor {
                 }
             }
         });
-
 
 
         root.setOnKeyPressed(event -> {

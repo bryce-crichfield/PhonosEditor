@@ -1,16 +1,14 @@
 package component;
 
-import javafx.geometry.Insets;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
+import javafx.geometry.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.transform.Scale;
-import javafx.scene.transform.Transform;
+import javafx.scene.paint.*;
+import javafx.scene.shape.*;
+import javafx.scene.transform.*;
 
-import java.util.function.Consumer;
+import java.util.function.*;
 
 public abstract class ScrollBar extends AnchorPane {
     public static final int SIZE = 15;

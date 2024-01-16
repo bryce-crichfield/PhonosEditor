@@ -1,8 +1,8 @@
 package animation;
 
-import javafx.animation.AnimationTimer;
+import javafx.animation.*;
 
-import java.time.Duration;
+import java.time.*;
 
 public interface Animation {
     default boolean isDead() {

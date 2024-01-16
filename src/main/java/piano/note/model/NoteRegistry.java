@@ -1,9 +1,7 @@
 package piano.note.model;
 
-import javafx.collections.FXCollections;
-import piano.note.NoteObserver;
-import piano.note.model.NoteData;
-import piano.note.model.NoteEntry;
+import javafx.collections.*;
+import piano.note.*;
 
 import java.util.*;
 

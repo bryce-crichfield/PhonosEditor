@@ -1,6 +1,6 @@
 package piano.note.model;
 
-import lombok.Data;
+import lombok.*;
 
 @Data
 public class NotePitch {

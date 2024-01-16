@@ -1,11 +1,10 @@
 package piano.view.midi;
 
-import javafx.scene.Cursor;
-import javafx.scene.layout.Pane;
-import javafx.scene.shape.Rectangle;
-import piano.MidiEditorContext;
-import piano.note.model.NoteEntry;
-import piano.note.model.NotePitch;
+import javafx.scene.*;
+import javafx.scene.layout.*;
+import javafx.scene.shape.*;
+import piano.*;
+import piano.note.model.*;
 
 
 abstract class NoteMidiHandle {

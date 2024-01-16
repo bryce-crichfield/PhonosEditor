@@ -1,8 +1,8 @@
 package piano;
 
-import piano.note.NoteService;
-import piano.playback.PlaybackService;
-import piano.view.settings.ViewSettings;
+import piano.note.*;
+import piano.playback.*;
+import piano.view.settings.*;
 
 public class MidiEditorContext {
     private final PlaybackService playback;

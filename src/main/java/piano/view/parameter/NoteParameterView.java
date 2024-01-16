@@ -1,15 +1,14 @@
 package piano.view.parameter;
 
-import javafx.collections.ListChangeListener;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import piano.MidiEditorContext;
-import piano.Util;
-import piano.note.NoteService;
-import piano.note.model.NoteEntry;
+import javafx.collections.*;
+import javafx.scene.layout.*;
+import javafx.scene.paint.*;
+import javafx.scene.shape.*;
+import piano.*;
+import piano.note.*;
+import piano.note.model.*;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.*;
 
 class NoteParameterView extends Rectangle {
     private final MidiEditorContext context;

@@ -1,11 +1,10 @@
 package animation.particle;
 
-import animation.Animation;
-import javafx.scene.shape.Rectangle;
+import animation.*;
+import javafx.scene.shape.*;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.*;
+import java.util.*;
 
 public class Particle extends Rectangle implements Animation {
     private final List<ParticleComponent> components;

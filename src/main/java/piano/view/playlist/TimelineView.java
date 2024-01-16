@@ -1,19 +1,15 @@
 package piano.view.playlist;
 
-import component.ScrollBar;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import component.*;
+import javafx.beans.property.*;
 import javafx.scene.*;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
-import piano.MidiEditorContext;
-import piano.Util;
-import piano.util.GridMath;
+import javafx.scene.input.*;
+import javafx.scene.layout.*;
+import javafx.scene.paint.*;
+import javafx.scene.shape.*;
+import javafx.scene.text.*;
+import piano.*;
+import piano.util.*;
 
 
 public class TimelineView extends AnchorPane {

@@ -1,18 +1,14 @@
 package piano.tool;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.geometry.Point3D;
-import javafx.scene.Node;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.PickResult;
-import piano.MidiEditorContext;
-import piano.Util;
-import piano.view.settings.GridInfo;
-import piano.note.model.NoteData;
-import piano.note.model.NotePitch;
-import piano.util.GridMath;
-import piano.view.midi.NoteMidiEditor;
-import piano.view.midi.NoteMidiView;
+import javafx.beans.property.*;
+import javafx.geometry.*;
+import javafx.scene.*;
+import javafx.scene.input.*;
+import piano.*;
+import piano.note.model.*;
+import piano.util.*;
+import piano.view.midi.*;
+import piano.view.settings.*;
 
 public class PencilTool implements EditorTool {
     private final NoteMidiEditor view;

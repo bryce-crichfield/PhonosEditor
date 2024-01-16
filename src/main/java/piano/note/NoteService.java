@@ -4,10 +4,8 @@ import piano.note.command.*;
 import piano.note.model.*;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.function.*;
+import java.util.stream.*;
 
 public class NoteService {
     private final NoteRegistry registry;
@@ -18,15 +16,6 @@ public class NoteService {
     public NoteService(NoteRegistry registry) {
         this.registry = registry;
         this.noteSelection = new NoteSelection();
-    }
-
-    public void execute(NoteCommand action) {
-        if (!action.execute(registry)) {
-            return;
-        }
-
-        undoStack.push(action);
-        redoStack.clear();
     }
 
     public void redo() {
@@ -51,6 +40,15 @@ public class NoteService {
         execute(new CreateNoteCommand(data));
     }
 
+    public void execute(NoteCommand action) {
+        if (!action.execute(registry)) {
+            return;
+        }
+
+        undoStack.push(action);
+        redoStack.clear();
+    }
+
     public void create(Collection<NoteData> data) {
         Set<NoteCommand> commands = data.stream().map(CreateNoteCommand::new).collect(Collectors.toSet());
         GroupNoteCommand command = new GroupNoteCommand(commands);
@@ -58,11 +56,7 @@ public class NoteService {
     }
 
     public void modify(NoteEntry entry, Function<NoteData, NoteData> update) {
-         multicast(entry, e -> new ModifyNoteCommand(e, update.apply(e.get())));
-    }
-
-    public void delete(NoteEntry entry) {
-        multicast(entry, DeleteNoteCommand::new);
+        multicast(entry, e -> new ModifyNoteCommand(e, update.apply(e.get())));
     }
 
     private void multicast(NoteEntry entry, Function<NoteEntry, NoteCommand> factory) {
@@ -74,6 +68,10 @@ public class NoteService {
 
         GroupNoteCommand command = new GroupNoteCommand(commands);
         execute(command);
+    }
+
+    public void delete(NoteEntry entry) {
+        multicast(entry, DeleteNoteCommand::new);
     }
 
     public NoteSelection getSelection() {
