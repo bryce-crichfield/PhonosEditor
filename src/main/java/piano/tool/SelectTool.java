@@ -10,10 +10,12 @@ import javafx.scene.shape.Rectangle;
 import piano.MidiEditorContext;
 import piano.note.model.NoteData;
 import piano.note.model.NoteEntry;
+import piano.note.model.NoteRegistry;
 import piano.view.midi.NoteMidiEditor;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class SelectTool implements EditorTool {
     // Two Modes:
@@ -122,7 +124,8 @@ public class SelectTool implements EditorTool {
 
 
             context.getNoteService().getSelection().clear();
-            Collection<NoteEntry> noteEntries = context.getNoteService().query(noteEntry -> isNoteSelected(noteEntry.get()));
+            Stream<NoteEntry> registry = context.getNoteService().getRegistry().getEntries().stream();
+            Collection<NoteEntry> noteEntries = registry.filter(noteEntry -> isNoteSelected(noteEntry.get())).toList();
             noteEntries.forEach(note -> context.getNoteService().getSelection().add(note));
         }
 

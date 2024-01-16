@@ -23,10 +23,8 @@ public class GroupNoteCommand implements NoteCommand {
     }
 
     @Override
-    public void execute(NoteRegistry registry) {
-        for (NoteCommand action : actions) {
-            action.execute(registry);
-        }
+    public boolean execute(NoteRegistry registry) {
+        return actions.stream().map(action -> action.execute(registry)).reduce(Boolean::logicalOr).get();
     }
 
     @Override

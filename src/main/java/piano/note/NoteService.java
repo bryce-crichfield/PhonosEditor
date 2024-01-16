@@ -20,6 +20,15 @@ public class NoteService {
         this.noteSelection = new NoteSelection();
     }
 
+    public void execute(NoteCommand action) {
+        if (!action.execute(registry)) {
+            return;
+        }
+
+        undoStack.push(action);
+        redoStack.clear();
+    }
+
     public void redo() {
         if (redoStack.isEmpty())
             return;
@@ -33,30 +42,13 @@ public class NoteService {
         if (undoStack.isEmpty())
             return;
 
-
         NoteCommand action = undoStack.pop();
         action.undo(registry);
         redoStack.push(action);
     }
 
-    public Collection<NoteEntry> query(Predicate<NoteEntry> predicate) {
-        List<NoteEntry> result = new ArrayList<>();
-        for (NoteEntry entry : registry.getEntries()) {
-            if (predicate.test(entry)) {
-                result.add(entry);
-            }
-        }
-        return result;
-    }
-
     public void create(NoteData data) {
         execute(new CreateNoteCommand(data));
-    }
-
-    public void execute(NoteCommand action) {
-        action.execute(registry);
-        undoStack.push(action);
-        redoStack.clear();
     }
 
     public void create(Collection<NoteData> data) {
@@ -66,16 +58,22 @@ public class NoteService {
     }
 
     public void modify(NoteEntry entry, Function<NoteData, NoteData> update) {
-         (noteSelection.isEmpty() ? Stream.of(entry) : noteSelection.stream())
-                .flatMap(e -> e.getGroup().map(group -> group.stream()).orElse(Stream.of(e)))
-                .distinct()
-                .map(e -> new ModifyNoteCommand(e, update.apply(e.get())))
-                .collect(Collectors.toSet())
-                .forEach(this::execute);
+         multicast(entry, e -> new ModifyNoteCommand(e, update.apply(e.get())));
     }
 
     public void delete(NoteEntry entry) {
-        execute(new DeleteNoteCommand(entry));
+        multicast(entry, DeleteNoteCommand::new);
+    }
+
+    private void multicast(NoteEntry entry, Function<NoteEntry, NoteCommand> factory) {
+        Set<NoteCommand> commands = (noteSelection.isEmpty() ? Stream.of(entry) : noteSelection.stream())
+                .flatMap(e -> e.getGroup().map(group -> group.stream()).orElse(Stream.of(e)))
+                .distinct()
+                .map(e -> factory.apply(e))
+                .collect(Collectors.toSet());
+
+        GroupNoteCommand command = new GroupNoteCommand(commands);
+        execute(command);
     }
 
     public NoteSelection getSelection() {

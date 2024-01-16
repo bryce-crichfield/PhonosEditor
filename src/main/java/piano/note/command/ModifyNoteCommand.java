@@ -17,13 +17,14 @@ public class ModifyNoteCommand implements NoteCommand {
     }
 
     @Override
-    public void execute(NoteRegistry registry) {
+    public boolean execute(NoteRegistry registry) {
         if (newData.equals(entry.get())) {
-            return;
+            return false;
         }
 
         oldData = Optional.of(entry.get());
         entry.set(newData);
+        return true;
     }
 
     @Override

@@ -15,10 +15,12 @@ public class DeleteNoteCommand implements NoteCommand {
     }
 
     @Override
-    public void execute(NoteRegistry registry) {
+    public boolean execute(NoteRegistry registry) {
         undo(registry);
         registry.unregister(entry);
         memo = Optional.of(entry.get());
+
+        return true;
     }
 
     @Override

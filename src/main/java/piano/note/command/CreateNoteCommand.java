@@ -21,13 +21,15 @@ public class CreateNoteCommand implements NoteCommand {
     }
 
     @Override
-    public void execute(NoteRegistry registry) {
+    public boolean execute(NoteRegistry registry) {
         undo(registry);
 
         for (NoteData data : this.data) {
             NoteEntry entry = registry.register(data);
             memo.add(entry);
         }
+
+        return true;
     }
 
     @Override
