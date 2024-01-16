@@ -28,4 +28,12 @@ public class GridInfo {
     public Rectangle createRectangle() {
         return new Rectangle(0, 0, (int) cellWidth * columns, (int) cellHeight * rows);
     }
+
+    public double getTotalWidth() {
+        return columns * cellWidth;
+    }
+
+    public double getTotalHeight() {
+        return rows * cellHeight;
+    }
 }

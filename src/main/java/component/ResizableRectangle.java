@@ -29,7 +29,7 @@ public class ResizableRectangle extends Rectangle {
         handles.add(this);
     }
 
-    private void makeCenterHandle(Group group, boolean horizontal, boolean vertical) {
+    protected void makeCenterHandle(Group group, boolean horizontal, boolean vertical) {
         Rectangle centerHandle = new Rectangle();
         centerHandle.xProperty().bind(super.xProperty().add(HANDLE_MIN_WIDTH));
         centerHandle.yProperty().bind(super.yProperty().add(HANDLE_MIN_HEIGHT));
@@ -77,7 +77,7 @@ public class ResizableRectangle extends Rectangle {
         });
     }
 
-    private void makeTopHandle(Group group) {
+    protected void makeTopHandle(Group group) {
         Rectangle topHandle = new Rectangle();
         topHandle.xProperty().bind(super.xProperty().add(10));
         topHandle.yProperty().bind(super.yProperty());
@@ -125,7 +125,7 @@ public class ResizableRectangle extends Rectangle {
         }
     }
 
-    private void makeBottomHandle(Group group) {
+    protected void makeBottomHandle(Group group) {
         Rectangle bottomHandle = new Rectangle();
         bottomHandle.xProperty().bind(super.xProperty().add(10));
         bottomHandle.yProperty().bind(super.yProperty().add(super.heightProperty().subtract(10)));
@@ -162,7 +162,7 @@ public class ResizableRectangle extends Rectangle {
         });
     }
 
-    private void makeLeftHandle(Group group) {
+    protected void makeLeftHandle(Group group) {
         Rectangle leftHandle = new Rectangle();
         leftHandle.xProperty().bind(super.xProperty());
         leftHandle.yProperty().bind(super.yProperty());
@@ -203,7 +203,7 @@ public class ResizableRectangle extends Rectangle {
         });
     }
 
-    private void makeRightHandle(Group group) {
+    protected void makeRightHandle(Group group) {
         Rectangle rightHandle = new Rectangle();
         rightHandle.xProperty().bind(super.xProperty().add(super.widthProperty()));
         rightHandle.yProperty().bind(super.yProperty());

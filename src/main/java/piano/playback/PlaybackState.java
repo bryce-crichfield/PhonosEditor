@@ -27,4 +27,8 @@ public class PlaybackState {
         this.tempo = tempo;
         this.isPlaying = isPlaying;
     }
+
+    public double getDuration() {
+        return tail - head;
+    }
 }

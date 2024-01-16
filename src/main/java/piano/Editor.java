@@ -50,7 +50,6 @@ public class Editor {
     public AnchorPane root;
     public VBox toolBarRoot;
     public BorderPane rootBorderPane;
-    public ComboBox<String> comboZoomLevel;
     // Non-FXML (Note editor)
     private SplitPane splitPane;
     private NoteMidiEditor noteMidiEditor;
@@ -283,27 +282,7 @@ public class Editor {
             rootBorderPane.setCenter(splitPane);
         }
 
-        // Add options to Zoom Level Combo Box -------------------------------------------------------------------------
-        ChangeListener<String> comboZoomLevelListener = (observable, oldValue, newValue) -> {
-            String zoomLevel = comboZoomLevel.getSelectionModel().getSelectedItem().toString();
-            double percentage = Double.parseDouble(zoomLevel.replaceAll("[^0-9]", "")) / 100;
-            double cellWidth = GridInfo.MAX_CELL_WIDTH * percentage;
-            double cellHeight = GridInfo.MAX_CELL_HEIGHT * percentage;
-            var gi = context.getViewSettings().gridInfoProperty().get();
-            var newGi = gi.withCellWidth(cellWidth).withCellHeight(cellHeight);
-            context.getViewSettings().setGridInfo(newGi);
-            horizontalScrollBar.scrollBy(0);
-            verticalScrollBar.scrollBy(0);
-        };
-
-        {
-            comboZoomLevel.valueProperty().addListener(comboZoomLevelListener);
-            comboZoomLevel.getItems().addAll("50%", "75%", "100%", "125%", "150%", "200%");
-        }
-
         context.getPlayback().play();
-        comboZoomLevel.setValue("100%");
-
         tools.selectToggle(toggleToolPlayhead);
     }
 
@@ -317,19 +296,5 @@ public class Editor {
 
     public void playlistStop(ActionEvent actionEvent) {
         context.getPlayback().stop();
-    }
-
-    public void viewSettingsDialog(ActionEvent actionEvent) throws IOException {
-        // Load the ViewSettings.fxml file and create a new stage for the popup dialog
-
-        FXMLLoader loader = new FXMLLoader();
-        loader.setController(new ViewSettingsController(context));
-        loader.setLocation(Editor.class.getResource("/ViewSettings.fxml"));
-        Parent root = loader.load();
-
-        Scene scene = new Scene(root);
-        Stage stage = new Stage();
-        stage.setScene(scene);
-        stage.show();
     }
 }

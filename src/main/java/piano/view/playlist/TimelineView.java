@@ -1,21 +1,19 @@
 package piano.view.playlist;
 
 import component.ScrollBar;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import piano.EditorContext;
-import piano.model.NoteData;
-import piano.model.NoteEntry;
-
-import java.util.HashMap;
-import java.util.Map;
+import piano.Util;
+import piano.util.GridMath;
 
 
 public class TimelineView extends AnchorPane {
@@ -23,25 +21,6 @@ public class TimelineView extends AnchorPane {
     Rectangle background;
     Camera camera;
     Group world;
-
-    class TimelineMarker extends StackPane {
-        Text text;
-        int columnIndex;
-
-        TimelineMarker(int columnIndex, EditorContext context) {
-            this.columnIndex = columnIndex;
-
-            text = new Text(Integer.toString(columnIndex + 1));
-            this.getChildren().addAll(text);
-
-            // whenever gridInfo changes, repostion the marker
-            context.getViewSettings().gridInfoProperty().addListener((observable, oldValue, newValue) -> {
-                this.setTranslateX(columnIndex * 16 * newValue.getCellWidth());
-                this.setTranslateY(0);
-            });
-        }
-    }
-
 
     public TimelineView(EditorContext context) {
         this.context = context;
@@ -69,7 +48,6 @@ public class TimelineView extends AnchorPane {
 
         // 125 is accounting for the width of the piano roll (not dynamic)
         scene.layoutXProperty().bind(this.layoutXProperty().add(125));
-//        scene.layoutYProperty().bind(this.layoutYProperty());
         scene.widthProperty().bind(this.widthProperty().subtract(125));
         scene.heightProperty().bind(this.heightProperty());
 
@@ -86,8 +64,166 @@ public class TimelineView extends AnchorPane {
             TimelineMarker marker = new TimelineMarker(i / 16, context);
             marker.setTranslateX(i * context.getViewSettings().getGridInfo().getCellWidth());
             marker.setTranslateY(0);
-            marker.setTranslateZ(0);
+            marker.setTranslateZ(10);
             world.getChildren().add(marker);
+        }
+
+
+        PlayheadHandle playheadHandle = new PlayheadHandle(context);
+        playheadHandle.heightProperty().bind(this.heightProperty());
+        world.getChildren().add(playheadHandle);
+    }
+
+    private static class PlayheadHandle extends Rectangle {
+        private static final int HANDLE_WIDTH = 15;
+        private final EditorContext context;
+        private StringProperty currentHandle = new SimpleStringProperty("None");
+        private boolean isDragging = false;
+
+        private double unsnappedX = 0;
+        private double unsnappedWidth = 0;
+
+        private double lastX = 0;
+        private double deltaX = 0;
+        public PlayheadHandle(EditorContext context) {
+
+            this.setFill(Color.CYAN.deriveColor(1, 1, 1, 0.75));
+            this.setTranslateZ(0);
+            this.setOpacity(0.5);
+
+            this.context = context;
+
+            this.setOnMouseMoved((event) -> {
+                if (this.isDragging) {
+                    return;
+                }
+
+                chooseHandle(event);
+            });
+
+            this.setOnMousePressed((event) -> {
+                this.isDragging = true;
+                unsnappedX = getX();
+                unsnappedWidth = getWidth();
+                lastX = event.getX();
+                chooseHandle(event);
+            });
+
+            this.setOnMouseDragged(this::onMouseDragged);
+
+            this.setOnMouseReleased((event) -> {
+                this.isDragging = false;
+                releaseHandle(event);
+            });
+
+            this.setWidth(100);
+
+            currentHandle.addListener((observable, oldVal, newVal) -> {
+                switch (newVal) {
+                    case "Left":
+                        setCursor(Cursor.W_RESIZE);
+                        break;
+                    case "Center":
+                        setCursor(Cursor.MOVE);
+                        break;
+                    case "Right":
+                        setCursor(Cursor.E_RESIZE);
+                        break;
+                    default:
+                        setCursor(Cursor.DEFAULT);
+                        break;
+                }
+            });
+
+            context.getViewSettings().gridInfoProperty().addListener((observable, oldValue, newValue) -> {
+                var gi = newValue;
+                var playback = context.getPlayback().getState();
+                double x = playback.getHead() * gi.getCellWidth();
+                double width = (playback.getTail() - playback.getHead()) * gi.getCellWidth();
+                setX(x);
+                setWidth(width);
+            });
+        }
+
+        private void onMouseDragged(MouseEvent event) {
+            double nowX = event.getX();
+            deltaX = nowX - lastX;
+            lastX = nowX;
+
+            switch (currentHandle.get()) {
+                case "Left":
+                    onLeftHandleDragged(event);
+                    break;
+                case "Center":
+                    onCenterHandleDragged(event);
+                    break;
+                case "Right":
+                    onRightHandleDragged(event);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void onLeftHandleDragged(MouseEvent event) {
+            var gi = context.getViewSettings().getGridInfo();
+            var playback = context.getPlayback();
+
+            double x = unsnappedX + deltaX;
+            x = GridMath.snapToGridX(gi, x);
+            x = Util.clamp(x, 0, gi.getTotalWidth() - gi.getCellWidth());
+            unsnappedX += deltaX;
+
+            double width = unsnappedWidth - deltaX;
+            width = GridMath.snapToGridX(gi, width) + gi.getCellWidth();
+            width = Util.clamp(width, gi.getCellWidth(), gi.getTotalWidth() - x);
+            unsnappedWidth -= deltaX;
+
+            double head = Math.floor(x / gi.getCellWidth());
+            double tail = Math.floor((x + width) / gi.getCellWidth());
+
+            setX(x);
+            setWidth(width);
+            playback.setHead(head);
+            playback.setTail(tail);
+        }
+
+        private void onCenterHandleDragged(MouseEvent event) {
+            var gi = context.getViewSettings().getGridInfo();
+            var playback = context.getPlayback();
+            var x = unsnappedX + deltaX;
+            x = GridMath.snapToGridX(gi, x);
+            x = Util.clamp(x, 0, gi.getTotalWidth() - getWidth());
+            unsnappedX += deltaX;
+            setX(x);
+            playback.setHead(Math.floor(x / gi.getCellWidth()));
+            playback.setTail(Math.floor((x + getWidth()) / gi.getCellWidth()));
+        }
+
+        private void onRightHandleDragged(MouseEvent event) {
+            var gi = context.getViewSettings().getGridInfo();
+            var playback = context.getPlayback();
+            double width = unsnappedWidth + deltaX;
+            width = GridMath.snapToGridX(gi, width);
+            width = Util.clamp(width, gi.getCellWidth(), gi.getTotalWidth() - getX());
+            unsnappedWidth += deltaX;
+            setWidth(width);
+            playback.setTail(Math.floor((unsnappedX + width) / gi.getCellWidth()));
+        }
+
+
+        private void chooseHandle(MouseEvent event) {
+            if (event.getX() < getX() + HANDLE_WIDTH) {
+                currentHandle.set("Left");
+            } else if (event.getX() > getX() + getWidth() - HANDLE_WIDTH) {
+                currentHandle.set("Right");
+            } else {
+                currentHandle.set("Center");
+            }
+        }
+
+        private void releaseHandle(MouseEvent event) {
+            currentHandle.set("None");
         }
     }
 
@@ -97,5 +233,23 @@ public class TimelineView extends AnchorPane {
 
     public void scrollX(double v) {
         world.setTranslateX(v);
+    }
+
+    class TimelineMarker extends StackPane {
+        Text text;
+        int columnIndex;
+
+        TimelineMarker(int columnIndex, EditorContext context) {
+            this.columnIndex = columnIndex;
+
+            text = new Text(Integer.toString(columnIndex + 1));
+            this.getChildren().addAll(text);
+
+            // whenever gridInfo changes, repostion the marker
+            context.getViewSettings().gridInfoProperty().addListener((observable, oldValue, newValue) -> {
+                this.setTranslateX(columnIndex * 16 * newValue.getCellWidth());
+                this.setTranslateY(0);
+            });
+        }
     }
 }

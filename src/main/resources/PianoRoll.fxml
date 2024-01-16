@@ -35,20 +35,18 @@
                             <FontIcon iconLiteral="mdi-box-cutter"/>
                         </graphic>
                     </ToggleButton>
-
                     <Separator orientation="VERTICAL"/>
-
-                    <ComboBox fx:id="comboZoomLevel">
-                    </ComboBox>
-
+                    <Button>
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-wrench"/>
+                        </graphic>
+                    </Button>
                     <Separator orientation="VERTICAL"/>
-
                     <Button onAction="#playlistPause">
                         <graphic>
                             <FontIcon iconLiteral="mdi-pause"/>
                         </graphic>
                     </Button>
-
                     <Button onAction="#playlistPlay">
                         <graphic>
                             <FontIcon iconLiteral="mdi-play"/>
@@ -57,14 +55,6 @@
                     <Button onAction="#playlistStop">
                         <graphic>
                             <FontIcon iconLiteral="mdi-stop"/>
-                        </graphic>
-                    </Button>
-
-                    <Separator orientation="VERTICAL"/>
-
-                    <Button onAction="#viewSettingsDialog">
-                        <graphic>
-                            <FontIcon iconLiteral="mdi-settings"/>
                         </graphic>
                     </Button>
                 </ToolBar>
