@@ -11,7 +11,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -20,6 +19,7 @@ import piano.MidiEditorContext;
 import piano.model.GridInfo;
 import piano.model.NoteData;
 import piano.model.NoteEntry;
+import piano.view.settings.Theme;
 import piano.view.settings.ViewSettingsController;
 
 import java.io.IOException;
@@ -45,16 +45,15 @@ public class NoteParameterEditor extends AnchorPane {
         setHeight(100);
         var gridInfo = context.getViewSettings().gridInfoProperty();
         background = gridInfo.get().createRectangle();
-        background.setFill(createGridLineFill());
+        background.setFill(Theme.BACKGROUND);
         gridInfo.addListener((observable, oldValue, newValue) -> {
             background.setWidth(newValue.getColumns() * newValue.getCellWidth());
             background.setHeight(newValue.getRows() * newValue.getCellHeight());
-            background.setFill(createGridLineFill());
         });
         background.setTranslateZ(0);
 
         // Configure the world and the scene
-        world = new Group(background);
+        world = new Group(background, createGrid());
 
 
         HBox hbox = new HBox();
@@ -119,23 +118,33 @@ public class NoteParameterEditor extends AnchorPane {
         }
     }
 
-    public Paint createGridLineFill() {
-        double cellWidth = context.getViewSettings().getGridInfo().getCellWidth();
-        double backgroundWidth = context.getViewSettings().getGridInfo().getColumns() * cellWidth;
-        double backgroundHeight = this.getHeight();
+    public Group createGrid() {
+        Group grid = new Group();
 
-        var canvas = new javafx.scene.canvas.Canvas(backgroundWidth, backgroundHeight);
-        var gc = canvas.getGraphicsContext2D();
-        gc.setFill(Color.DARKGRAY.darker().darker().darker().darker().darker());
-        gc.fillRect(0, 0, backgroundWidth, backgroundHeight);
-        gc.setStroke(Color.DARKGRAY.darker().darker().darker().darker());
+        var gi = context.getViewSettings().gridInfoProperty();
 
-        for (int i = 0; i < backgroundWidth / cellWidth; i++) {
-            gc.strokeLine(i * cellWidth, 0, i * cellWidth, backgroundHeight);
+        double rows = gi.get().getRows();
+        double columns = gi.get().getColumns();
+
+        // Draw the vertical lines
+        Color vertLineLight = Theme.BACKGROUND.brighter();
+        Color vertLineDark = Theme.BACKGROUND.darker().darker();
+
+        for (int col = 0; col < columns; col++) {
+            Rectangle rect = new Rectangle();
+            int finalCol = col;
+            gi.addListener((observable, oldValue, newValue) -> {
+                rect.setX(newValue.getCellWidth() * finalCol);
+                rect.setY(0);
+                rect.setWidth(1);
+                rect.setHeight(newValue.getRows() * newValue.getCellHeight());
+            });
+            rect.setDisable(true);
+            rect.setFill(col % 4 == 0 ? vertLineLight : vertLineDark);
+            grid.getChildren().add(rect);
         }
 
-        var image = canvas.snapshot(null, null);
-        return new javafx.scene.paint.ImagePattern(image);
+        return grid;
     }
 
     private Pane makeViewPropsPanel() {
@@ -148,23 +157,6 @@ public class NoteParameterEditor extends AnchorPane {
         vboxProps.setAlignment(Pos.CENTER);
 
         // Add options to Zoom Level Combo Box -------------------------------------------------------------------------
-        ComboBox<String> comboZoomLevel = new ComboBox<>();
-        comboZoomLevel.setPrefWidth(100);
-        comboZoomLevel.getItems().addAll("50%", "75%", "100%", "125%", "150%", "200%");
-        comboZoomLevel.setValue("100%");
-        ChangeListener<String> comboZoomLevelListener = (observable, oldValue, newValue) -> {
-            String zoomLevel = comboZoomLevel.getSelectionModel().getSelectedItem();
-            double percentage = Double.parseDouble(zoomLevel.replaceAll("[^0-9]", "")) / 100;
-            double cellWidth = GridInfo.MAX_CELL_WIDTH * percentage;
-            double cellHeight = GridInfo.MAX_CELL_HEIGHT * percentage;
-            var gi = context.getViewSettings().gridInfoProperty().get();
-            var newGi = gi.withCellWidth(cellWidth).withCellHeight(cellHeight);
-            context.getViewSettings().setGridInfo(newGi);
-            // TODO: We need to make sure we trigger a scroll in the editor so we maintain the relative position
-        };
-        comboZoomLevel.valueProperty().addListener(comboZoomLevelListener);
-        vboxProps.getChildren().add(comboZoomLevel);
-
         ComboBox<String> parameterSelect = new ComboBox<>();
         parameterSelect.setPrefWidth(100);
         parameterSelect.getItems().addAll("Velocity", "Pitch", "Duration");

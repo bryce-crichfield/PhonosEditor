@@ -149,11 +149,54 @@ public class MidiEditor {
 
         // Initialize scrolling ---------------------------------------------------------------------------------------
         noteMidiEditor.setOnScroll((EventHandler<? super ScrollEvent>) event -> {
-            if (!event.isAltDown() && event.isControlDown()) {
-                horizontalScrollBar.scrollBy(-event.getDeltaY());
-            } else {
-                verticalScrollBar.scrollBy(-event.getDeltaY());
+            // None  -> Vertical scroll
+            // Shift -> Horizontal scroll
+            // Ctrl -> Zoom Both (Vertical and Horizontal)
+            // Ctrl + Shift -> Zoom Horizontal
+            // Ctrl + Alt -> Zoom Vertical
+
+            // Sometimes the delta is x, and sometimes it is y, so we need to check both, and just use whichever one is
+            // not 0
+            final double delta = event.getDeltaX() == 0 ? event.getDeltaY() : event.getDeltaX();
+            Runnable zoomVertical = () -> {
+                double percentage = delta / 1000;
+                double newCellHeight = context.getViewSettings().getGridInfo().getCellHeight() * (1 + percentage);
+                var gi = context.getViewSettings().getGridInfo();
+                var newGi = gi.withCellHeight(newCellHeight);
+                context.getViewSettings().setGridInfo(newGi);
+            };
+
+            Runnable zoomHorizontal = () -> {
+                double percentage = delta / 1000;
+                double newCellWidth = context.getViewSettings().getGridInfo().getCellWidth() * (1 + percentage);
+                var gi = context.getViewSettings().getGridInfo();
+                var newGi = gi.withCellWidth(newCellWidth);
+                context.getViewSettings().setGridInfo(newGi);
+            };
+
+
+            if (event.isControlDown() && event.isShiftDown()) {
+                zoomHorizontal.run();
+                return;
             }
+
+            if (event.isControlDown() && event.isAltDown()) {
+                zoomVertical.run();
+                return;
+            }
+
+            if (event.isControlDown()) {
+                zoomVertical.run();
+                zoomHorizontal.run();
+                return;
+            }
+
+            if (event.isShiftDown()) {
+                horizontalScrollBar.scrollBy(-event.getDeltaY());
+                return;
+            }
+
+            verticalScrollBar.scrollBy(-event.getDeltaY());
         });
 
         // When dragging the mouse, scroll the screen if the mouse is near the edge of the screen ----------------------
@@ -194,6 +237,8 @@ public class MidiEditor {
                 }
             }
         });
+
+
 
         root.setOnKeyPressed(event -> {
             if (event.isControlDown() && event.getCode().toString().equals("Z")) {
