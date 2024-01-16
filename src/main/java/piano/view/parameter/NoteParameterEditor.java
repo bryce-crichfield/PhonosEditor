@@ -1,6 +1,5 @@
 package piano.view.parameter;
 
-import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.*;
@@ -16,9 +15,8 @@ import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
 import piano.MidiEditor;
 import piano.MidiEditorContext;
-import piano.model.GridInfo;
-import piano.model.NoteData;
-import piano.model.NoteEntry;
+import piano.model.note.NoteData;
+import piano.model.note.NoteEntry;
 import piano.view.settings.Theme;
 import piano.view.settings.ViewSettingsController;
 

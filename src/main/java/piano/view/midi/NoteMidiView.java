@@ -9,8 +9,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import piano.MidiEditorContext;
 import piano.model.GridInfo;
-import piano.model.NoteData;
-import piano.model.NoteEntry;
+import piano.model.note.NoteData;
+import piano.model.note.NoteEntry;
 import piano.tool.EditorTool;
 import piano.tool.PencilTool;
 
@@ -42,7 +42,6 @@ public class NoteMidiView extends StackPane {
             double largerDimension = Math.min(grid.getCellWidth(), grid.getCellHeight());
             label.setFont(label.getFont().font(largerDimension * 0.5));
         }
-
 
         rectangle = new Rectangle();
         rectangle.setFill(Color.DARKGREEN);

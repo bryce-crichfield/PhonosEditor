@@ -1,8 +1,9 @@
-package piano.model;
+package piano.model.note;
 
 import lombok.Getter;
 import lombok.With;
 import piano.Util;
+import piano.model.GridInfo;
 import piano.util.GridMath;
 
 @With

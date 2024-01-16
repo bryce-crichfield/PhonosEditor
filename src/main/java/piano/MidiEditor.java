@@ -17,9 +17,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import piano.control.BaseNoteService;
 import piano.model.GridInfo;
-import piano.model.NoteData;
-import piano.model.NoteEntry;
-import piano.model.NoteRegistry;
+import piano.model.note.NoteData;
+import piano.model.note.NoteEntry;
+import piano.model.note.NoteGroup;
+import piano.model.note.NoteRegistry;
 import piano.playback.BasePlaybackService;
 import piano.playback.PlaybackState;
 import piano.tool.EditorTool;
@@ -273,6 +274,16 @@ public class MidiEditor {
                 }
 
                 context.getNotes().createMany(newNotes);
+            }
+
+            if (event.isControlDown() && event.getCode().toString().equals("G")) {
+                System.out.println("Grouping n notes: " + context.getNotes().getSelectedEntries().size());
+                Collection<NoteEntry> selected = context.getNotes().getSelectedEntries();
+                // create group
+                NoteGroup group = new NoteGroup();
+                for (NoteEntry entry : selected) {
+                    group.add(entry);
+                }
             }
         });
 

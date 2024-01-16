@@ -4,8 +4,8 @@ import javafx.scene.Cursor;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import piano.MidiEditorContext;
-import piano.model.NoteEntry;
-import piano.model.NotePitch;
+import piano.model.note.NoteEntry;
+import piano.model.note.NotePitch;
 
 
 abstract class NoteMidiHandle {

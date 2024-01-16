@@ -1,4 +1,4 @@
-package piano.model;
+package piano.model.note;
 
 import lombok.Data;
 

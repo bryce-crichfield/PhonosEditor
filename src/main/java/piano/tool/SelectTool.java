@@ -8,8 +8,8 @@ import javafx.scene.input.PickResult;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import piano.MidiEditorContext;
-import piano.model.NoteData;
-import piano.model.NoteEntry;
+import piano.model.note.NoteData;
+import piano.model.note.NoteEntry;
 import piano.view.midi.NoteMidiEditor;
 
 import java.util.Collection;

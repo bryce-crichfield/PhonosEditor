@@ -1,21 +1,20 @@
-package piano.model;
+package piano.model.note;
 
 import javafx.collections.FXCollections;
 import piano.control.NoteObserver;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class NoteRegistry {
-    private final List<NoteEntry> notes;
+    private final Set<NoteEntry> notes;
     private final List<Consumer<NoteEntry>> onAddedCallbacks;
     private final List<Consumer<NoteEntry>> onRemovedCallbacks;
     private final List<NoteObserver> onUpdatedCallbacks;
 
     public NoteRegistry() {
-        notes = new LinkedList<>();
+        notes = new HashSet<>();
+
         onAddedCallbacks = FXCollections.observableArrayList();
         onRemovedCallbacks = FXCollections.observableArrayList();
         onUpdatedCallbacks = FXCollections.observableArrayList();

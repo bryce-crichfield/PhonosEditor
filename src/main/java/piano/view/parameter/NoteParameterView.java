@@ -7,7 +7,7 @@ import javafx.scene.shape.Rectangle;
 import piano.MidiEditorContext;
 import piano.Util;
 import piano.control.NoteService;
-import piano.model.NoteEntry;
+import piano.model.note.NoteEntry;
 
 import java.util.concurrent.atomic.AtomicReference;
 

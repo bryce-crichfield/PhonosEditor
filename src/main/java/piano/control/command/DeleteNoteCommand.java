@@ -1,16 +1,16 @@
-package piano.control;
+package piano.control.command;
 
-import piano.model.NoteData;
-import piano.model.NoteEntry;
-import piano.model.NoteRegistry;
+import piano.model.note.NoteData;
+import piano.model.note.NoteEntry;
+import piano.model.note.NoteRegistry;
 
 import java.util.Optional;
 
-public class DeleteNoteAction implements NoteAction {
+public class DeleteNoteCommand implements NoteCommand {
     private NoteEntry entry;
     private Optional<NoteData> memo = Optional.empty();
 
-    public DeleteNoteAction(NoteEntry entry) {
+    public DeleteNoteCommand(NoteEntry entry) {
         this.entry = entry;
     }
 
