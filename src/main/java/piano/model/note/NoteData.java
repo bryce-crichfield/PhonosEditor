@@ -13,7 +13,6 @@ public class NoteData {
     private int start;
     private int end;
     private int velocity;
-
     public NoteData(NotePitch pitch, int start, int end, int velocity) {
         // Enforce invariants
         start = Math.max(start, 0);
