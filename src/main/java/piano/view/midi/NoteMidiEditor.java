@@ -30,17 +30,16 @@ public class NoteMidiEditor extends AnchorPane {
         // Create the background grid surface --------------------------------------------------------------------------
         var gridInfo = context.getViewSettings().gridInfoProperty();
         background = gridInfo.get().createRectangle();
-        background.setFill(createGridLineFill());
+
         gridInfo.addListener((observable, oldValue, newValue) -> {
             var newRect = newValue.createRectangle();
             background.setWidth(newRect.getWidth());
             background.setHeight(newRect.getHeight());
-            background.setFill(createGridLineFill());
         });
         background.setTranslateZ(0);
 
         // Add the surface to the world and configure the scene --------------------------------------------------------
-        world = new Group(background);
+        world = new Group(background, createGrid());
 
         Camera camera = new ParallelCamera();
         camera.setFarClip(10000.0);
@@ -80,72 +79,61 @@ public class NoteMidiEditor extends AnchorPane {
         PlaybackView playbackView = new PlaybackView(context, world, background.heightProperty(), currentTool);
     }
 
-    public ImagePattern createGridLineFill() {
-        // TODO: Doesn't support large grid sizes
-        // TODO: Please rewrite me before I am lost forever :((((
-        GridInfo gridInfo = context.getViewSettings().getGridInfo();
-        double width = gridInfo.getColumns() * gridInfo.getCellWidth();
-        double height = gridInfo.getRows() * gridInfo.getCellHeight();
-        double gridWidth = gridInfo.getCellWidth();
-        double gridHeight = gridInfo.getCellHeight();
-        double rows = gridInfo.getRows();
-        double columns = gridInfo.getColumns();
+    public Group createGrid() {
+        Group grid = new Group();
+        var gi = context.getViewSettings().gridInfoProperty();
+        double rows = gi.get().getRows();
+        double columns = gi.get().getColumns();
 
-        Canvas canvas = new Canvas(width, height);
-        var gc = canvas.getGraphicsContext2D();
-
-        // Draw the background every 16 columns alternating between dark and light
+        // Draw the background using rectangles
         boolean dark = false;
-        for (int col = 0; col < columns; col += 16) {
-            if (dark) {
-                gc.setFill(Theme.BACKGROUND);
-            } else {
-                gc.setFill(Theme.BACKGROUND.darker());
-            }
-            gc.fillRect(col * gridWidth, 0, 16 * gridWidth, height);
-            dark = !dark;
-        }
-
-        // Darken the black keys
-        boolean[] keyMask = {true, false, true, false, true, true, false, true, false, true, false, true, true};
-
-        Color darkerFill = Theme.BACKGROUND.deriveColor(1, 1, 1, 0.1);
-        gc.setFill(darkerFill);
-        int keyIndex = 12;
-        for (int row = (int) (rows - 1); row >= 0; row--) {
-            int y = (int) (row * gridHeight);
-            if (keyMask[keyIndex]) {
-                gc.fillRect(0, y, width, gridHeight);
-            }
-
-            if (keyIndex == 0) {
-                keyIndex = 11;
-            } else {
-                keyIndex--;
-            }
+        for (int col = 0; col < columns; col += 16, dark = !dark) {
+            Rectangle rect = new Rectangle();
+            int finalCol = col;
+            gi.addListener((observable, oldValue, newValue) -> {
+                rect.setX(newValue.getCellWidth() * finalCol);
+                rect.setY(0);
+                rect.setWidth(newValue.getColumns() * newValue.getCellWidth());
+                rect.setHeight(newValue.getRows() * newValue.getCellHeight());
+            });
+            rect.setDisable(true);
+            rect.setFill(dark ? Theme.BACKGROUND : Theme.BACKGROUND.darker());
+            grid.getChildren().add(rect);
         }
 
         // Draw the vertical lines
         Color vertLineLight = Theme.BACKGROUND.brighter();
         Color vertLineDark = Theme.BACKGROUND.darker().darker();
         for (int col = 0; col < columns; col++) {
-            if (col % 4 == 0) {
-                gc.setStroke(vertLineLight);
-            } else {
-                gc.setStroke(vertLineDark);
-            }
-            gc.strokeLine(col * gridWidth, 0, col * gridWidth, height);
+            Rectangle rect = new Rectangle();
+            int finalCol = col;
+            gi.addListener((observable, oldValue, newValue) -> {
+                rect.setX(newValue.getCellWidth() * finalCol);
+                rect.setY(0);
+                rect.setWidth(1);
+                rect.setHeight(newValue.getRows() * newValue.getCellHeight());
+            });
+            rect.setDisable(true);
+            rect.setFill(col % 4 == 0 ? vertLineLight : vertLineDark);
+            grid.getChildren().add(rect);
         }
 
         // Draw the horizontal lines
         for (int row = 0; row < rows; row++) {
-            gc.strokeLine(0, row * gridHeight, width, row * gridHeight);
+            Rectangle rect = new Rectangle();
+            int finalRow = row;
+            gi.addListener((observable, oldValue, newValue) -> {
+                rect.setX(0);
+                rect.setY(newValue.getCellHeight() * finalRow);
+                rect.setWidth(newValue.getColumns() * newValue.getCellWidth());
+                rect.setHeight(1);
+            });
+            rect.setDisable(true);
+            rect.setFill(Theme.BACKGROUND.darker().darker());
+            grid.getChildren().add(rect);
         }
-
-        Image image = canvas.snapshot(new SnapshotParameters(), null);
-        return new ImagePattern(image, 0, 0, width, height, false);
+        return grid;
     }
-
 
     public Rectangle getBackgroundSurface() {
         return background;

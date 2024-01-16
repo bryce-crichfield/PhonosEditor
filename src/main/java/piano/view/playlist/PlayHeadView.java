@@ -12,7 +12,7 @@ public class PlayHeadView extends Rectangle {
         this.setFill(javafx.scene.paint.Color.CYAN);
         this.setStroke(javafx.scene.paint.Color.WHITE);
         this.setOpacity(0.5);
-        this.setWidth(10);
+        this.setWidth(3);
         this.heightProperty().bind(height);
 
         context.getPlayback().observe((old, now) -> {

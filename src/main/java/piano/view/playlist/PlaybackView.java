@@ -22,7 +22,7 @@ public class PlaybackView {
 
         playHeadView = new PlayHeadView(heightProp, context);
         playHeadView.setManaged(false);
-//        group.getChildren().add(playHeadView);
+        group.getChildren().add(playHeadView);
 
         rectangle = new Rectangle();
         rectangle.setFill(Color.CYAN.deriveColor(1, 1, 1, 0.15));
