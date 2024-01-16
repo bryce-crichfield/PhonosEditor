@@ -37,8 +37,10 @@ public class NoteMidiView extends StackPane {
 
         label = new Text("");
         {
-            double cellHeight = context.getViewSettings().gridInfoProperty().get().getCellHeight();
-            label.setFont(label.getFont().font(cellHeight * 0.5));
+            // The font height should be 50% of the limiting cell dimension
+            var grid = context.getViewSettings().gridInfoProperty().get();
+            double largerDimension = Math.min(grid.getCellWidth(), grid.getCellHeight());
+            label.setFont(label.getFont().font(largerDimension * 0.5));
         }
 
 
@@ -68,9 +70,9 @@ public class NoteMidiView extends StackPane {
             double height = grid.getCellHeight();
             rectangle.setHeight(height);
 
-            // The font height should be 80% of the cell height
-            double cellHeight = context.getViewSettings().gridInfoProperty().get().getCellHeight();
-            label.setFont(label.getFont().font(cellHeight * 0.5));
+            // The font height should be 50% of the limiting cell dimension
+            double largerDimension = Math.min(grid.getCellWidth(), grid.getCellHeight());
+            label.setFont(label.getFont().font(largerDimension * 0.5));
         });
 
         // When the tool changes, we need to update the controller

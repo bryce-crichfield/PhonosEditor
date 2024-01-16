@@ -3,7 +3,7 @@ package piano.view.settings;
 import javafx.scene.paint.Color;
 
 public class Theme {
-    public static final Color BACKGROUND = Color.web("#282828");
+    public static final Color BACKGROUND = Color.web("#282828").darker();
     public static final Color FOREGROUND = Color.web("#ebdbb2");
     public static final Color COMMENT = Color.web("#928374");
     public static final Color RED = Color.web("#cc241d");
