@@ -60,14 +60,15 @@ public class NoteService {
     }
 
     private void multicast(NoteEntry entry, Function<NoteEntry, NoteCommand> factory) {
+        // For either the selected notes, or the single note, create a command that modifies those notes and
+        // all notes in their groups.
+
         Set<NoteCommand> commands = (noteSelection.isEmpty() ? Stream.of(entry) : noteSelection.stream())
                 .flatMap(e -> e.getGroup().map(group -> group.stream()).orElse(Stream.of(e)))
                 .distinct()
                 .map(e -> factory.apply(e))
                 .collect(Collectors.toSet());
-
-        GroupNoteCommand command = new GroupNoteCommand(commands);
-        execute(command);
+        execute(new GroupNoteCommand(commands));
     }
 
     public void delete(NoteEntry entry) {

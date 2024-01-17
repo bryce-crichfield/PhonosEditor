@@ -6,6 +6,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.*;
 import javafx.scene.shape.*;
 import piano.*;
+import piano.note.model.*;
 import piano.tool.*;
 import piano.view.playlist.*;
 import piano.view.settings.*;
@@ -50,6 +51,7 @@ public class NoteMidiEditor extends AnchorPane {
         subScene.setRoot(world);
 
         getChildren().add(subScene);
+
         // Delegate mouse events to EditorTool -------------------------------------------------------------------------
         subScene.setOnMousePressed(mouseEvent -> currentTool.get().ifPresent(tool -> tool.onMouseEvent(mouseEvent)));
         subScene.setOnMouseMoved(mouseEvent -> currentTool.get().ifPresent(tool -> tool.onMouseEvent(mouseEvent)));
@@ -67,11 +69,11 @@ public class NoteMidiEditor extends AnchorPane {
         });
 
         context.getNoteService().getRegistry().onDeletedListener((entry, oldData, newData) -> {
-            world.getChildren().removeIf(
-                    node -> node instanceof NoteMidiView view && view.getNoteEntry().equals(entry));
+            world.getChildren()
+                    .removeIf(node -> node instanceof NoteMidiView view && view.getNoteEntry().equals(entry));
         });
 
-        // Not a fan of how this just adds itself to the world, but it's the only way I could get it to work
+        // Not a fan of how this just adds itself to the world, but I haven't changed it yet
         PlaybackView playbackView = new PlaybackView(context, world, background.heightProperty(), currentTool);
     }
 
@@ -81,53 +83,60 @@ public class NoteMidiEditor extends AnchorPane {
         double rows = gi.get().getRows();
         double columns = gi.get().getColumns();
 
-        // Draw the background using rectangles
-        boolean dark = false;
-        for (int col = 0; col < columns; col += 16, dark = !dark) {
+        // Draw the background grid ------------------------------------------------------------------------------------
+        for (int key = 0; key < rows; key++) {
+            NotePitch pitch = NotePitch.from(key + 1);
+            Color color = pitch.getNoteName().contains("#") ? Theme.GRAY_0 : Theme.GRAY_1;
+
             Rectangle rect = new Rectangle();
-            int finalCol = col;
-            gi.addListener((observable, oldValue, newValue) -> {
-                rect.setX(newValue.getCellWidth() * finalCol);
-                rect.setY(0);
-                rect.setWidth(newValue.getColumns() * newValue.getCellWidth());
-                rect.setHeight(newValue.getRows() * newValue.getCellHeight());
-            });
-            rect.setDisable(true);
-            rect.setFill(dark ? Theme.BACKGROUND : Theme.BACKGROUND.darker());
             grid.getChildren().add(rect);
+
+            rect.setDisable(true);
+            rect.setFill(color);
+
+            int finalKey = key;
+            gi.addListener((observable, oldValue, newGi) -> {
+                rect.setX(0);
+                rect.setY(newGi.getCellHeight() * finalKey);
+                rect.setWidth(newGi.getTotalWidth());
+                rect.setHeight(newGi.getCellHeight());
+            });
         }
 
-        // Draw the vertical lines
-        Color vertLineLight = Theme.BACKGROUND.brighter();
-        Color vertLineDark = Theme.BACKGROUND.darker().darker();
+        // Draw the vertical lines -------------------------------------------------------------------------------------
         for (int col = 0; col < columns; col++) {
             Rectangle rect = new Rectangle();
+            grid.getChildren().add(rect);
+
+            rect.setDisable(true);
+            rect.setFill(col % 4 == 0 ? Theme.GRAY_3 : Theme.GRAY_2);
+
             int finalCol = col;
-            gi.addListener((observable, oldValue, newValue) -> {
-                rect.setX(newValue.getCellWidth() * finalCol);
+            gi.addListener((observable, oldValue, newGi) -> {
+                rect.setX(newGi.getCellWidth() * finalCol);
                 rect.setY(0);
                 rect.setWidth(1);
-                rect.setHeight(newValue.getRows() * newValue.getCellHeight());
+                rect.setHeight(newGi.getTotalHeight());
             });
-            rect.setDisable(true);
-            rect.setFill(col % 4 == 0 ? vertLineLight : vertLineDark);
-            grid.getChildren().add(rect);
         }
 
-        // Draw the horizontal lines
+        // Draw the horizontal lines -----------------------------------------------------------------------------------
         for (int row = 0; row < rows; row++) {
             Rectangle rect = new Rectangle();
+            grid.getChildren().add(rect);
+
+            rect.setDisable(true);
+            rect.setFill(Theme.GRAY_2);
+
             int finalRow = row;
-            gi.addListener((observable, oldValue, newValue) -> {
+            gi.addListener((observable, oldValue, newGi) -> {
                 rect.setX(0);
-                rect.setY(newValue.getCellHeight() * finalRow);
-                rect.setWidth(newValue.getColumns() * newValue.getCellWidth());
+                rect.setY(newGi.getCellHeight() * finalRow);
+                rect.setWidth(newGi.getTotalWidth());
                 rect.setHeight(1);
             });
-            rect.setDisable(true);
-            rect.setFill(Theme.BACKGROUND.darker().darker());
-            grid.getChildren().add(rect);
         }
+
         return grid;
     }
 

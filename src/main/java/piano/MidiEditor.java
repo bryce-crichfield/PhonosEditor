@@ -40,6 +40,9 @@ public class MidiEditor {
     private NoteEditorPianoView pianoView;
     private MidiEditorContext context;
 
+    private ScrollBar verticalScrollBar;
+    private ScrollBar horizontalScrollBar;
+
 
     public MidiEditor() {
         super();
@@ -78,60 +81,8 @@ public class MidiEditor {
             noteParameterEditor.setMaxHeight(500);
         }
 
-        ScrollBar verticalScrollBar = new VerticalScrollBar();
-        HBox rightBox = new HBox();
-        // Initialize vertical scroll bar ------------------------------------------------------------------------------
-        {
-            Rectangle leftSpacer = new Rectangle(1, 0);
-            leftSpacer.setFill(Color.TRANSPARENT);
-            rightBox.getChildren().add(leftSpacer);
-
-            // When scrolled, move the note pattern editor and piano roll by the same amount as along the height of the
-            // background surface as the percentage scrolled along the scroll bar
-            verticalScrollBar.setOnHandleScroll(scroll -> {
-                double newTranslateY = scroll.getRelativePosition() * noteMidiEditor.getBackgroundSurface().getHeight();
-                newTranslateY = Util.map(newTranslateY, 0, noteMidiEditor.getBackgroundSurface().getHeight(), 0,
-                                         noteMidiEditor.getBackgroundSurface().getHeight() - noteMidiEditor.getHeight()
-                );
-                noteMidiEditor.scrollToY(-newTranslateY);
-                pianoView.scrollY(-newTranslateY);
-            });
-
-            rightBox.getChildren().add(verticalScrollBar);
-
-            bodyBorderPane.setRight(rightBox);
-        }
-
-        ScrollBar horizontalScrollBar = new HorizontalScrollBar();
-        // Initialize horizontal scroll bar ----------------------------------------------------------------------------
-        {
-
-            TimelineView timelineView = new TimelineView(context);
-            timelineView.setMinHeight(15);
-            timelineView.setMaxHeight(15);
-            bodyBorderPane.setTop(timelineView);
-
-            // When scrolled, move the note pattern editor and note parameter editor by the same amount as along the
-            // width of the background surface as the percentage scrolled along the scroll bar
-            horizontalScrollBar.setOnHandleScroll(scroll -> {
-                double newTranslateX = scroll.getRelativePosition() * noteMidiEditor.getBackgroundSurface().getWidth();
-                newTranslateX = Util.map(newTranslateX, 0, noteMidiEditor.getBackgroundSurface().getWidth(), 0,
-                                         noteMidiEditor.getBackgroundSurface().getWidth() - noteMidiEditor.getWidth()
-                );
-                noteMidiEditor.scrollToX(-newTranslateX);
-                noteParameterEditor.scrollX(-newTranslateX);
-                timelineView.scrollX(-newTranslateX);
-
-            });
-
-            HBox bottomBox = new HBox();
-            Rectangle pianoWidthSpacer = new Rectangle(125, 1);
-            pianoWidthSpacer.setFill(Color.TRANSPARENT);
-            bottomBox.getChildren().add(pianoWidthSpacer);
-            bottomBox.getChildren().add(horizontalScrollBar);
-            HBox.setHgrow(horizontalScrollBar, Priority.ALWAYS);
-            bodyBorderPane.setBottom(bottomBox);
-        }
+        initVerticalScrollBar();
+        initHorizontalScrollBar();
 
         // Initialize scrolling ---------------------------------------------------------------------------------------
         noteMidiEditor.setOnScroll((EventHandler<? super ScrollEvent>) event -> {
@@ -183,6 +134,7 @@ public class MidiEditor {
             }
 
             verticalScrollBar.scrollBy(-event.getDeltaY());
+            horizontalScrollBar.scrollBy(-event.getDeltaX());
         });
 
         // When dragging the mouse, scroll the screen if the mouse is near the edge of the screen ----------------------
@@ -209,7 +161,6 @@ public class MidiEditor {
             }
         });
 
-
         currentTool.addListener((observable, oldValue, newValue) -> {
             // if there is a tool toggle the corresponding button
             if (newValue.isPresent()) {
@@ -223,7 +174,6 @@ public class MidiEditor {
                 }
             }
         });
-
 
         root.setOnKeyPressed(event -> {
             if (event.isControlDown() && event.getCode().toString().equals("Z")) {
@@ -289,11 +239,9 @@ public class MidiEditor {
             toggleToolSelect.setOnAction(event -> noteMidiEditor.setTool(
                     new SelectTool(noteMidiEditor, noteMidiEditor.getWorld(), context)));
 
-            toggleToolPencil.setOnAction(event -> noteMidiEditor.setTool(
-                    new PencilTool(noteMidiEditor, context)));
+            toggleToolPencil.setOnAction(event -> noteMidiEditor.setTool(new PencilTool(noteMidiEditor, context)));
 
-            toggleToolSlice.setOnAction(event -> noteMidiEditor.setTool(
-                    new SliceTool()));
+            toggleToolSlice.setOnAction(event -> noteMidiEditor.setTool(new SliceTool()));
 
         }
 
@@ -317,6 +265,58 @@ public class MidiEditor {
         var oldGi = context.getViewSettings().getGridInfo();
         context.getViewSettings().gridInfoProperty().set(oldGi.withRows(0));
         context.getViewSettings().gridInfoProperty().set(oldGi);
+    }
+
+    private void initHorizontalScrollBar() {
+        horizontalScrollBar = new HorizontalScrollBar();
+        TimelineView timelineView = new TimelineView(context);
+        timelineView.setMinHeight(15);
+        timelineView.setMaxHeight(15);
+        bodyBorderPane.setTop(timelineView);
+
+        // When scrolled, move the note pattern editor and note parameter editor by the same amount as along the
+        // width of the background surface as the percentage scrolled along the scroll bar
+        horizontalScrollBar.setOnHandleScroll(scroll -> {
+            double newTranslateX = scroll.getRelativePosition() * noteMidiEditor.getBackgroundSurface().getWidth();
+            newTranslateX = Util.map(newTranslateX, 0, noteMidiEditor.getBackgroundSurface().getWidth(), 0,
+                                     noteMidiEditor.getBackgroundSurface().getWidth() - noteMidiEditor.getWidth()
+            );
+            noteMidiEditor.scrollToX(-newTranslateX);
+            noteParameterEditor.scrollX(-newTranslateX);
+            timelineView.scrollX(-newTranslateX);
+
+        });
+
+        HBox bottomBox = new HBox();
+        Rectangle pianoWidthSpacer = new Rectangle(125, 1);
+        pianoWidthSpacer.setFill(Color.TRANSPARENT);
+        bottomBox.getChildren().add(pianoWidthSpacer);
+        bottomBox.getChildren().add(horizontalScrollBar);
+        HBox.setHgrow(horizontalScrollBar, Priority.ALWAYS);
+        bodyBorderPane.setBottom(bottomBox);
+    }
+
+    private void initVerticalScrollBar() {
+        verticalScrollBar = new VerticalScrollBar();
+        HBox rightBox = new HBox();
+        Rectangle leftSpacer = new Rectangle(1, 0);
+        leftSpacer.setFill(Color.TRANSPARENT);
+        rightBox.getChildren().add(leftSpacer);
+
+        // When scrolled, move the note pattern editor and piano roll by the same amount as along the height of the
+        // background surface as the percentage scrolled along the scroll bar
+        verticalScrollBar.setOnHandleScroll(scroll -> {
+            double newTranslateY = scroll.getRelativePosition() * noteMidiEditor.getBackgroundSurface().getHeight();
+            newTranslateY = Util.map(newTranslateY, 0, noteMidiEditor.getBackgroundSurface().getHeight(), 0,
+                                     noteMidiEditor.getBackgroundSurface().getHeight() - noteMidiEditor.getHeight()
+            );
+            noteMidiEditor.scrollToY(-newTranslateY);
+            pianoView.scrollY(-newTranslateY);
+        });
+
+        rightBox.getChildren().add(verticalScrollBar);
+
+        bodyBorderPane.setRight(rightBox);
     }
 
     public void playlistPause(ActionEvent actionEvent) {

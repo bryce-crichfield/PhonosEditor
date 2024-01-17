@@ -42,11 +42,9 @@ public class NoteMidiView extends StackPane {
         }
 
         rectangle = new Rectangle();
-        rectangle.setFill(Color.DARKGREEN);
+        rectangle.setFill(Theme.ORANGE);
         rectangle.setStroke(Color.BLACK);
         rectangle.setStrokeWidth(1);
-        rectangle.setArcHeight(10);
-        rectangle.setArcWidth(10);
         getChildren().addAll(rectangle, label);
 
         bindPaneToRectangle();
@@ -119,9 +117,9 @@ public class NoteMidiView extends StackPane {
         // Update the view rectangle when the selected entries change
         context.getNoteService().getSelection().addListener((ListChangeListener<NoteEntry>) c -> {
             if (c.getList().contains(noteEntry)) {
-                rectangle.setFill(Color.BLUE);
+                rectangle.setFill(Theme.BRIGHT_GREEN);
             } else {
-                rectangle.setFill(Color.DARKGREEN);
+                rectangle.setFill(Theme.ORANGE);
             }
         });
 

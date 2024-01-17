@@ -3,6 +3,15 @@ package piano.view.settings;
 import javafx.scene.paint.*;
 
 public class Theme {
+
+    public static final Color GRAY_0 = Color.web("#282828").darker().darker();
+    public static final Color GRAY_1 = Color.web("#282828").darker();
+    public static final Color GRAY_2 = Color.web("#282828");
+    public static final Color GRAY_3 = Color.web("#282828").brighter();
+    public static final Color GRAY_4 = Color.web("#282828").brighter().brighter();
+    public static final Color GRAY_5 = Color.web("#282828").brighter().brighter().brighter();
+
+
     public static final Color BACKGROUND = Color.web("#282828").darker();
     public static final Color FOREGROUND = Color.web("#ebdbb2");
     public static final Color COMMENT = Color.web("#928374");
