@@ -147,19 +147,9 @@ public class NoteParameterEditor extends AnchorPane {
 
         VBox vboxProps = new VBox();
         vboxProps.setAlignment(Pos.CENTER);
+        vboxProps.setSpacing(10);
 
         // Add options to Zoom Level Combo Box -------------------------------------------------------------------------
-        Spinner<Integer> measureCount = new Spinner<>(1, 100, 1);
-        measureCount.setPrefWidth(100);
-        measureCount.setEditable(true);
-        vboxProps.getChildren().add(measureCount);
-        measureCount.valueProperty().addListener(($0, $1, value) -> {
-            GridInfo gridInfo = context.getViewSettings().gridInfoProperty().get();
-            gridInfo = gridInfo.withMeasures(value);
-            context.getViewSettings().gridInfoProperty().set(gridInfo);
-        });
-
-
         ComboBox<String> snapSelect = new ComboBox<>();
         snapSelect.setPrefWidth(100);
         snapSelect.getItems().addAll("4/1", "2/1", "1/1", "1/2", "1/3", "1/4", "1/6", "1/8", "1/12", "1/16", "1/32");
@@ -188,7 +178,9 @@ public class NoteParameterEditor extends AnchorPane {
         settingsButton.setOnAction(event -> {
             // Load the ViewSettings.fxml file and create a new stage for the popup dialog
             FXMLLoader loader = new FXMLLoader();
-            loader.setController(new ViewSettingsController(context));
+            Stage stage = new Stage();
+
+            loader.setController(new ViewSettingsController(context, stage));
             loader.setLocation(MidiEditor.class.getResource("/ViewSettings.fxml"));
             Parent root = null;
             try {
@@ -198,9 +190,12 @@ public class NoteParameterEditor extends AnchorPane {
             }
 
             Scene scene = new Scene(root);
-            Stage stage = new Stage();
             stage.setScene(scene);
+
+            // hide window buttons
+            stage.initStyle(StageStyle.UNDECORATED);
             stage.show();
+
         });
         vboxProps.getChildren().add(settingsButton);
 

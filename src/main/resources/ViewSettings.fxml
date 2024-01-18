@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.RadioButton?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.VBox?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml"
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<TitledPane xmlns:fx="http://javafx.com/fxml"
             xmlns="http://javafx.com/javafx"
-            prefHeight="400.0" prefWidth="600.0">
+            prefHeight="600.0" prefWidth="400.0"
+            text="View Settings"
+            collapsible="false"
+>
+        <GridPane hgap="25" vgap="15">
+            <Label text="Pattern Color" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <ColorPicker fx:id="colorPicker" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
 
-    <children>
-        <VBox>
-            <Label text="View Settings"/>
-            <Separator orientation="HORIZONTAL"/>
-            <RadioButton fx:id="showPianoRollNoteLetters" text="Show Piano Letters" GridPane.columnIndex="0"
-                         GridPane.rowIndex="0"/>
-        </VBox>
-    </children>
-</AnchorPane>
+            <Label text="Pattern Length" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <Spinner fx:id="patternLengthSpinner" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+            <Label text="Show Piano Letters" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <RadioButton fx:id="showPianoRollNoteLetters" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+            <Label text="Show Note Letters" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+            <RadioButton fx:id="showNoteLetters" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+            <Button fx:id="closeStageButton" text="Close" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+        </GridPane>
+</TitledPane>

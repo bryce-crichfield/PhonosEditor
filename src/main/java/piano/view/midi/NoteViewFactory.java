@@ -10,6 +10,7 @@ import javafx.scene.text.*;
 import piano.*;
 import piano.note.model.*;
 import piano.tool.*;
+import piano.util.*;
 import piano.view.settings.*;
 
 import java.awt.*;
@@ -111,23 +112,47 @@ public class NoteViewFactory {
         return root;
     }
 
+    public static final int MIN_LABEL_WIDTH = 32;
+
     private static Text createLabel(MidiEditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
         Text label = new Text();
         {
+            label.setVisible(context.getViewSettings().showNoteLettersProperty().get());
+            Color backgroundColor = context.getViewSettings().getPatternColor();
+            double whiteContrast = ColorUtils.contrast(backgroundColor, Color.WHITE);
+            double blackContrast = ColorUtils.contrast(backgroundColor, Color.BLACK);
+            Color fontColor = whiteContrast > blackContrast ? Color.WHITE : Color.BLACK;
+            label.setFill(fontColor);
         }
+
+        // { ViewSettings } -> { Label }
+        context.getViewSettings().showNoteLettersProperty().addListener(($0, $1, show) -> {
+            label.setVisible(show);
+        });
+
+        // { ViewSettings } -> { Label }
+        context.getViewSettings().patternColorProperty().addListener(($0, $1, color) -> {
+            double whiteContrast = ColorUtils.contrast(color, Color.WHITE);
+            double blackContrast = ColorUtils.contrast(color, Color.BLACK);
+            Color fontColor = whiteContrast > blackContrast ? Color.WHITE : Color.BLACK;
+            label.setFill(fontColor);
+        });
 
         // { GridInfo } -> { Label }
         context.getViewSettings().gridInfoProperty().addListener(($0, $1, grid) -> {
             // The font height should be 50% of the limiting cell dimension
-            double largerDimension = Math.min(grid.getBeatDisplayWidth(), grid.getCellHeight());
+            double width = noteEntry.get().getDuration() * grid.getStepDisplayWidth();
+            if (width < MIN_LABEL_WIDTH) {
+                label.setVisible(false);
+                return;
+            }
+
+            double largerDimension = Math.min(width, grid.getCellHeight());
+            label.setVisible(context.getViewSettings().showNoteLettersProperty().get());
             label.setFont(label.getFont().font(largerDimension * 0.5));
         });
 
         // { NoteEntry } -> { Label }
-        noteEntry.addListener(($0, $1, data) -> {
-            String noteString = data.getPitch().getNoteName();
-            label.setText(noteString);
-        });
 
         // { rectangle.x } -> { Label }
         rectangle.xProperty().addListener(($0, $1, x) -> {
@@ -147,6 +172,17 @@ public class NoteViewFactory {
         rectangle.widthProperty().addListener(($0, $1, width) -> {
             label.setX(width.doubleValue() / 2 - label.getLayoutBounds().getWidth() / 2);
             label.setY(width.doubleValue() / 2 + label.getLayoutBounds().getHeight() / 2);
+
+            var grid = context.getViewSettings().gridInfoProperty().get();
+            double w = noteEntry.get().getDuration() * grid.getStepDisplayWidth();
+            if (w < MIN_LABEL_WIDTH) {
+                label.setVisible(false);
+                return;
+            }
+
+            double largerDimension = Math.min(w, grid.getCellHeight());
+            label.setVisible(context.getViewSettings().showNoteLettersProperty().get());
+            label.setFont(label.getFont().font(largerDimension * 0.5));
         });
 
         return label;
@@ -157,10 +193,15 @@ public class NoteViewFactory {
         {
             NoteData data = noteEntry.get();
             var grid = context.getViewSettings().gridInfoProperty().get();
-            rectangle.setFill(Theme.ORANGE);
+            rectangle.setFill(context.getViewSettings().getPatternColor());
             rectangle.setStroke(Color.BLACK);
             rectangle.setStrokeWidth(1);
         }
+
+        // PatternColor <update> Rectangle
+        context.getViewSettings().patternColorProperty().addListener(($0, $1, color) -> {
+            rectangle.setFill(color);
+        });
 
         // GridInfo <update> Rectangle
         context.getViewSettings().gridInfoProperty().addListener(($0, $1, grid) -> {
@@ -182,10 +223,14 @@ public class NoteViewFactory {
 
         // NoteSelection <update> Rectangle
         context.getNoteService().getSelection().addListener((ListChangeListener<NoteEntry>) c -> {
-            if (c.getList().contains(noteEntry))
-                rectangle.setFill(Theme.BRIGHT_GREEN);
-            else
-                rectangle.setFill(Theme.ORANGE);
+            if (c.getList().contains(noteEntry)) {
+                rectangle.setStroke(Color.CYAN);
+                rectangle.setStrokeWidth(2);
+            }
+            else {
+                rectangle.setStroke(Color.BLACK);
+                rectangle.setStrokeWidth(1);
+            }
         });
 
         return rectangle;
@@ -198,7 +243,14 @@ public class NoteViewFactory {
         rectangle.setY(data.calcYPosOnGrid(grid));
         rectangle.setWidth(data.calculateDisplayWidth(grid));
         rectangle.setHeight(data.calculateDisplayHeight(grid));
+
+        double width = entry.get().getDuration() * grid.getStepDisplayWidth();
+        if (width < MIN_LABEL_WIDTH) {
+            text.setVisible(false);
+            return;
+        }
         double largerDimension = Math.min(grid.getBeatDisplayWidth(), grid.getCellHeight());
+        text.setVisible(context.getViewSettings().showNoteLettersProperty().get());
         text.setFont(text.getFont().font(largerDimension * 0.5));
     }
 
