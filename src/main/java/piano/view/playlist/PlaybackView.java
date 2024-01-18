@@ -35,8 +35,8 @@ public class PlaybackView {
             var tail = newState.getTail();
             var head = newState.getHead();
             var gi = context.getViewSettings().gridInfoProperty().get();
-            double x = head * gi.getCellWidth();
-            double width = newState.getDuration() * gi.getCellWidth();
+            double x = head * gi.getBeatDisplayWidth();
+            double width = newState.getDuration() * gi.getBeatDisplayWidth();
             rectangle.setX(x);
             rectangle.setWidth(width);
         }));
@@ -44,8 +44,8 @@ public class PlaybackView {
         context.getViewSettings().gridInfoProperty().addListener((observable, oldValue, newValue) -> {
             var gi = newValue;
             var playback = context.getPlayback().getState();
-            double x = playback.getHead() * gi.getCellWidth();
-            double width = (playback.getTail() - playback.getHead()) * gi.getCellWidth();
+            double x = playback.getHead() * gi.getBeatDisplayWidth();
+            double width = (playback.getTail() - playback.getHead()) * gi.getBeatDisplayWidth();
             rectangle.setX(x);
             rectangle.setWidth(width);
         });

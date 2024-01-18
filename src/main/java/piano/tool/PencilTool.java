@@ -6,7 +6,6 @@ import javafx.scene.*;
 import javafx.scene.input.*;
 import piano.*;
 import piano.note.model.*;
-import piano.util.*;
 import piano.view.midi.*;
 import piano.view.settings.*;
 
@@ -35,12 +34,13 @@ public class PencilTool implements EditorTool {
                 ObjectProperty<GridInfo> gridInfo = context.getViewSettings().gridInfoProperty();
                 var gi = gridInfo.get();
 
-                int cellX = (int) (GridMath.snapToGridX(gi, point.getX()) / gi.getCellWidth());
-                int cellY = (int) (GridMath.snapToGridY(gi, point.getY()) / gi.getCellHeight());
+                int startStep = (int) (gi.snapWorldXToNearestStep(point.getX()));
+                int endStep = (int) (startStep + gi.snapInSteps());
+                int cellY = (int) (gi.snapToGridY(point.getY()) / gi.getCellHeight());
 
                 int mappedIndex = (int) Util.reverse(cellY, 0, 87);
                 NotePitch pitch = NotePitch.from(mappedIndex + 1);
-                NoteData data = new NoteData(pitch, cellX, cellX + 1, 100);
+                NoteData data = new NoteData(pitch, startStep, endStep, 100);
 
                 context.getNoteService().getSelection().clear();
                 context.getNoteService().create(data);

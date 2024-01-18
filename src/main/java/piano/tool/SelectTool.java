@@ -140,7 +140,7 @@ public class SelectTool implements EditorTool {
             var gi = context.getViewSettings().getGridInfo();
             double noteX = data.calcXPosOnGrid(gi);
             double noteY = data.calcYPosOnGrid(gi);
-            double noteWidth = gi.getCellWidth() * data.getDuration();
+            double noteWidth = gi.getBeatDisplayWidth() * data.getDuration();
             double noteHeight = gi.getCellHeight();
 
             double boxX = getX();
@@ -165,7 +165,7 @@ public class SelectTool implements EditorTool {
             var gi = context.getViewSettings().getGridInfo();
             double noteX = data.calcXPosOnGrid(gi);
             double noteY = data.calcYPosOnGrid(gi);
-            double noteWidth = gi.getCellWidth() * data.getDuration();
+            double noteWidth = gi.getBeatDisplayWidth() * data.getDuration();
             double noteHeight = gi.getCellHeight();
 
             double boxX = getX();

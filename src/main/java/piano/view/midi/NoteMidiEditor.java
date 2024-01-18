@@ -27,9 +27,8 @@ public class NoteMidiEditor extends AnchorPane {
         // Create the background grid surface --------------------------------------------------------------------------
         var gridInfo = context.getViewSettings().gridInfoProperty();
         background = gridInfo.get().createRectangle();
-
-        gridInfo.addListener((observable, oldValue, newValue) -> {
-            var newRect = newValue.createRectangle();
+        gridInfo.addListener(($0, $1, newGi) -> {
+            var newRect = newGi.createRectangle();
             background.setWidth(newRect.getWidth());
             background.setHeight(newRect.getHeight());
         });
@@ -81,12 +80,14 @@ public class NoteMidiEditor extends AnchorPane {
         Group grid = new Group();
         var gi = context.getViewSettings().gridInfoProperty();
         double rows = gi.get().getRows();
-        double columns = gi.get().getColumns();
+        double columns = gi.get().getMeasures();
 
         // Draw the background grid ------------------------------------------------------------------------------------
         for (int key = 0; key < rows; key++) {
             NotePitch pitch = NotePitch.from(key + 1);
-            Color color = pitch.getNoteName().contains("#") ? Theme.GRAY_0 : Theme.GRAY_1;
+            Color color = pitch.getNoteName().contains("#") ?
+                    Theme.GRAY_0 :
+                    Theme.GRAY_1;
 
             Rectangle rect = new Rectangle();
             grid.getChildren().add(rect);
@@ -96,46 +97,42 @@ public class NoteMidiEditor extends AnchorPane {
 
             int finalKey = key;
             gi.addListener((observable, oldValue, newGi) -> {
-                rect.setX(0);
                 rect.setY(newGi.getCellHeight() * finalKey);
-                rect.setWidth(newGi.getTotalWidth());
-                rect.setHeight(newGi.getCellHeight());
+                rect.setWidth(newGi.createRectangle().getWidth());
+                rect.setHeight(newGi.createRectangle().getHeight());
             });
+
+            // Add a border to each rectangle
+            rect.setStroke(Theme.GRAY_2);
+            rect.setStrokeWidth(1);
         }
 
         // Draw the vertical lines -------------------------------------------------------------------------------------
-        for (int col = 0; col < columns; col++) {
-            Rectangle rect = new Rectangle();
-            grid.getChildren().add(rect);
+        Group verticalLines = new Group();
+        grid.getChildren().add(verticalLines);
 
-            rect.setDisable(true);
-            rect.setFill(col % 4 == 0 ? Theme.GRAY_3 : Theme.GRAY_2);
+        gi.addListener(($0, $1, newGi) -> {
+            verticalLines.getChildren().clear();
 
-            int finalCol = col;
-            gi.addListener((observable, oldValue, newGi) -> {
-                rect.setX(newGi.getCellWidth() * finalCol);
+            for (int step = 0; step < newGi.getTotalSteps(); step++) {
+                Rectangle rect = new Rectangle();
+                rect.setX(newGi.getBeatDisplayWidth() / newGi.getSnapSize() * step);
                 rect.setY(0);
                 rect.setWidth(1);
                 rect.setHeight(newGi.getTotalHeight());
-            });
-        }
 
-        // Draw the horizontal lines -----------------------------------------------------------------------------------
-        for (int row = 0; row < rows; row++) {
-            Rectangle rect = new Rectangle();
-            grid.getChildren().add(rect);
+                rect.setDisable(true);
 
-            rect.setDisable(true);
-            rect.setFill(Theme.GRAY_2);
+                Color color = Theme.GRAY_3;
+                if (step % newGi.getSnapSize() == 0)
+                    color = Theme.GRAY_4;
+                if (step % (newGi.getSnapSize() * newGi.getTime().getNumerator()) == 0)
+                    color = Theme.GRAY_5;
+                rect.setFill(color);
 
-            int finalRow = row;
-            gi.addListener((observable, oldValue, newGi) -> {
-                rect.setX(0);
-                rect.setY(newGi.getCellHeight() * finalRow);
-                rect.setWidth(newGi.getTotalWidth());
-                rect.setHeight(1);
-            });
-        }
+                verticalLines.getChildren().add(rect);
+            }
+        });
 
         return grid;
     }

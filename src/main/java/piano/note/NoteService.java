@@ -55,8 +55,11 @@ public class NoteService {
         execute(command);
     }
 
-    public void modify(NoteEntry entry, Function<NoteData, NoteData> update) {
-        multicast(entry, e -> new ModifyNoteCommand(e, update.apply(e.get())));
+    public void modify(NoteEntry entry, Function<NoteEntry, NoteData> update) {
+        // This is strange, but we take a Function<NoteEntry, NoteData> instead of a Function<NoteData, NoteData>
+        // because we want to be able to use the update function on any note entry the service decides to modify.
+        // This is useful for modifying all notes in a group, for example.
+        multicast(entry, e -> new ModifyNoteCommand(e, update.apply(e)));
     }
 
     private void multicast(NoteEntry entry, Function<NoteEntry, NoteCommand> factory) {

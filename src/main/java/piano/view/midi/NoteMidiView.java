@@ -22,8 +22,8 @@ public class NoteMidiView extends StackPane {
     private final Text label;
     private final NoteMidiHandle.Left leftHandle;
     private final NoteMidiHandle.Right rightHandle;
-    private final NoteMidiHandle.Body bodyHandle;
-    private Optional<NoteMidiHandle> selectedHandle;
+    private final NoteMidiHandle.Center centerHandle;
+    private Optional<NoteMidiHandle> selectedHandle = Optional.empty();
     private Optional<NoteMidiController> controller = Optional.empty();
 
     public NoteMidiView(NoteEntry noteEntry, MidiEditorContext context,
@@ -37,7 +37,7 @@ public class NoteMidiView extends StackPane {
         {
             // The font height should be 50% of the limiting cell dimension
             var grid = context.getViewSettings().gridInfoProperty().get();
-            double largerDimension = Math.min(grid.getCellWidth(), grid.getCellHeight());
+            double largerDimension = Math.min(grid.getBeatDisplayWidth(), grid.getCellHeight());
             label.setFont(label.getFont().font(largerDimension * 0.5));
         }
 
@@ -54,19 +54,13 @@ public class NoteMidiView extends StackPane {
             NoteData data = this.noteEntry.get();
             GridInfo grid = newValue1;
 
-            double x = data.calcXPosOnGrid(grid);
-            double y = data.calcYPosOnGrid(grid);
-            rectangle.setX(x);
-            rectangle.setY(y);
-
-            double width = (data.getEnd() - data.getStart()) * grid.getCellWidth();
-            rectangle.setWidth(width);
-
-            double height = grid.getCellHeight();
-            rectangle.setHeight(height);
+            rectangle.setX(data.calcXPosOnGrid(grid));
+            rectangle.setY(data.calcYPosOnGrid(grid));
+            rectangle.setWidth(data.calculateDisplayWidth(grid));
+            rectangle.setHeight(data.calculateDisplayHeight(grid));
 
             // The font height should be 50% of the limiting cell dimension
-            double largerDimension = Math.min(grid.getCellWidth(), grid.getCellHeight());
+            double largerDimension = Math.min(grid.getBeatDisplayWidth(), grid.getCellHeight());
             label.setFont(label.getFont().font(largerDimension * 0.5));
         });
 
@@ -97,21 +91,17 @@ public class NoteMidiView extends StackPane {
         rectangle.setOnMouseMoved(event -> controller.ifPresent(c -> c.rectangleOnMouseMoved(event)));
 
         // Delegate the drag event to the selected handle
+        this.setOnMousePressed(event -> controller.ifPresent(c -> c.stackPaneOnMousePressed(event)));
         this.setOnMouseDragged(event -> controller.ifPresent(c -> c.stackPaneOnMouseDragged(event)));
+        this.setOnMouseReleased(event -> controller.ifPresent(c -> c.stackPaneOnMouseReleased(event)));
 
         // Update the view rectangle when the note data model changes
-        noteEntry.addListener((observable, oldValue, newValue) -> {
-            var gridInfo = context.getViewSettings().gridInfoProperty();
-            double x = newValue.calcXPosOnGrid(gridInfo.get());
-            double y = newValue.calcYPosOnGrid(gridInfo.get());
-            rectangle.setX(x);
-            rectangle.setY(y);
-
-            double width = (newValue.getEnd() - newValue.getStart()) * gridInfo.get().getCellWidth();
-            rectangle.setWidth(width);
-
-            double height = gridInfo.get().getCellHeight();
-            rectangle.setHeight(height);
+        noteEntry.addListener(($0, $1, data) -> {
+            var grid = context.getViewSettings().gridInfoProperty().get();
+            rectangle.setX(data.calcXPosOnGrid(grid));
+            rectangle.setY(data.calcYPosOnGrid(grid));
+            rectangle.setWidth(data.calculateDisplayWidth(grid));
+            rectangle.setHeight(data.calculateDisplayHeight(grid));
         });
 
         // Update the view rectangle when the selected entries change
@@ -125,20 +115,16 @@ public class NoteMidiView extends StackPane {
 
         // Initialize the view
         NoteData data = this.noteEntry.get();
-        var gridInfo = context.getViewSettings().gridInfoProperty();
-        double x = data.calcXPosOnGrid(gridInfo.get());
-        double y = data.calcYPosOnGrid(gridInfo.get());
-        rectangle.setX(x);
-        rectangle.setY(y);
-        double width = (data.getEnd() - data.getStart()) * gridInfo.get().getCellWidth();
-        rectangle.setWidth(width);
-        double height = gridInfo.get().getCellHeight();
-        rectangle.setHeight(height);
+        var grid = context.getViewSettings().gridInfoProperty().get();
+        rectangle.setX(data.calcXPosOnGrid(grid));
+        rectangle.setY(data.calcYPosOnGrid(grid));
+        rectangle.setWidth(data.calculateDisplayWidth(grid));
+        rectangle.setHeight(data.calculateDisplayHeight(grid));
 
         // Create handles
         leftHandle = new NoteMidiHandle.Left(this, context, noteEntry, rectangle);
         rightHandle = new NoteMidiHandle.Right(this, context, noteEntry, rectangle);
-        bodyHandle = new NoteMidiHandle.Body(this, context, noteEntry, rectangle);
+        centerHandle = new NoteMidiHandle.Center(this, context, noteEntry, rectangle);
     }
 
     private void bindPaneToRectangle() {
@@ -168,20 +154,23 @@ public class NoteMidiView extends StackPane {
     }
 
     private class NoteMidiController {
+        double lastX;
         public void stackPaneOnMouseDragged(MouseEvent event) {
-            double deltaX = event.getX();
-            double deltaY = event.getY();
-
             var gridInfo = context.getViewSettings().gridInfoProperty();
+            double deltaX = event.getSceneX() - lastX;
+            double cellY = event.getY() / gridInfo.get().getCellHeight();
 
-            double cellX = deltaX / gridInfo.get().getCellWidth();
-            double cellY = deltaY / gridInfo.get().getCellHeight();
+            selectedHandle.ifPresent(handle -> handle.onDragged(deltaX, cellY));
+            lastX = event.getSceneX();
+        }
 
-            if (selectedHandle != null) {
-                selectedHandle.ifPresent(handle -> handle.onDragged(cellX, cellY));
-            }
+        public void stackPaneOnMousePressed(MouseEvent event) {
+            lastX = event.getSceneX();
+            selectedHandle.ifPresent(handle -> handle.onDragEntered());
+        }
 
-            event.consume();
+        public void stackPaneOnMouseReleased(MouseEvent event) {
+            selectedHandle = Optional.empty();
         }
 
         public void rectangleOnMouseMoved(MouseEvent event) {
@@ -191,16 +180,14 @@ public class NoteMidiView extends StackPane {
                 selectedHandle = Optional.of(leftHandle);
             } else if (rightHandle.isHovered(mouseX)) {
                 selectedHandle = Optional.of(rightHandle);
-            } else if (bodyHandle.isHovered(mouseX)) {
-                selectedHandle = Optional.of(bodyHandle);
+            } else if (centerHandle.isHovered(mouseX)) {
+                selectedHandle = Optional.of(centerHandle);
             } else {
                 selectedHandle = Optional.empty();
             }
 
             // Change the cursor to indicate the handle that will be selected
             selectedHandle.ifPresent(handle -> setCursor(handle.getCursor()));
-
-            event.consume();
         }
     }
 }

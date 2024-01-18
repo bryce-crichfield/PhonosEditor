@@ -5,6 +5,7 @@ import javafx.scene.layout.*;
 import javafx.scene.shape.*;
 import piano.*;
 import piano.note.model.*;
+import piano.util.*;
 
 
 abstract class NoteMidiHandle {
@@ -18,9 +19,18 @@ abstract class NoteMidiHandle {
         this.context = context;
         this.noteEntry = noteEntry;
         this.rectangle = rectangle;
+
+        var grid = context.getViewSettings().gridInfoProperty().get();
+        double unsnappedX = noteEntry.get().getStartStep() * grid.getStepDisplayWidth();
+        noteEntry.setUnsnappedX(unsnappedX);
     }
 
-    public abstract void onDragged(double cellsX, double cellsY);
+    public void onDragEntered() {
+        var grid = context.getViewSettings().gridInfoProperty().get();
+        double unsnappedX = noteEntry.get().getStartStep() * grid.getStepDisplayWidth();
+        noteEntry.setUnsnappedX(unsnappedX);
+    }
+    public abstract void onDragged(double deltaX, double cellsY);
 
     public abstract Cursor getCursor();
 
@@ -32,10 +42,14 @@ abstract class NoteMidiHandle {
         }
 
         @Override
-        public void onDragged(double cellsX, double cellsY) {
-            context.getNoteService().modify(noteEntry, noteData -> {
-                int x = (int) (noteData.getStart() + cellsX);
-                return noteData.withStart(x);
+        public void onDragged(double deltaX, double cellsY) {
+            context.getNoteService().modify(noteEntry, entry -> {
+                var noteData = entry.get();
+                var grid = context.getViewSettings().gridInfoProperty().get();
+                double unsnappedX = entry.getUnsnappedX() + deltaX;
+                entry.setUnsnappedX(unsnappedX);
+                double startStep = grid.snapWorldXToNearestStep(unsnappedX);
+                return noteData.withStartStep((int) startStep);
             });
         }
 
@@ -56,10 +70,18 @@ abstract class NoteMidiHandle {
         }
 
         @Override
-        public void onDragged(double cellsX, double cellsY) {
-            context.getNoteService().modify(noteEntry, noteData -> {
-                int x = (int) (noteData.getStart() + cellsX);
-                return noteData.withEnd(x);
+        public void onDragged(double deltaX, double cellsY) {
+            context.getNoteService().modify(noteEntry, entry -> {
+                var noteData = entry.get();
+                var grid = context.getViewSettings().gridInfoProperty().get();
+                double unsnappedX = entry.getUnsnappedX() + deltaX;
+                entry.setUnsnappedX(unsnappedX);
+                double endStep = grid.snapWorldXToNearestStep(unsnappedX);
+                double newDuration = endStep - noteData.getStartStep();
+                if (newDuration < grid.getStepsPerSnap()) {
+                    return noteData;
+                }
+                return noteData.withEndStep((int) endStep);
             });
         }
 
@@ -74,20 +96,23 @@ abstract class NoteMidiHandle {
         }
     }
 
-    static class Body extends NoteMidiHandle {
-        public Body(Pane pane, MidiEditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
+    static class Center extends NoteMidiHandle {
+        public Center(Pane pane, MidiEditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
             super(pane, context, noteEntry, rectangle);
         }
 
         @Override
-        public void onDragged(double cellsX, double cellsY) {
-            context.getNoteService().modify(noteEntry, noteData -> {
-                int newStart = (int) (noteData.getStart() + cellsX);
-                int newEnd = (int) (noteData.getEnd() + cellsX);
+        public void onDragged(double deltaX, double cellsY) {
+            context.getNoteService().modify(noteEntry, entry -> {
+                var noteData = entry.get();
+                var grid = context.getViewSettings().gridInfoProperty().get();
+                double unsnappedX = entry.getUnsnappedX() + deltaX;
+                entry.setUnsnappedX(unsnappedX);
+                double startStep = grid.snapWorldXToNearestStep(unsnappedX);
+                double endStep = startStep + noteData.getDuration();
                 int newNoteIndex = (int) (noteData.getPitch().getNoteIndex() - cellsY) + 1;
                 NotePitch newPitch = NotePitch.from(newNoteIndex);
-
-                return noteData.withStart(newStart).withEnd(newEnd).withPitch(newPitch);
+                return noteData.withStartStep((int) startStep).withEndStep((int) endStep).withPitch(newPitch);
             });
         }
 

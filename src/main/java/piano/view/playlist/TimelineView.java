@@ -9,7 +9,6 @@ import javafx.scene.paint.*;
 import javafx.scene.shape.*;
 import javafx.scene.text.*;
 import piano.*;
-import piano.util.*;
 
 
 public class TimelineView extends AnchorPane {
@@ -31,7 +30,7 @@ public class TimelineView extends AnchorPane {
         background = gridInfo.get().createRectangle();
         background.setFill(createGridLineFill());
         gridInfo.addListener((observable, oldValue, newValue) -> {
-            background.setWidth(newValue.getColumns() * newValue.getCellWidth());
+            background.setWidth(newValue.getMeasures() * newValue.getBeatDisplayWidth());
             background.setHeight(newValue.getRows() * newValue.getCellHeight());
             background.setFill(createGridLineFill());
         });
@@ -55,10 +54,10 @@ public class TimelineView extends AnchorPane {
         this.getChildren().add(scene);
 
         // generate the timeline markers and add them to the world
-        int numColumns = context.getViewSettings().getGridInfo().getColumns();
+        int numColumns = context.getViewSettings().getGridInfo().getMeasures();
         for (int i = 0; i < numColumns; i += 16) {
             TimelineMarker marker = new TimelineMarker(i / 16, context);
-            marker.setTranslateX(i * context.getViewSettings().getGridInfo().getCellWidth());
+            marker.setTranslateX(i * context.getViewSettings().getGridInfo().getBeatDisplayWidth());
             marker.setTranslateY(0);
             marker.setTranslateZ(10);
             world.getChildren().add(marker);
@@ -143,8 +142,8 @@ public class TimelineView extends AnchorPane {
             context.getViewSettings().gridInfoProperty().addListener((observable, oldValue, newValue) -> {
                 var gi = newValue;
                 var playback = context.getPlayback().getState();
-                double x = playback.getHead() * gi.getCellWidth();
-                double width = (playback.getTail() - playback.getHead()) * gi.getCellWidth();
+                double x = playback.getHead() * gi.getBeatDisplayWidth();
+                double width = (playback.getTail() - playback.getHead()) * gi.getBeatDisplayWidth();
                 setX(x);
                 setWidth(width);
             });
@@ -175,17 +174,17 @@ public class TimelineView extends AnchorPane {
             var playback = context.getPlayback();
 
             double x = unsnappedX + deltaX;
-            x = GridMath.snapToGridX(gi, x);
-            x = Util.clamp(x, 0, gi.getTotalWidth() - gi.getCellWidth());
+            x = gi.snapWorldXToNearestStep(x) * gi.getStepDisplayWidth();
+            x = Util.clamp(x, 0, gi.getTotalWidth() - gi.getBeatDisplayWidth());
             unsnappedX += deltaX;
 
             double width = unsnappedWidth - deltaX;
-            width = GridMath.snapToGridX(gi, width) + gi.getCellWidth();
-            width = Util.clamp(width, gi.getCellWidth(), gi.getTotalWidth() - x);
+            width =(gi.snapWorldXToNearestStep(width) + gi.getStepDisplayWidth()) + gi.getBeatDisplayWidth();
+            width = Util.clamp(width, gi.getBeatDisplayWidth(), gi.getTotalWidth() - x);
             unsnappedWidth -= deltaX;
 
-            double head = Math.floor(x / gi.getCellWidth());
-            double tail = Math.floor((x + width) / gi.getCellWidth());
+            double head = Math.floor(x / gi.getBeatDisplayWidth());
+            double tail = Math.floor((x + width) / gi.getBeatDisplayWidth());
 
             setX(x);
             setWidth(width);
@@ -197,23 +196,23 @@ public class TimelineView extends AnchorPane {
             var gi = context.getViewSettings().getGridInfo();
             var playback = context.getPlayback();
             var x = unsnappedX + deltaX;
-            x = GridMath.snapToGridX(gi, x);
+            x = gi.snapWorldXToNearestStep(x) * gi.getStepDisplayWidth();
             x = Util.clamp(x, 0, gi.getTotalWidth() - getWidth());
             unsnappedX += deltaX;
             setX(x);
-            playback.setHead(Math.floor(x / gi.getCellWidth()));
-            playback.setTail(Math.floor((x + getWidth()) / gi.getCellWidth()));
+            playback.setHead(Math.floor(x / gi.getBeatDisplayWidth()));
+            playback.setTail(Math.floor((x + getWidth()) / gi.getBeatDisplayWidth()));
         }
 
         private void onRightHandleDragged(MouseEvent event) {
             var gi = context.getViewSettings().getGridInfo();
             var playback = context.getPlayback();
             double width = unsnappedWidth + deltaX;
-            width = GridMath.snapToGridX(gi, width);
-            width = Util.clamp(width, gi.getCellWidth(), gi.getTotalWidth() - getX());
+            width = gi.snapWorldXToNearestStep(width) * gi.getStepDisplayWidth();
+            width = Util.clamp(width, gi.getBeatDisplayWidth(), gi.getTotalWidth() - getX());
             unsnappedWidth += deltaX;
             setWidth(width);
-            playback.setTail(Math.floor((unsnappedX + width) / gi.getCellWidth()));
+            playback.setTail(Math.floor((unsnappedX + width) / gi.getBeatDisplayWidth()));
         }
 
 
@@ -244,7 +243,7 @@ public class TimelineView extends AnchorPane {
 
             // whenever gridInfo changes, repostion the marker
             context.getViewSettings().gridInfoProperty().addListener((observable, oldValue, newValue) -> {
-                this.setTranslateX(columnIndex * 16 * newValue.getCellWidth());
+                this.setTranslateX(columnIndex * 16 * newValue.getBeatDisplayWidth());
                 this.setTranslateY(0);
             });
         }

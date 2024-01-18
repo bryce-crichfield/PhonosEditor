@@ -53,7 +53,7 @@ public class MidiEditor {
 
         // Create the editor context -----------------------------------------------------------------------------------
         {
-            var gridInfo = new GridInfo(88, 16 * 16, 32, 16);
+            var gridInfo = new GridInfo(88, 4, 32, 16, 1);
             var viewSettings = new ViewSettings(gridInfo, true);
 
             var noteRegistry = new NoteRegistry();
@@ -105,9 +105,9 @@ public class MidiEditor {
 
             Runnable zoomHorizontal = () -> {
                 double percentage = delta / 1000;
-                double newCellWidth = context.getViewSettings().getGridInfo().getCellWidth() * (1 + percentage);
+                double newCellWidth = context.getViewSettings().getGridInfo().getBeatDisplayWidth() * (1 + percentage);
                 var gi = context.getViewSettings().getGridInfo();
-                var newGi = gi.withCellWidth(newCellWidth);
+                var newGi = gi.withBeatDisplayWidth(newCellWidth);
                 context.getViewSettings().setGridInfo(newGi);
             };
 
@@ -191,8 +191,8 @@ public class MidiEditor {
                 int lowestStart = Integer.MAX_VALUE;
                 int highestEnd = Integer.MIN_VALUE;
                 for (NoteEntry entry : selected) {
-                    lowestStart = Math.min(lowestStart, entry.get().getStart());
-                    highestEnd = Math.max(highestEnd, entry.get().getEnd());
+                    lowestStart = Math.min(lowestStart, entry.get().getStartStep());
+                    highestEnd = Math.max(highestEnd, entry.get().getEndStep());
                 }
 
                 // Create a new pattern with the same length as the selected pattern
@@ -201,8 +201,8 @@ public class MidiEditor {
                 for (NoteEntry entry : selected) {
                     NoteData data = entry.get();
 
-                    int newStart = data.getStart() + length;
-                    int newEnd = data.getEnd() + length;
+                    int newStart = data.getStartStep() + length;
+                    int newEnd = data.getEndStep() + length;
                     NoteData newData = new NoteData(data.getPitch(), newStart, newEnd, data.getVelocity());
                     newNotes.add(newData);
                 }
@@ -277,14 +277,17 @@ public class MidiEditor {
         // When scrolled, move the note pattern editor and note parameter editor by the same amount as along the
         // width of the background surface as the percentage scrolled along the scroll bar
         horizontalScrollBar.setOnHandleScroll(scroll -> {
-            double newTranslateX = scroll.getRelativePosition() * noteMidiEditor.getBackgroundSurface().getWidth();
-            newTranslateX = Util.map(newTranslateX, 0, noteMidiEditor.getBackgroundSurface().getWidth(), 0,
-                                     noteMidiEditor.getBackgroundSurface().getWidth() - noteMidiEditor.getWidth()
-            );
-            noteMidiEditor.scrollToX(-newTranslateX);
-            noteParameterEditor.scrollX(-newTranslateX);
-            timelineView.scrollX(-newTranslateX);
+            var grid = context.getViewSettings().gridInfoProperty().get();
+            double newTranslateX = scroll.getRelativePosition() * grid.getTotalWidth();
+            if (grid.getTotalWidth() > noteMidiEditor.getWidth()) {
+                newTranslateX = Util.map(newTranslateX, 0, grid.getTotalWidth(), 0,
+                                         grid.getTotalWidth() - noteMidiEditor.getWidth()
+                );
 
+                noteMidiEditor.scrollToX(-newTranslateX);
+                noteParameterEditor.scrollX(-newTranslateX);
+                timelineView.scrollX(-newTranslateX);
+            }
         });
 
         HBox bottomBox = new HBox();

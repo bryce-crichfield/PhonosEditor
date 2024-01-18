@@ -75,7 +75,7 @@ class NoteParameterView extends Rectangle {
             double ty = this.getTranslateY() + dy;
             double velocity = Util.clamp(1 - (ty / parent.getHeight()), 0, 1);
 
-            context.getNoteService().modify(noteEntry, data -> data.withVelocity((int) (velocity * 100)));
+            context.getNoteService().modify(noteEntry, entry -> entry.get().withVelocity((int) (velocity * 100)));
         });
 
         // Sheet Metal gradient
@@ -104,7 +104,7 @@ class NoteParameterView extends Rectangle {
 
         this.setTranslateX(x);
         this.setTranslateY(y);
-        this.setWidth(gridInfo.getCellWidth());
+        this.setWidth(gridInfo.getBeatDisplayWidth());
         this.setHeight(parent.getHeight());
 
         calculateColor();

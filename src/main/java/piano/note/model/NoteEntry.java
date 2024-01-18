@@ -5,6 +5,16 @@ import javafx.beans.property.*;
 import java.util.*;
 
 public class NoteEntry extends SimpleObjectProperty<NoteData> {
+    private double unsnappedX;
+
+    public double getUnsnappedX() {
+        return unsnappedX;
+    }
+
+    public void setUnsnappedX(double unsnappedX) {
+        this.unsnappedX = unsnappedX;
+    }
+
     private Optional<NoteGroup> group = Optional.empty();
 
     public NoteEntry(NoteData note) {

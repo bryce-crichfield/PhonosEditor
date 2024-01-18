@@ -17,7 +17,7 @@ public class PlayHeadView extends Rectangle {
 
         context.getPlayback().observe((old, now) -> {
             GridInfo gi = context.getViewSettings().getGridInfo();
-            double x = now.getValue() * gi.getCellWidth();
+            double x = now.getValue() * gi.getBeatDisplayWidth();
             this.setTranslateX(x);
             this.toFront();
         });

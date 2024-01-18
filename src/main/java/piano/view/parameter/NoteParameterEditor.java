@@ -37,7 +37,7 @@ public class NoteParameterEditor extends AnchorPane {
         background = gridInfo.get().createRectangle();
         background.setFill(Theme.BACKGROUND);
         gridInfo.addListener((observable, oldValue, newValue) -> {
-            background.setWidth(newValue.getColumns() * newValue.getCellWidth());
+            background.setWidth(newValue.getMeasures() * newValue.getBeatDisplayWidth());
             background.setHeight(newValue.getRows() * newValue.getCellHeight());
         });
         background.setTranslateZ(0);
@@ -99,7 +99,7 @@ public class NoteParameterEditor extends AnchorPane {
         for (NoteParameterView view : views) {
             NoteEntry noteEntry = view.getNoteEntry();
             NoteData noteData = noteEntry.get();
-            int index = noteData.getStart();
+            int index = noteData.getStartStep();
             double velocity = noteData.getVelocity();
             double currentLowestVelocity = velocityMap.getOrDefault(index, 100.0);
 
@@ -116,7 +116,7 @@ public class NoteParameterEditor extends AnchorPane {
         var gi = context.getViewSettings().gridInfoProperty();
 
         double rows = gi.get().getRows();
-        double columns = gi.get().getColumns();
+        double columns = gi.get().getMeasures();
 
         // Draw the vertical lines
         Color vertLineLight = Theme.BACKGROUND.brighter();
@@ -126,7 +126,7 @@ public class NoteParameterEditor extends AnchorPane {
             Rectangle rect = new Rectangle();
             int finalCol = col;
             gi.addListener((observable, oldValue, newValue) -> {
-                rect.setX(newValue.getCellWidth() * finalCol);
+                rect.setX(newValue.getBeatDisplayWidth() * finalCol);
                 rect.setY(0);
                 rect.setWidth(1);
                 rect.setHeight(newValue.getRows() * newValue.getCellHeight());
@@ -149,6 +149,31 @@ public class NoteParameterEditor extends AnchorPane {
         vboxProps.setAlignment(Pos.CENTER);
 
         // Add options to Zoom Level Combo Box -------------------------------------------------------------------------
+        Spinner<Integer> measureCount = new Spinner<>(1, 100, 1);
+        measureCount.setPrefWidth(100);
+        measureCount.setEditable(true);
+        vboxProps.getChildren().add(measureCount);
+        measureCount.valueProperty().addListener(($0, $1, value) -> {
+            GridInfo gridInfo = context.getViewSettings().gridInfoProperty().get();
+            gridInfo = gridInfo.withMeasures(value);
+            context.getViewSettings().gridInfoProperty().set(gridInfo);
+        });
+
+
+        ComboBox<String> snapSelect = new ComboBox<>();
+        snapSelect.setPrefWidth(100);
+        snapSelect.getItems().addAll("4/1", "2/1", "1/1", "1/2", "1/3", "1/4", "1/6", "1/8", "1/12", "1/16", "1/32");
+        snapSelect.setValue("1/4");
+        vboxProps.getChildren().add(snapSelect);
+        snapSelect.valueProperty().addListener(($0, $1, value) -> {
+            double parsedFraction = Double.parseDouble(value.split("/")[0]) / Double.parseDouble(value.split("/")[1]);
+            double inverse = 1 / parsedFraction;
+            GridInfo gridInfo = context.getViewSettings().gridInfoProperty().get();
+            gridInfo = gridInfo.withSnapSize(inverse);
+            context.getViewSettings().gridInfoProperty().set(gridInfo);
+        });
+
+
         ComboBox<String> parameterSelect = new ComboBox<>();
         parameterSelect.setPrefWidth(100);
         parameterSelect.getItems().addAll("Velocity", "Pitch", "Duration");
