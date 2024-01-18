@@ -35,7 +35,7 @@ public class MidiEditor {
     ToggleGroup tools = new ToggleGroup();
     // Non-FXML (Note editor)
     private SplitPane splitPane;
-    private NoteMidiEditor noteMidiEditor;
+    private NoteEditorView noteViewEditor;
     private NoteParameterEditor noteParameterEditor;
     private NoteEditorPianoView pianoView;
     private MidiEditorContext context;
@@ -53,11 +53,11 @@ public class MidiEditor {
 
         // Create the editor context -----------------------------------------------------------------------------------
         {
-            var gridInfo = new GridInfo(88, 4, 32, 16, 1);
+            var gridInfo = new GridInfo(88, 16, 32, 16, 1);
             var viewSettings = new ViewSettings(gridInfo, true);
 
             var noteRegistry = new NoteRegistry();
-            var playbackState = new PlaybackState(0, 4, 120, false);
+            var playbackState = new PlaybackState(0, 256, 120, false);
 
             var playbackService = new BasePlaybackService(new SimpleObjectProperty<>(playbackState));
             var noteService = new NoteService(noteRegistry);
@@ -73,8 +73,8 @@ public class MidiEditor {
         {
             // The pattern editor represents the world as a large rectangle with a grid drawn on it.  The large
             // rectangle is the background surface, and the grid is drawn on top of it.
-            noteMidiEditor = new NoteMidiEditor(context, currentTool);
-            bodyBorderPane.setCenter(noteMidiEditor);
+            noteViewEditor = new NoteEditorView(context, currentTool);
+            bodyBorderPane.setCenter(noteViewEditor);
 
             noteParameterEditor = new NoteParameterEditor(context);
             noteParameterEditor.setMinHeight(100);
@@ -85,7 +85,7 @@ public class MidiEditor {
         initHorizontalScrollBar();
 
         // Initialize scrolling ---------------------------------------------------------------------------------------
-        noteMidiEditor.setOnScroll((EventHandler<? super ScrollEvent>) event -> {
+        noteViewEditor.setOnScroll((EventHandler<? super ScrollEvent>) event -> {
             // None  -> Vertical scroll
             // Shift -> Horizontal scroll
             // Ctrl -> Zoom Both (Vertical and Horizontal)
@@ -138,13 +138,13 @@ public class MidiEditor {
         });
 
         // When dragging the mouse, scroll the screen if the mouse is near the edge of the screen ----------------------
-        noteMidiEditor.setOnMouseDragged(event -> {
+        noteViewEditor.setOnMouseDragged(event -> {
             // if nearing the edge of the screen, scroll the screen
             double x = event.getX();
             double y = event.getY();
 
-            double width = noteMidiEditor.getWidth();
-            double height = noteMidiEditor.getHeight();
+            double width = noteViewEditor.getWidth();
+            double height = noteViewEditor.getHeight();
 
             double scrollSpeed = 25;
 
@@ -219,12 +219,13 @@ public class MidiEditor {
                     group.add(entry);
                 }
             }
+
         });
 
         // Initialize piano roll ---------------------------------------------------------------------------------------
         {
             pianoView = new NoteEditorPianoView(context);
-            noteMidiEditor.heightProperty().addListener((observable, oldValue, newValue) -> {
+            noteViewEditor.heightProperty().addListener((observable, oldValue, newValue) -> {
                 pianoView.setPrefHeight(newValue.doubleValue());
             });
             bodyBorderPane.setLeft(pianoView);
@@ -236,12 +237,12 @@ public class MidiEditor {
             tools.getToggles().add(toggleToolPencil);
             tools.getToggles().add(toggleToolSlice);
 
-            toggleToolSelect.setOnAction(event -> noteMidiEditor.setTool(
-                    new SelectTool(noteMidiEditor, noteMidiEditor.getWorld(), context)));
+            toggleToolSelect.setOnAction(event -> noteViewEditor.setTool(
+                    new SelectTool(noteViewEditor, noteViewEditor.getWorld(), context)));
 
-            toggleToolPencil.setOnAction(event -> noteMidiEditor.setTool(new PencilTool(noteMidiEditor, context)));
+            toggleToolPencil.setOnAction(event -> noteViewEditor.setTool(new PencilTool(noteViewEditor, context)));
 
-            toggleToolSlice.setOnAction(event -> noteMidiEditor.setTool(new SliceTool()));
+            toggleToolSlice.setOnAction(event -> noteViewEditor.setTool(new SliceTool()));
 
         }
 
@@ -279,12 +280,12 @@ public class MidiEditor {
         horizontalScrollBar.setOnHandleScroll(scroll -> {
             var grid = context.getViewSettings().gridInfoProperty().get();
             double newTranslateX = scroll.getRelativePosition() * grid.getTotalWidth();
-            if (grid.getTotalWidth() > noteMidiEditor.getWidth()) {
+            if (grid.getTotalWidth() > noteViewEditor.getWidth()) {
                 newTranslateX = Util.map(newTranslateX, 0, grid.getTotalWidth(), 0,
-                                         grid.getTotalWidth() - noteMidiEditor.getWidth()
+                                         grid.getTotalWidth() - noteViewEditor.getWidth()
                 );
 
-                noteMidiEditor.scrollToX(-newTranslateX);
+                noteViewEditor.scrollToX(-newTranslateX);
                 noteParameterEditor.scrollX(-newTranslateX);
                 timelineView.scrollX(-newTranslateX);
             }
@@ -309,11 +310,11 @@ public class MidiEditor {
         // When scrolled, move the note pattern editor and piano roll by the same amount as along the height of the
         // background surface as the percentage scrolled along the scroll bar
         verticalScrollBar.setOnHandleScroll(scroll -> {
-            double newTranslateY = scroll.getRelativePosition() * noteMidiEditor.getBackgroundSurface().getHeight();
-            newTranslateY = Util.map(newTranslateY, 0, noteMidiEditor.getBackgroundSurface().getHeight(), 0,
-                                     noteMidiEditor.getBackgroundSurface().getHeight() - noteMidiEditor.getHeight()
+            double newTranslateY = scroll.getRelativePosition() * noteViewEditor.getBackgroundSurface().getHeight();
+            newTranslateY = Util.map(newTranslateY, 0, noteViewEditor.getBackgroundSurface().getHeight(), 0,
+                                     noteViewEditor.getBackgroundSurface().getHeight() - noteViewEditor.getHeight()
             );
-            noteMidiEditor.scrollToY(-newTranslateY);
+            noteViewEditor.scrollToY(-newTranslateY);
             pianoView.scrollY(-newTranslateY);
         });
 

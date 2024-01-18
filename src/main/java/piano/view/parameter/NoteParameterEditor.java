@@ -111,32 +111,32 @@ public class NoteParameterEditor extends AnchorPane {
     }
 
     public Group createGrid() {
-        Group grid = new Group();
-
+        Group verticalLines = new Group();
         var gi = context.getViewSettings().gridInfoProperty();
+        gi.addListener(($0, $1, newGi) -> {
+            verticalLines.getChildren().clear();
 
-        double rows = gi.get().getRows();
-        double columns = gi.get().getMeasures();
-
-        // Draw the vertical lines
-        Color vertLineLight = Theme.BACKGROUND.brighter();
-        Color vertLineDark = Theme.BACKGROUND.darker().darker();
-
-        for (int col = 0; col < columns; col++) {
-            Rectangle rect = new Rectangle();
-            int finalCol = col;
-            gi.addListener((observable, oldValue, newValue) -> {
-                rect.setX(newValue.getBeatDisplayWidth() * finalCol);
+            for (int step = 0; step < newGi.getTotalSteps(); step++) {
+                Rectangle rect = new Rectangle();
+                rect.setX(newGi.getBeatDisplayWidth() / newGi.getSnapSize() * step);
                 rect.setY(0);
                 rect.setWidth(1);
-                rect.setHeight(newValue.getRows() * newValue.getCellHeight());
-            });
-            rect.setDisable(true);
-            rect.setFill(col % 4 == 0 ? vertLineLight : vertLineDark);
-            grid.getChildren().add(rect);
-        }
+                rect.setHeight(newGi.getTotalHeight());
 
-        return grid;
+                rect.setDisable(true);
+
+                Color color = Theme.GRAY_3;
+                if (step % newGi.getSnapSize() == 0)
+                    color = Theme.GRAY_4;
+                if (step % (newGi.getSnapSize() * newGi.getTime().getNumerator()) == 0)
+                    color = Theme.GRAY_5;
+                rect.setFill(color);
+
+                verticalLines.getChildren().add(rect);
+            }
+        });
+
+        return verticalLines;
     }
 
     private Pane makeViewPropsPanel() {

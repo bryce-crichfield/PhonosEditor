@@ -10,10 +10,10 @@ import piano.view.midi.*;
 import piano.view.settings.*;
 
 public class PencilTool implements EditorTool {
-    private final NoteMidiEditor view;
+    private final NoteEditorView view;
     private final MidiEditorContext context;
 
-    public PencilTool(NoteMidiEditor view, MidiEditorContext context) {
+    public PencilTool(NoteEditorView view, MidiEditorContext context) {
         super();
         this.view = view;
         this.context = context;
@@ -55,22 +55,22 @@ public class PencilTool implements EditorTool {
             Node node = pickResult.getIntersectedNode();
             // We intersect the text of the note?  I guess this works, we just need to check the parent tree
             // For the noteMidiView and if we have it, we can remove it
-            NoteMidiView noteMidiView = null;
-            if (node instanceof NoteMidiView parentNoteMidiView) {
-                noteMidiView = parentNoteMidiView;
+            NoteView noteView = null;
+            if (node instanceof NoteView parentNoteView) {
+                noteView = parentNoteView;
             } else {
                 Node parent = node.getParent();
                 while (parent != null) {
-                    if (parent instanceof NoteMidiView parentNoteMidiView) {
-                        noteMidiView = parentNoteMidiView;
+                    if (parent instanceof NoteView parentNoteView) {
+                        noteView = parentNoteView;
                         break;
                     }
                     parent = parent.getParent();
                 }
             }
 
-            if (noteMidiView != null) {
-                context.getNoteService().delete(noteMidiView.getNoteEntry());
+            if (noteView != null) {
+                context.getNoteService().delete(noteView.getNoteEntry());
             }
         }
 

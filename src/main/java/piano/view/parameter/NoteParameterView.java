@@ -53,11 +53,14 @@ class NoteParameterView extends Rectangle {
 
         this.setOnMouseEntered(event -> {
             this.setStrokeWidth(1);
+
+            context.getNoteService().getSelection().add(noteEntry);
         });
 
         this.setOnMouseExited(event -> {
             this.getScene().setCursor(javafx.scene.Cursor.DEFAULT);
             this.setStrokeWidth(2);
+            context.getNoteService().getSelection().remove(noteEntry);
         });
 
 
@@ -96,15 +99,16 @@ class NoteParameterView extends Rectangle {
 
     private void recalculateViewFromModel() {
         var note = this.noteEntry.get();
-
         var gridInfo = context.getViewSettings().getGridInfo();
 
-        double x = note.calcXPosOnGrid(gridInfo);
+        double width = 10;
+
+        double x = note.calcXPosOnGrid(gridInfo) - width / 2;
         double y = (1 - note.getVelocityAsPercentage()) * parent.getHeight();
 
         this.setTranslateX(x);
         this.setTranslateY(y);
-        this.setWidth(gridInfo.getBeatDisplayWidth());
+        this.setWidth(width);
         this.setHeight(parent.getHeight());
 
         calculateColor();

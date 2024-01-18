@@ -21,7 +21,7 @@ public class PlaybackView {
 
         playHeadView = new PlayHeadView(heightProp, context);
         playHeadView.setManaged(false);
-        group.getChildren().add(playHeadView);
+//        group.getChildren().add(playHeadView);
 
         rectangle = new Rectangle();
         rectangle.setFill(Color.CYAN.deriveColor(1, 1, 1, 0.15));
@@ -31,21 +31,18 @@ public class PlaybackView {
         rectangle.setDisable(true);
         group.getChildren().add(rectangle);
 
-        context.getPlayback().observe(((oldState, newState) -> {
-            var tail = newState.getTail();
-            var head = newState.getHead();
-            var gi = context.getViewSettings().gridInfoProperty().get();
-            double x = head * gi.getBeatDisplayWidth();
-            double width = newState.getDuration() * gi.getBeatDisplayWidth();
+        context.getPlayback().observe((($0, playback) -> {
+            var grid = context.getViewSettings().gridInfoProperty().get();
+            double x = playback.getHead() * grid.getStepDisplayWidth();
+            double width = (playback.getTail() - playback.getHead()) * grid.getStepDisplayWidth();
             rectangle.setX(x);
             rectangle.setWidth(width);
         }));
 
-        context.getViewSettings().gridInfoProperty().addListener((observable, oldValue, newValue) -> {
-            var gi = newValue;
+        context.getViewSettings().gridInfoProperty().addListener(($0, $1, grid) -> {
             var playback = context.getPlayback().getState();
-            double x = playback.getHead() * gi.getBeatDisplayWidth();
-            double width = (playback.getTail() - playback.getHead()) * gi.getBeatDisplayWidth();
+            double x = playback.getHead() * grid.getStepDisplayWidth();
+            double width = (playback.getTail() - playback.getHead()) * grid.getStepDisplayWidth();
             rectangle.setX(x);
             rectangle.setWidth(width);
         });

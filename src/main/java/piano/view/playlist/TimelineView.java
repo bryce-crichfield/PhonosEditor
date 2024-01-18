@@ -9,6 +9,8 @@ import javafx.scene.paint.*;
 import javafx.scene.shape.*;
 import javafx.scene.text.*;
 import piano.*;
+import piano.util.*;
+import piano.view.settings.*;
 
 
 public class TimelineView extends AnchorPane {
@@ -54,10 +56,12 @@ public class TimelineView extends AnchorPane {
         this.getChildren().add(scene);
 
         // generate the timeline markers and add them to the world
-        int numColumns = context.getViewSettings().getGridInfo().getMeasures();
-        for (int i = 0; i < numColumns; i += 16) {
-            TimelineMarker marker = new TimelineMarker(i / 16, context);
-            marker.setTranslateX(i * context.getViewSettings().getGridInfo().getBeatDisplayWidth());
+        int measures = context.getViewSettings().getGridInfo().getMeasures();
+        for (int i = 0; i < measures; i ++) {
+            TimelineMarker marker = new TimelineMarker(i, context);
+            var gi = context.getViewSettings().getGridInfo();
+            double x = i * gi.getTotalWidth() / measures;
+            marker.setTranslateX(x);
             marker.setTranslateY(0);
             marker.setTranslateZ(10);
             world.getChildren().add(marker);
@@ -83,8 +87,8 @@ public class TimelineView extends AnchorPane {
         private final StringProperty currentHandle = new SimpleStringProperty("None");
         private boolean isDragging = false;
 
-        private double unsnappedX = 0;
-        private double unsnappedWidth = 0;
+        private double unsnappedStart;
+        private double unsnappedEnd;
 
         private double lastX = 0;
         private double deltaX = 0;
@@ -107,8 +111,8 @@ public class TimelineView extends AnchorPane {
 
             this.setOnMousePressed((event) -> {
                 this.isDragging = true;
-                unsnappedX = getX();
-                unsnappedWidth = getWidth();
+                unsnappedStart = getX();
+                unsnappedEnd = getX() + getWidth();
                 lastX = event.getX();
                 chooseHandle(event);
             });
@@ -139,11 +143,10 @@ public class TimelineView extends AnchorPane {
                 }
             });
 
-            context.getViewSettings().gridInfoProperty().addListener((observable, oldValue, newValue) -> {
-                var gi = newValue;
+            context.getViewSettings().gridInfoProperty().addListener(($0, $1, grid) -> {
                 var playback = context.getPlayback().getState();
-                double x = playback.getHead() * gi.getBeatDisplayWidth();
-                double width = (playback.getTail() - playback.getHead()) * gi.getBeatDisplayWidth();
+                double x = playback.getHead() * grid.getStepDisplayWidth();
+                double width = playback.getDuration() * grid.getStepDisplayWidth();
                 setX(x);
                 setWidth(width);
             });
@@ -170,51 +173,48 @@ public class TimelineView extends AnchorPane {
         }
 
         private void onLeftHandleDragged(MouseEvent event) {
-            var gi = context.getViewSettings().getGridInfo();
+            var grid = context.getViewSettings().getGridInfo();
             var playback = context.getPlayback();
 
-            double x = unsnappedX + deltaX;
-            x = gi.snapWorldXToNearestStep(x) * gi.getStepDisplayWidth();
-            x = Util.clamp(x, 0, gi.getTotalWidth() - gi.getBeatDisplayWidth());
-            unsnappedX += deltaX;
+            unsnappedStart += deltaX;
+            double startSteps = grid.snapWorldXToNearestStep(unsnappedStart);
+            double endSteps = playback.getState().getTail();
 
-            double width = unsnappedWidth - deltaX;
-            width =(gi.snapWorldXToNearestStep(width) + gi.getStepDisplayWidth()) + gi.getBeatDisplayWidth();
-            width = Util.clamp(width, gi.getBeatDisplayWidth(), gi.getTotalWidth() - x);
-            unsnappedWidth -= deltaX;
+            setX(startSteps * grid.getStepDisplayWidth());
+            setWidth((endSteps - startSteps) * grid.getStepDisplayWidth());
 
-            double head = Math.floor(x / gi.getBeatDisplayWidth());
-            double tail = Math.floor((x + width) / gi.getBeatDisplayWidth());
-
-            setX(x);
-            setWidth(width);
-            playback.setHead(head);
-            playback.setTail(tail);
+            playback.setHead(startSteps);
+            playback.setTail(endSteps);
         }
 
         private void onCenterHandleDragged(MouseEvent event) {
-            var gi = context.getViewSettings().getGridInfo();
+            var grid = context.getViewSettings().getGridInfo();
             var playback = context.getPlayback();
-            var x = unsnappedX + deltaX;
-            x = gi.snapWorldXToNearestStep(x) * gi.getStepDisplayWidth();
-            x = Util.clamp(x, 0, gi.getTotalWidth() - getWidth());
-            unsnappedX += deltaX;
-            setX(x);
-            playback.setHead(Math.floor(x / gi.getBeatDisplayWidth()));
-            playback.setTail(Math.floor((x + getWidth()) / gi.getBeatDisplayWidth()));
+
+            unsnappedStart += deltaX;
+            double startSteps = grid.snapWorldXToNearestStep(unsnappedStart);
+
+            unsnappedEnd += deltaX;
+            double endSteps = grid.snapWorldXToNearestStep(unsnappedEnd);
+
+            setX(startSteps * grid.getStepDisplayWidth());
+            setWidth((endSteps - startSteps) * grid.getStepDisplayWidth());
+
+            playback.setHead(startSteps);
+            playback.setTail(endSteps);
         }
 
         private void onRightHandleDragged(MouseEvent event) {
-            var gi = context.getViewSettings().getGridInfo();
+            var grid = context.getViewSettings().getGridInfo();
             var playback = context.getPlayback();
-            double width = unsnappedWidth + deltaX;
-            width = gi.snapWorldXToNearestStep(width) * gi.getStepDisplayWidth();
-            width = Util.clamp(width, gi.getBeatDisplayWidth(), gi.getTotalWidth() - getX());
-            unsnappedWidth += deltaX;
-            setWidth(width);
-            playback.setTail(Math.floor((unsnappedX + width) / gi.getBeatDisplayWidth()));
-        }
 
+            unsnappedEnd += deltaX;
+            double endSteps = grid.snapWorldXToNearestStep(unsnappedEnd);
+            double startSteps = playback.getState().getHead();
+
+            setWidth((endSteps - startSteps) * grid.getStepDisplayWidth());
+            playback.setTail(endSteps);
+        }
 
         private void chooseHandle(MouseEvent event) {
             if (event.getX() < getX() + HANDLE_WIDTH) {
@@ -235,15 +235,16 @@ public class TimelineView extends AnchorPane {
         Text text;
         int columnIndex;
 
-        TimelineMarker(int columnIndex, MidiEditorContext context) {
-            this.columnIndex = columnIndex;
+        TimelineMarker(int measure, MidiEditorContext context) {
+            this.columnIndex = measure;
 
-            text = new Text(Integer.toString(columnIndex + 1));
+            text = new Text(Integer.toString(measure + 1));
             this.getChildren().addAll(text);
 
             // whenever gridInfo changes, repostion the marker
-            context.getViewSettings().gridInfoProperty().addListener((observable, oldValue, newValue) -> {
-                this.setTranslateX(columnIndex * 16 * newValue.getBeatDisplayWidth());
+            context.getViewSettings().gridInfoProperty().addListener(($0, $1, grid) -> {
+                double width = grid.getTotalWidth() / grid.getMeasures();
+                this.setTranslateX(measure * width);
                 this.setTranslateY(0);
             });
         }

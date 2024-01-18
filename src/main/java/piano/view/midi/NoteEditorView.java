@@ -14,13 +14,13 @@ import piano.view.settings.*;
 import java.util.*;
 
 
-public class NoteMidiEditor extends AnchorPane {
+public class NoteEditorView extends AnchorPane {
     private final MidiEditorContext context;
     private final Rectangle background;
     private final Group world;
     private final ObjectProperty<Optional<EditorTool>> currentTool;
 
-    public NoteMidiEditor(MidiEditorContext context, ObjectProperty<Optional<EditorTool>> currentTool) {
+    public NoteEditorView(MidiEditorContext context, ObjectProperty<Optional<EditorTool>> currentTool) {
         this.context = context;
         this.currentTool = currentTool;
 
@@ -63,13 +63,13 @@ public class NoteMidiEditor extends AnchorPane {
 
         // Bind view to model ------------------------------------------------------------------------------------------
         context.getNoteService().getRegistry().onCreatedListener((entry, oldData, newData) -> {
-            var noteMidiView = new NoteMidiView(entry, context, currentTool);
+            var noteMidiView = NoteViewFactory.create(entry, context, currentTool);
             world.getChildren().add(noteMidiView);
         });
 
         context.getNoteService().getRegistry().onDeletedListener((entry, oldData, newData) -> {
             world.getChildren()
-                    .removeIf(node -> node instanceof NoteMidiView view && view.getNoteEntry().equals(entry));
+                    .removeIf(node -> node instanceof NoteView view && view.getNoteEntry().equals(entry));
         });
 
         // Not a fan of how this just adds itself to the world, but I haven't changed it yet

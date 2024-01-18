@@ -22,10 +22,10 @@ public class SelectTool implements EditorTool {
 
     private final MidiEditorContext context;
     private final Group world;
-    private final NoteMidiEditor editor;
+    private final NoteEditorView editor;
     private Optional<SelectionBox> currentBox;
 
-    public SelectTool(NoteMidiEditor editor, Group world, MidiEditorContext context) {
+    public SelectTool(NoteEditorView editor, Group world, MidiEditorContext context) {
         this.world = world;
         this.editor = editor;
         this.context = context;
