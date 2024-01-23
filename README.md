@@ -1,8 +1,8 @@
-# Phonos MIDI Editor
+# Phonos Editor
 
 ## Overview
 
-Welcome to Phonos MIDI Editor! This application is designed to empower users in creating dynamic and expressive MIDI scores with unparalleled ease. Whether you're a seasoned composer or just starting your musical journey, Phonos provides a user-friendly platform for crafting intricate MIDI compositions.
+Welcome to Phonos Editor! This application is designed to empower users in creating dynamic and expressive MIDI scores with unparalleled ease. Whether you're a seasoned composer or just starting your musical journey, Phonos provides a user-friendly platform for crafting intricate MIDI compositions.
 
 ## Features
 
