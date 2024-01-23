@@ -114,7 +114,7 @@ public class NoteEditorView extends AnchorPane {
         gi.addListener(($0, $1, newGi) -> {
             verticalLines.getChildren().clear();
 
-            for (int step = 0; step < newGi.getTotalSteps(); step++) {
+            for (int step = 0; step < newGi.getTotalSnaps(); step++) {
                 Rectangle rect = new Rectangle();
                 rect.setX(newGi.getBeatDisplayWidth() / newGi.getSnapSize() * step);
                 rect.setY(0);

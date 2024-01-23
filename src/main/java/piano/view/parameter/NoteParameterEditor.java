@@ -116,7 +116,7 @@ public class NoteParameterEditor extends AnchorPane {
         gi.addListener(($0, $1, newGi) -> {
             verticalLines.getChildren().clear();
 
-            for (int step = 0; step < newGi.getTotalSteps(); step++) {
+            for (int step = 0; step < newGi.getTotalSnaps(); step++) {
                 Rectangle rect = new Rectangle();
                 rect.setX(newGi.getBeatDisplayWidth() / newGi.getSnapSize() * step);
                 rect.setY(0);
@@ -179,7 +179,6 @@ public class NoteParameterEditor extends AnchorPane {
             // Load the ViewSettings.fxml file and create a new stage for the popup dialog
             FXMLLoader loader = new FXMLLoader();
             Stage stage = new Stage();
-
             loader.setController(new ViewSettingsController(context, stage));
             loader.setLocation(MidiEditor.class.getResource("/ViewSettings.fxml"));
             Parent root = null;

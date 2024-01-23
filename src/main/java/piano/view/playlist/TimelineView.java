@@ -9,8 +9,6 @@ import javafx.scene.paint.*;
 import javafx.scene.shape.*;
 import javafx.scene.text.*;
 import piano.*;
-import piano.util.*;
-import piano.view.settings.*;
 
 
 public class TimelineView extends AnchorPane {
@@ -180,6 +178,10 @@ public class TimelineView extends AnchorPane {
             double startSteps = grid.snapWorldXToNearestStep(unsnappedStart);
             double endSteps = playback.getState().getTail();
 
+            if (!insideBounds(startSteps) | !insideBounds(endSteps)) {
+                return;
+            }
+
             setX(startSteps * grid.getStepDisplayWidth());
             setWidth((endSteps - startSteps) * grid.getStepDisplayWidth());
 
@@ -197,6 +199,10 @@ public class TimelineView extends AnchorPane {
             unsnappedEnd += deltaX;
             double endSteps = grid.snapWorldXToNearestStep(unsnappedEnd);
 
+            if (!insideBounds(startSteps) | !insideBounds(endSteps)) {
+                return;
+            }
+
             setX(startSteps * grid.getStepDisplayWidth());
             setWidth((endSteps - startSteps) * grid.getStepDisplayWidth());
 
@@ -212,8 +218,17 @@ public class TimelineView extends AnchorPane {
             double endSteps = grid.snapWorldXToNearestStep(unsnappedEnd);
             double startSteps = playback.getState().getHead();
 
+            if (!insideBounds(startSteps) | !insideBounds(endSteps)) {
+                return;
+            }
+
             setWidth((endSteps - startSteps) * grid.getStepDisplayWidth());
             playback.setTail(endSteps);
+        }
+
+        private boolean insideBounds(double steps) {
+            var grid = context.getViewSettings().getGridInfo();
+            return steps >= 0 && steps <= grid.getTotalSteps();
         }
 
         private void chooseHandle(MouseEvent event) {

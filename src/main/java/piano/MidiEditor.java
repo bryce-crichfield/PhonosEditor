@@ -2,6 +2,7 @@ package piano;
 
 import component.ScrollBar;
 import component.*;
+import javafx.animation.*;
 import javafx.beans.property.*;
 import javafx.event.*;
 import javafx.geometry.*;
@@ -14,6 +15,7 @@ import piano.note.*;
 import piano.note.model.*;
 import piano.playback.*;
 import piano.tool.*;
+import piano.view.*;
 import piano.view.midi.*;
 import piano.view.parameter.*;
 import piano.view.piano.*;
@@ -85,6 +87,9 @@ public class MidiEditor {
         initHorizontalScrollBar();
 
         // Initialize scrolling ---------------------------------------------------------------------------------------
+        SmoothZoomController zoomController = new SmoothZoomController(context);
+        zoomController.spawn();
+
         noteViewEditor.setOnScroll((EventHandler<? super ScrollEvent>) event -> {
             // None  -> Vertical scroll
             // Shift -> Horizontal scroll
@@ -92,49 +97,31 @@ public class MidiEditor {
             // Ctrl + Shift -> Zoom Horizontal
             // Ctrl + Alt -> Zoom Vertical
 
-            // Sometimes the delta is x, and sometimes it is y, so we need to check both, and just use whichever one is
-            // not 0
-            final double delta = event.getDeltaX() == 0 ? event.getDeltaY() : event.getDeltaX();
-            Runnable zoomVertical = () -> {
-                double percentage = delta / 1000;
-                double newCellHeight = context.getViewSettings().getGridInfo().getCellHeight() * (1 + percentage);
-                var gi = context.getViewSettings().getGridInfo();
-                var newGi = gi.withCellHeight(newCellHeight);
-                context.getViewSettings().setGridInfo(newGi);
-            };
-
-            Runnable zoomHorizontal = () -> {
-                double percentage = delta / 1000;
-                double newCellWidth = context.getViewSettings().getGridInfo().getBeatDisplayWidth() * (1 + percentage);
-                var gi = context.getViewSettings().getGridInfo();
-                var newGi = gi.withBeatDisplayWidth(newCellWidth);
-                context.getViewSettings().setGridInfo(newGi);
-            };
-
+            double horizontalDelta = event.getDeltaX();
+            double verticalDelta = event.getDeltaY();
 
             if (event.isControlDown() && event.isShiftDown()) {
-                zoomHorizontal.run();
+                zoomController.shoveHorizontal(horizontalDelta);
                 return;
             }
 
             if (event.isControlDown() && event.isAltDown()) {
-                zoomVertical.run();
+                zoomController.shoveVertical(-verticalDelta);
                 return;
             }
 
             if (event.isControlDown()) {
-                zoomVertical.run();
-                zoomHorizontal.run();
+                zoomController.shoveHorizontal(horizontalDelta);
+                zoomController.shoveVertical(verticalDelta);
                 return;
             }
 
             if (event.isShiftDown()) {
-                horizontalScrollBar.scrollBy(-event.getDeltaY());
+                horizontalScrollBar.scrollBy(horizontalDelta);
                 return;
             }
 
-            verticalScrollBar.scrollBy(-event.getDeltaY());
-            horizontalScrollBar.scrollBy(-event.getDeltaX());
+            verticalScrollBar.scrollBy(verticalDelta);
         });
 
         // When dragging the mouse, scroll the screen if the mouse is near the edge of the screen ----------------------
@@ -148,17 +135,7 @@ public class MidiEditor {
 
             double scrollSpeed = 25;
 
-            if (x < scrollSpeed) {
-                horizontalScrollBar.scrollBy(-scrollSpeed);
-            } else if (x > width - scrollSpeed) {
-                horizontalScrollBar.scrollBy(scrollSpeed);
-            }
-
-            if (y < scrollSpeed) {
-                verticalScrollBar.scrollBy(-scrollSpeed);
-            } else if (y > height - scrollSpeed) {
-                verticalScrollBar.scrollBy(scrollSpeed);
-            }
+            // TODO: Scroll when approaching the edge of the screen
         });
 
         currentTool.addListener((observable, oldValue, newValue) -> {
@@ -291,6 +268,11 @@ public class MidiEditor {
             }
         });
 
+        // whenver grid info changes, update the scroll bar to have the same absolute position
+        context.getViewSettings().gridInfoProperty().addListener(($0, oldGi, newGi) -> {
+        });
+
+
         HBox bottomBox = new HBox();
         Rectangle pianoWidthSpacer = new Rectangle(125, 1);
         pianoWidthSpacer.setFill(Color.TRANSPARENT);
@@ -316,6 +298,11 @@ public class MidiEditor {
             );
             noteViewEditor.scrollToY(-newTranslateY);
             pianoView.scrollY(-newTranslateY);
+        });
+
+        // whenver grid info changes, the scroll bar needs to move such that its at the same center position
+        context.getViewSettings().gridInfoProperty().addListener(($0, oldGi, newGi) -> {
+
         });
 
         rightBox.getChildren().add(verticalScrollBar);

@@ -1,13 +1,16 @@
 package piano.view.settings;
 
+import atlantafx.base.controls.*;
 import javafx.scene.control.*;
 import javafx.stage.*;
 import piano.*;
 
 public class ViewSettingsController {
     private final MidiEditorContext context;
-    public RadioButton showPianoRollNoteLetters;
-    public RadioButton showNoteLetters;
+    public ToggleSwitch showPianoRollNoteLetters;
+    public ToggleSwitch showNoteLetters;
+    public ToggleSwitch smoothScrollEnabled;
+    public ToggleSwitch smoothZoomEnabled;
     public Spinner<Integer> patternLengthSpinner;
     public ColorPicker colorPicker;
     public Button closeStageButton;
@@ -25,6 +28,12 @@ public class ViewSettingsController {
 
         showNoteLetters.selectedProperty().bindBidirectional(
                 context.getViewSettings().showNoteLettersProperty());
+//
+        smoothZoomEnabled.selectedProperty().bindBidirectional(
+                context.getViewSettings().smoothZoomEnabled);
+
+        smoothScrollEnabled.selectedProperty().bindBidirectional(
+                context.getViewSettings().smoothScrollEnabled);
 
         patternLengthSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 64));
         patternLengthSpinner.getValueFactory().setValue(context.getViewSettings().getGridInfo().getMeasures());

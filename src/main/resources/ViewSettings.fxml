@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import atlantafx.base.controls.ToggleSwitch?>
 <TitledPane xmlns:fx="http://javafx.com/fxml"
             xmlns="http://javafx.com/javafx"
             prefHeight="600.0" prefWidth="400.0"
@@ -16,11 +17,17 @@
             <Spinner fx:id="patternLengthSpinner" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
             <Label text="Show Piano Letters" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-            <RadioButton fx:id="showPianoRollNoteLetters" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+            <ToggleSwitch fx:id="showPianoRollNoteLetters" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
             <Label text="Show Note Letters" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-            <RadioButton fx:id="showNoteLetters" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+            <ToggleSwitch fx:id="showNoteLetters" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
-            <Button fx:id="closeStageButton" text="Close" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+            <Label text="Smooth Zoom" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+            <ToggleSwitch fx:id="smoothZoomEnabled" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+
+            <Label text="Smooth Scroll" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+            <ToggleSwitch fx:id="smoothScrollEnabled" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+
+            <Button fx:id="closeStageButton" text="Close" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
         </GridPane>
 </TitledPane>

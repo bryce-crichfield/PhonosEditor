@@ -52,8 +52,16 @@ public class GridInfo {
         return rows * cellHeight;
     }
 
-    public double getTotalSteps() {
+    public double getTotalSnaps() {
         return measures * time.getNumerator() * snapSize;
+    }
+
+    public double getTotalBeats() {
+        return measures * time.getNumerator();
+    }
+
+    public double getTotalSteps() {
+        return getTotalBeats() * STEPS_PER_BEAT;
     }
 
     public double getStepDisplayWidth() {

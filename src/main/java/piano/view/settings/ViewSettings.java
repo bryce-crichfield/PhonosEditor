@@ -8,6 +8,8 @@ public class ViewSettings {
     private final BooleanProperty showPianoRollNoteLetters;
     private final BooleanProperty showNoteLetters;
     private final ObjectProperty<Color> patternColor;
+    public final ObjectProperty<Boolean> smoothScrollEnabled = new SimpleObjectProperty<>(true);
+    public final ObjectProperty<Boolean> smoothZoomEnabled = new SimpleObjectProperty<>(true);
 
     public ViewSettings(GridInfo gridInfo, boolean showPianoRollNoteLetters) {
         this.gridInfo = new SimpleObjectProperty<>(gridInfo);

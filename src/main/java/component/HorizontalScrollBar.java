@@ -97,6 +97,7 @@ public class HorizontalScrollBar extends ScrollBar {
         updateX(newX);
     }
 
+
     @Override
     public double getScrollableLength() {
         return track.getWidth();
