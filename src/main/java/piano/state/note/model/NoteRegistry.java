@@ -6,12 +6,14 @@ import piano.state.note.*;
 import java.util.*;
 
 public class NoteRegistry {
+    private final NoteService service;
     private final Set<NoteEntry> notes;
     private final List<NoteObserver> onCreatedObservers;
     private final List<NoteObserver> onDeletedObservers;
     private final List<NoteObserver> onModifiedObservers;
 
-    public NoteRegistry() {
+    public NoteRegistry(NoteService service) {
+        this.service = service;
         notes = new HashSet<>();
 
         onCreatedObservers = FXCollections.observableArrayList();
@@ -20,7 +22,7 @@ public class NoteRegistry {
     }
 
     public NoteEntry register(NoteData note) {
-        var entry = new NoteEntry(note);
+        var entry = new NoteEntry(note, service);
         notes.add(entry);
         onCreatedObservers.forEach(callback -> callback.accept(entry, null, entry.get()));
         entry.addListener((observable, oldValue, newValue) -> {

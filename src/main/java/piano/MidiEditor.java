@@ -57,11 +57,10 @@ public class MidiEditor {
             var gridInfo = new GridInfo(88, 16, 32, 16, 1);
             var viewSettings = new ViewSettings(gridInfo, true);
 
-            var noteRegistry = new NoteRegistry();
             var playbackState = new PlaybackState(0, 256, 120, false);
 
             var playbackService = new BasePlaybackService(new SimpleObjectProperty<>(playbackState));
-            var noteService = new NoteService(noteRegistry);
+            var noteService = new NoteService();
             context = new MidiEditorContext(playbackService, noteService, viewSettings);
 
             playbackService.observe((String noteName) -> {

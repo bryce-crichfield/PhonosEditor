@@ -100,8 +100,8 @@ abstract class NoteViewHandle {
                 var noteData = entry.get();
 
                 entry.setUnsnappedX(entry.getUnsnappedX() + deltaX);
-                double endStep = grid.snapWorldXToNearestStep(entry.getUnsnappedX());
-                NoteData newNoteData = noteData.withEndStep((int) endStep);
+                double endStep = grid.snapWorldXToNearestStep(entry.getUnsnappedX() );
+                NoteData newNoteData = noteData.withEndStep((int) ((int) endStep + grid.getStepsPerSnap()));
                 return validate(noteData, newNoteData);
             });
         }

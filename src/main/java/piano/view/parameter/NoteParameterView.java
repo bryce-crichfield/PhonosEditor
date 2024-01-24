@@ -90,10 +90,8 @@ class NoteParameterView extends Rectangle {
         this.setStrokeWidth(2);
         this.setStroke(Color.BLACK);
 
-        // When the note is selected, change the color of the rectangle
-        NoteService noteService = context.getNoteService();
-        noteService.getSelection().addListener((ListChangeListener<? super NoteEntry>) c -> {
-            if (noteService.getSelection().contains(noteEntry)) {
+        noteEntry.highlightedProperty().addListener(($0, $1, highlighted) -> {
+            if (highlighted) {
                 this.setStroke(Color.CYAN.desaturate());
             } else {
                 this.setStroke(Color.BLACK);

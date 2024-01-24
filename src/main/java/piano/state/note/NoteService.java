@@ -14,8 +14,8 @@ public class NoteService {
     private final Stack<NoteCommand> undoStack = new Stack<>();
     private final Stack<NoteCommand> redoStack = new Stack<>();
 
-    public NoteService(NoteRegistry registry) {
-        this.registry = registry;
+    public NoteService() {
+        this.registry = new NoteRegistry(this);
         this.noteSelection = new NoteSelection();
         this.noteCommands = new NoteCommands(registry, noteSelection);
     }
@@ -101,6 +101,22 @@ public class NoteService {
 
     public void delete(NoteEntry entry) {
         multicast(entry, e -> Optional.of(new DeleteNoteCommand(e)));
+    }
+
+    public void foreach(NoteEntry entry, Consumer<NoteEntry> action) {
+        (noteSelection.isEmpty() ?
+                Stream.of(entry) :
+                noteSelection.stream()).flatMap(e -> e.getGroup().map(Collection::stream).orElse(Stream.of(e)))
+                .distinct()
+                .forEach(action);
+    }
+
+    public List<NoteEntry> getAssociated(NoteEntry entry) {
+        return (noteSelection.isEmpty() ?
+                Stream.of(entry) :
+                noteSelection.stream()).flatMap(e -> e.getGroup().map(Collection::stream).orElse(Stream.of(e)))
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     public NoteSelection getSelection() {

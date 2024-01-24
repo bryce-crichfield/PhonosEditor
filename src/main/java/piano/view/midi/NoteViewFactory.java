@@ -14,6 +14,8 @@ import java.awt.*;
 import java.util.*;
 
 public class NoteViewFactory {
+    public static final int MIN_LABEL_WIDTH = 32;
+
     public static NoteView create(NoteEntry noteEntry, MidiEditorContext context,
             ObjectProperty<Optional<EditorTool>> currentTool
     ) {
@@ -45,6 +47,20 @@ public class NoteViewFactory {
             }
 
             state.selectedHandle.ifPresent(tool -> root.setCursor(tool.getCursor()));
+        });
+
+        // { MouseOver } highlights { NoteEntry }
+        root.setOnMouseEntered(event -> {
+            noteEntry.foreach(entry -> {
+                entry.highlightedProperty().set(true);
+            });
+        });
+
+        // { MouseExit } unhighlights { NoteEntry }
+        root.setOnMouseExited(event -> {
+            noteEntry.foreach(entry -> {
+                entry.highlightedProperty().set(false);
+            });
         });
 
         // { NoteMidiView Press } starts { NoteMidiHandle Drag }
@@ -109,8 +125,6 @@ public class NoteViewFactory {
         return root;
     }
 
-    public static final int MIN_LABEL_WIDTH = 32;
-
     private static Text createLabel(MidiEditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
         Text label = new Text();
         {
@@ -118,7 +132,9 @@ public class NoteViewFactory {
             Color backgroundColor = context.getViewSettings().getPatternColor();
             double whiteContrast = ColorUtils.contrast(backgroundColor, Color.WHITE);
             double blackContrast = ColorUtils.contrast(backgroundColor, Color.BLACK);
-            Color fontColor = whiteContrast > blackContrast ? Color.WHITE : Color.BLACK;
+            Color fontColor = whiteContrast > blackContrast ?
+                    Color.WHITE :
+                    Color.BLACK;
             label.setFill(fontColor);
         }
 
@@ -131,7 +147,9 @@ public class NoteViewFactory {
         context.getViewSettings().patternColorProperty().addListener(($0, $1, color) -> {
             double whiteContrast = ColorUtils.contrast(color, Color.WHITE);
             double blackContrast = ColorUtils.contrast(color, Color.BLACK);
-            Color fontColor = whiteContrast > blackContrast ? Color.WHITE : Color.BLACK;
+            Color fontColor = whiteContrast > blackContrast ?
+                    Color.WHITE :
+                    Color.BLACK;
             label.setFill(fontColor);
         });
 
@@ -218,16 +236,31 @@ public class NoteViewFactory {
             rectangle.setHeight(data.calculateDisplayHeight(grid));
         });
 
+        Runnable highlight = () -> {
+            rectangle.setStroke(Color.CYAN);
+            rectangle.setStrokeWidth(2);
+        };
+
+        Runnable unhighlight = () -> {
+            rectangle.setStroke(Color.BLACK);
+            rectangle.setStrokeWidth(1);
+        };
+
         // NoteSelection <update> Rectangle
         context.getNoteService().getSelection().addListener((ListChangeListener<NoteEntry>) c -> {
             if (c.getList().contains(noteEntry)) {
-                rectangle.setStroke(Color.CYAN);
-                rectangle.setStrokeWidth(2);
+                noteEntry.foreach(entry -> {
+                    entry.highlightedProperty().set(true);
+                });
             }
-            else {
-                rectangle.setStroke(Color.BLACK);
-                rectangle.setStrokeWidth(1);
-            }
+        });
+
+        // NoteEntry <update> Rectangle
+        noteEntry.highlightedProperty().addListener(($0, $1, highlighted) -> {
+            if (highlighted)
+                highlight.run();
+            else
+                unhighlight.run();
         });
 
         return rectangle;
