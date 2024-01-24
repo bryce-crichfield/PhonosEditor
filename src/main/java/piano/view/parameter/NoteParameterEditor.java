@@ -10,7 +10,7 @@ import javafx.scene.shape.*;
 import javafx.stage.*;
 import org.kordamp.ikonli.javafx.*;
 import piano.*;
-import piano.note.model.*;
+import piano.state.note.model.*;
 import piano.view.settings.*;
 
 import java.io.*;
@@ -48,11 +48,17 @@ public class NoteParameterEditor extends AnchorPane {
 
         HBox hbox = new HBox();
         SubScene scene = new SubScene(world, 0, 0, true, SceneAntialiasing.BALANCED);
-        Pane propsPane = makeViewPropsPanel();
+        PropertiesView propertiesView = new PropertiesView(context);
+        this.heightProperty().addListener((observable, oldValue, newValue) -> {
+            propertiesView.setPrefHeight(newValue.doubleValue());
+        });
+        // from piano roll
+        propertiesView.setPrefWidth(125);
 
-        scene.layoutXProperty().bind(this.layoutXProperty().add(propsPane.widthProperty()));
+
+        scene.layoutXProperty().bind(this.layoutXProperty().add(propertiesView.widthProperty()));
         scene.layoutYProperty().bind(this.layoutYProperty());
-        scene.widthProperty().bind(this.widthProperty().subtract(propsPane.widthProperty()));
+        scene.widthProperty().bind(this.widthProperty().subtract(propertiesView.widthProperty()));
         scene.heightProperty().bind(this.heightProperty());
 
         scene.setCamera(camera);
@@ -61,7 +67,7 @@ public class NoteParameterEditor extends AnchorPane {
 
         scene.setFill(Color.DARKGRAY.darker().darker().darker().darker().darker());
 
-        hbox.getChildren().add(propsPane);
+        hbox.getChildren().add(propertiesView);
         hbox.getChildren().add(scene);
         this.getChildren().add(hbox);
 
@@ -139,77 +145,6 @@ public class NoteParameterEditor extends AnchorPane {
         return verticalLines;
     }
 
-    private Pane makeViewPropsPanel() {
-        // 125 is accounting for the width of the piano roll (not dynamic)
-        AnchorPane propsPane = new AnchorPane();
-        propsPane.setPrefWidth(125);
-        propsPane.setPrefHeight(100);
-
-        VBox vboxProps = new VBox();
-        vboxProps.setAlignment(Pos.CENTER);
-        vboxProps.setSpacing(10);
-
-        // Add options to Zoom Level Combo Box -------------------------------------------------------------------------
-        ComboBox<String> snapSelect = new ComboBox<>();
-        snapSelect.setPrefWidth(100);
-        snapSelect.getItems().addAll("4/1", "2/1", "1/1", "1/2", "1/3", "1/4", "1/6", "1/8", "1/12", "1/16", "1/32");
-        snapSelect.setValue("1/4");
-        vboxProps.getChildren().add(snapSelect);
-        snapSelect.valueProperty().addListener(($0, $1, value) -> {
-            double parsedFraction = Double.parseDouble(value.split("/")[0]) / Double.parseDouble(value.split("/")[1]);
-            double inverse = 1 / parsedFraction;
-            GridInfo gridInfo = context.getViewSettings().gridInfoProperty().get();
-            gridInfo = gridInfo.withSnapSize(inverse);
-            context.getViewSettings().gridInfoProperty().set(gridInfo);
-        });
-
-
-        ComboBox<String> parameterSelect = new ComboBox<>();
-        parameterSelect.setPrefWidth(100);
-        parameterSelect.getItems().addAll("Velocity", "Pitch", "Duration");
-        parameterSelect.setValue("Velocity");
-        vboxProps.getChildren().add(parameterSelect);
-
-        FontIcon settingsIcon = new FontIcon("mdi-settings");
-        settingsIcon.setIconSize(16);
-        Button settingsButton = new Button("", settingsIcon);
-        settingsButton.setPrefWidth(100);
-        settingsButton.setPrefHeight(30);
-        settingsButton.setOnAction(event -> {
-            // Load the ViewSettings.fxml file and create a new stage for the popup dialog
-            FXMLLoader loader = new FXMLLoader();
-            Stage stage = new Stage();
-            loader.setController(new ViewSettingsController(context, stage));
-            loader.setLocation(MidiEditor.class.getResource("/ViewSettings.fxml"));
-            Parent root = null;
-            try {
-                root = loader.load();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-
-            // hide window buttons
-            stage.initStyle(StageStyle.UNDECORATED);
-            stage.show();
-
-        });
-        vboxProps.getChildren().add(settingsButton);
-
-        propsPane.getChildren().add(vboxProps);
-        AnchorPane.setTopAnchor(vboxProps, 10.0);
-        AnchorPane.setLeftAnchor(vboxProps, 10.0);
-        AnchorPane.setRightAnchor(vboxProps, 10.0);
-        AnchorPane.setBottomAnchor(vboxProps, 10.0);
-
-        this.heightProperty().addListener((observable, oldValue, newValue) -> {
-            propsPane.setPrefHeight(newValue.doubleValue());
-        });
-
-        return propsPane;
-    }
 
     public void scrollX(double v) {
         world.setTranslateX(v);

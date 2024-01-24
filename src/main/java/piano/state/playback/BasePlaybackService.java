@@ -1,4 +1,4 @@
-package piano.playback;
+package piano.state.playback;
 
 import javafx.animation.*;
 import javafx.beans.property.*;

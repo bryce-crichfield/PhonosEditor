@@ -1,7 +1,7 @@
-package piano.note.model;
+package piano.state.note.model;
 
 import javafx.collections.*;
-import piano.note.*;
+import piano.state.note.*;
 
 import java.util.*;
 

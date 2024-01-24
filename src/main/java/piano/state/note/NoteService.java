@@ -1,7 +1,7 @@
-package piano.note;
+package piano.state.note;
 
-import piano.note.command.*;
-import piano.note.model.*;
+import piano.state.note.command.*;
+import piano.state.note.model.*;
 
 import java.util.*;
 import java.util.function.*;
@@ -10,12 +10,14 @@ import java.util.stream.*;
 public class NoteService {
     private final NoteRegistry registry;
     private final NoteSelection noteSelection;
+    private final NoteCommands noteCommands;
     private final Stack<NoteCommand> undoStack = new Stack<>();
     private final Stack<NoteCommand> redoStack = new Stack<>();
 
     public NoteService(NoteRegistry registry) {
         this.registry = registry;
         this.noteSelection = new NoteSelection();
+        this.noteCommands = new NoteCommands(registry, noteSelection);
     }
 
     public void redo() {
@@ -25,6 +27,9 @@ public class NoteService {
         NoteCommand action = redoStack.pop();
         action.execute(registry);
         undoStack.push(action);
+
+        // Now uses command tree to handle redo
+        noteCommands.redo();
     }
 
     public void undo() {
@@ -34,6 +39,9 @@ public class NoteService {
         NoteCommand action = undoStack.pop();
         action.undo(registry);
         redoStack.push(action);
+
+        // Now uses command tree to handle undo
+        noteCommands.undo();
     }
 
     public void create(NoteData data) {
@@ -45,6 +53,7 @@ public class NoteService {
             return;
         }
 
+        noteCommands.execute(action);
         undoStack.push(action);
         redoStack.clear();
     }
@@ -56,9 +65,23 @@ public class NoteService {
     }
 
     public void modify(Function<NoteEntry, NoteData> update) {
-        if (noteSelection.isEmpty()) return;
+        if (noteSelection.isEmpty())
+            return;
 
         multicast(null, e -> new ModifyNoteCommand(e, update.apply(e)));
+    }
+
+    private void multicast(NoteEntry entry, Function<NoteEntry, NoteCommand> factory) {
+        // For either the selected notes, or the single note, create a command that modifies those notes and
+        // all notes in their groups.
+
+        Set<NoteCommand> commands = (noteSelection.isEmpty() ?
+                Stream.of(entry) :
+                noteSelection.stream()).flatMap(e -> e.getGroup().map(Collection::stream).orElse(Stream.of(e)))
+                .distinct()
+                .map(factory::apply)
+                .collect(Collectors.toSet());
+        execute(new GroupNoteCommand(commands));
     }
 
     // Performs a side-effecting operation the selected notes' entries, and all entries of notes in their groups.
@@ -72,22 +95,11 @@ public class NoteService {
 
     // Performs a side-effecting operation on the selected notes' entries, and all entries of notes in their groups.
     public void update(NoteEntry entry, Consumer<NoteEntry> update) {
-        (noteSelection.isEmpty() ? Stream.of(entry) : noteSelection.stream())
-                .flatMap(e -> e.getGroup().map(Collection::stream).orElse(Stream.of(e)))
+        (noteSelection.isEmpty() ?
+                Stream.of(entry) :
+                noteSelection.stream()).flatMap(e -> e.getGroup().map(Collection::stream).orElse(Stream.of(e)))
                 .distinct()
                 .forEach(update);
-    }
-
-    private void multicast(NoteEntry entry, Function<NoteEntry, NoteCommand> factory) {
-        // For either the selected notes, or the single note, create a command that modifies those notes and
-        // all notes in their groups.
-
-        Set<NoteCommand> commands = (noteSelection.isEmpty() ? Stream.of(entry) : noteSelection.stream())
-                .flatMap(e -> e.getGroup().map(Collection::stream).orElse(Stream.of(e)))
-                .distinct()
-                .map(factory::apply)
-                .collect(Collectors.toSet());
-        execute(new GroupNoteCommand(commands));
     }
 
     public void delete(NoteEntry entry) {

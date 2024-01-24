@@ -5,8 +5,8 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.*;
 import javafx.scene.shape.*;
 import piano.*;
-import piano.note.*;
-import piano.note.model.*;
+import piano.state.note.*;
+import piano.state.note.model.*;
 
 import java.util.concurrent.atomic.*;
 

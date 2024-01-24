@@ -1,7 +1,7 @@
 package piano;
 
-import piano.note.*;
-import piano.playback.*;
+import piano.state.note.*;
+import piano.state.playback.*;
 import piano.view.settings.*;
 
 public class MidiEditorContext {

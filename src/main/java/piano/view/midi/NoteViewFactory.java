@@ -2,16 +2,13 @@ package piano.view.midi;
 
 import javafx.beans.property.*;
 import javafx.collections.*;
-import javafx.scene.paint.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.*;
 import piano.*;
-import piano.note.model.*;
+import piano.state.note.model.*;
 import piano.tool.*;
 import piano.util.*;
-import piano.view.settings.*;
 
 import java.awt.*;
 import java.util.*;

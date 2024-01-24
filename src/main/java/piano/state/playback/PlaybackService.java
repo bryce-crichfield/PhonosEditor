@@ -1,4 +1,4 @@
-package piano.playback;
+package piano.state.playback;
 
 public interface PlaybackService {
     void play();

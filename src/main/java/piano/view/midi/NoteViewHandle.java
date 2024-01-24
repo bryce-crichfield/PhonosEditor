@@ -4,7 +4,7 @@ import javafx.scene.*;
 import javafx.scene.layout.*;
 import javafx.scene.shape.*;
 import piano.*;
-import piano.note.model.*;
+import piano.state.note.model.*;
 
 
 abstract class NoteViewHandle {

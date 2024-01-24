@@ -2,7 +2,7 @@ package piano.view.midi;
 
 import javafx.scene.layout.*;
 import lombok.*;
-import piano.note.model.*;
+import piano.state.note.model.*;
 
 @Data
 public class NoteView extends StackPane {

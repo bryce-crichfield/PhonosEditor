@@ -1,6 +1,6 @@
-package piano.note.command;
+package piano.state.note.command;
 
-import piano.note.model.*;
+import piano.state.note.model.*;
 
 public interface NoteCommand {
     // @return true if the command changed the registry

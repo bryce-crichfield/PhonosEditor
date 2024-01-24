@@ -1,6 +1,6 @@
-package piano.note;
+package piano.state.note;
 
-import piano.note.model.*;
+import piano.state.note.model.*;
 
 @FunctionalInterface
 public interface NoteObserver {

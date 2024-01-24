@@ -1,4 +1,4 @@
-package piano.note.model;
+package piano.state.note.model;
 
 
 import com.sun.javafx.collections.*;
