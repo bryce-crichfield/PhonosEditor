@@ -5,6 +5,9 @@ import javafx.scene.layout.*;
 import javafx.scene.shape.*;
 import piano.*;
 import piano.state.note.model.*;
+import piano.view.settings.*;
+
+import java.util.*;
 
 
 abstract class NoteViewHandle {
@@ -18,10 +21,6 @@ abstract class NoteViewHandle {
         this.context = context;
         this.noteEntry = noteEntry;
         this.rectangle = rectangle;
-
-        var grid = context.getViewSettings().gridInfoProperty().get();
-//        double unsnappedX = noteEntry.get().getStartStep() * grid.getStepDisplayWidth();
-//        noteEntry.setUnsnappedX(unsnappedX);
     }
 
     public abstract void onDragEntered();
@@ -30,6 +29,26 @@ abstract class NoteViewHandle {
     public abstract Cursor getCursor();
 
     public abstract boolean isHovered(double mouseX);
+
+    public Optional<NoteData> validate(NoteData oldData, NoteData newData) {
+        GridInfo grid = context.getViewSettings().gridInfoProperty().get();
+
+        if (newData.getDurationInSteps() < grid.getStepsPerSnap())
+            return Optional.empty();
+        if (newData.getStartStep() + grid.getStepsPerSnap() > oldData.getEndStep())
+            return Optional.empty();
+        if (newData.getEndStep() - grid.getStepsPerSnap() < oldData.getStartStep())
+            return Optional.empty();
+        if (newData.getStartStep() < 0)
+            return Optional.empty();
+        if (newData.getEndStep() >= grid.getTotalSteps())
+            return Optional.empty();
+        if (newData.getPitch().getNoteIndex() < 1)
+            return Optional.empty();
+        if (newData.getPitch().getNoteIndex() > 88)
+            return Optional.empty();
+        return Optional.of(newData);
+    }
 
     static class Left extends NoteViewHandle {
         public Left(Pane pane, MidiEditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
@@ -44,7 +63,8 @@ abstract class NoteViewHandle {
                 double unsnappedX = entry.getUnsnappedX() + deltaX;
                 entry.setUnsnappedX(unsnappedX);
                 double startStep = grid.snapWorldXToNearestStep(unsnappedX);
-                return noteData.withStartStep((int) startStep);
+                NoteData newNoteData = noteData.withStartStep((int) startStep);
+                return validate(noteData, newNoteData);
             });
         }
 
@@ -81,7 +101,8 @@ abstract class NoteViewHandle {
 
                 entry.setUnsnappedX(entry.getUnsnappedX() + deltaX);
                 double endStep = grid.snapWorldXToNearestStep(entry.getUnsnappedX());
-                return noteData.withEndStep((int) endStep);
+                NoteData newNoteData = noteData.withEndStep((int) endStep);
+                return validate(noteData, newNoteData);
             });
         }
 
@@ -127,10 +148,11 @@ abstract class NoteViewHandle {
                 double unsnappedX = entry.getUnsnappedX() + deltaX;
                 entry.setUnsnappedX(unsnappedX);
                 double startStep = grid.snapWorldXToNearestStep(unsnappedX);
-                double endStep = startStep + noteData.getDuration();
+                double endStep = startStep + noteData.getDurationInSteps();
                 int newNoteIndex = (int) (noteData.getPitch().getNoteIndex() - cellsY) + 1;
                 NotePitch newPitch = NotePitch.from(newNoteIndex);
-                return noteData.withStartStep((int) startStep).withEndStep((int) endStep).withPitch(newPitch);
+                NoteData newNoteData = noteData.withStartStep((int) startStep).withEndStep((int) endStep).withPitch(newPitch);
+                return validate(noteData, newNoteData);
             });
         }
 

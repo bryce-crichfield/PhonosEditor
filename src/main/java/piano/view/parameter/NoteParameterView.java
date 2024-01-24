@@ -8,6 +8,7 @@ import piano.*;
 import piano.state.note.*;
 import piano.state.note.model.*;
 
+import java.util.*;
 import java.util.concurrent.atomic.*;
 
 class NoteParameterView extends Rectangle {
@@ -78,7 +79,10 @@ class NoteParameterView extends Rectangle {
             double ty = this.getTranslateY() + dy;
             double velocity = Util.clamp(1 - (ty / parent.getHeight()), 0, 1);
 
-            context.getNoteService().modify(noteEntry, entry -> entry.get().withVelocity((int) (velocity * 100)));
+            context.getNoteService().modify(noteEntry, entry -> {
+                NoteData newNoteData = entry.get().withVelocity((int) (velocity * 100));
+                return Optional.of(newNoteData);
+            });
         });
 
         // Sheet Metal gradient

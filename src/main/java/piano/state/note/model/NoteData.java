@@ -14,9 +14,9 @@ public class NoteData {
 
     public NoteData(NotePitch pitch, int startStep, int endStep, int velocity) {
         // Enforce invariants
-        startStep = Math.max(startStep, 0);
-        endStep = Math.max(endStep, 0);
-        velocity = (int) Util.clamp(velocity, 0, 100);
+//        startStep = Math.max(startStep, 0);
+//        endStep = Math.max(endStep, 0);
+//        velocity = (int) Util.clamp(velocity, 0, 100);
 
         // start must be less than end
         if (startStep > endStep) {
@@ -69,7 +69,7 @@ public class NoteData {
         return false;
     }
 
-    public double getDuration() {
+    public double getDurationInSteps() {
         return endStep - startStep;
     }
 
@@ -82,7 +82,7 @@ public class NoteData {
     }
 
     public double calculateDisplayWidth(GridInfo gridInfo) {
-        return getDuration() * gridInfo.getStepDisplayWidth();
+        return getDurationInSteps() * gridInfo.getStepDisplayWidth();
     }
 
     public double calculateDisplayHeight(GridInfo gridInfo) {

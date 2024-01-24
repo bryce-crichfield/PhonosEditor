@@ -138,7 +138,7 @@ public class NoteViewFactory {
         // { GridInfo } -> { Label }
         context.getViewSettings().gridInfoProperty().addListener(($0, $1, grid) -> {
             // The font height should be 50% of the limiting cell dimension
-            double width = noteEntry.get().getDuration() * grid.getStepDisplayWidth();
+            double width = noteEntry.get().getDurationInSteps() * grid.getStepDisplayWidth();
             if (width < MIN_LABEL_WIDTH) {
                 label.setVisible(false);
                 return;
@@ -171,7 +171,7 @@ public class NoteViewFactory {
             label.setY(width.doubleValue() / 2 + label.getLayoutBounds().getHeight() / 2);
 
             var grid = context.getViewSettings().gridInfoProperty().get();
-            double w = noteEntry.get().getDuration() * grid.getStepDisplayWidth();
+            double w = noteEntry.get().getDurationInSteps() * grid.getStepDisplayWidth();
             if (w < MIN_LABEL_WIDTH) {
                 label.setVisible(false);
                 return;
@@ -241,7 +241,7 @@ public class NoteViewFactory {
         rectangle.setWidth(data.calculateDisplayWidth(grid));
         rectangle.setHeight(data.calculateDisplayHeight(grid));
 
-        double width = entry.get().getDuration() * grid.getStepDisplayWidth();
+        double width = entry.get().getDurationInSteps() * grid.getStepDisplayWidth();
         if (width < MIN_LABEL_WIDTH) {
             text.setVisible(false);
             return;

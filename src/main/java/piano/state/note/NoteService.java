@@ -64,14 +64,7 @@ public class NoteService {
         execute(command);
     }
 
-    public void modify(Function<NoteEntry, NoteData> update) {
-        if (noteSelection.isEmpty())
-            return;
-
-        multicast(null, e -> new ModifyNoteCommand(e, update.apply(e)));
-    }
-
-    private void multicast(NoteEntry entry, Function<NoteEntry, NoteCommand> factory) {
+    private void multicast(NoteEntry entry, Function<NoteEntry, Optional<NoteCommand>> factory) {
         // For either the selected notes, or the single note, create a command that modifies those notes and
         // all notes in their groups.
 
@@ -80,17 +73,21 @@ public class NoteService {
                 noteSelection.stream()).flatMap(e -> e.getGroup().map(Collection::stream).orElse(Stream.of(e)))
                 .distinct()
                 .map(factory::apply)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .collect(Collectors.toSet());
+        if (commands.isEmpty())
+            return;
         execute(new GroupNoteCommand(commands));
     }
 
     // Performs a side-effecting operation the selected notes' entries, and all entries of notes in their groups.
     // Provided a function that takes any of those entries and returns a new NoteData
-    public void modify(NoteEntry entry, Function<NoteEntry, NoteData> update) {
+    public void modify(NoteEntry entry, Function<NoteEntry, Optional<NoteData>> update) {
         // This is strange, but we take a Function<NoteEntry, NoteData> instead of a Function<NoteData, NoteData>
         // because we want to be able to use the update function on any note entry the service decides to modify.
         // This is useful for modifying all notes in a group, for example.
-        multicast(entry, e -> new ModifyNoteCommand(e, update.apply(e)));
+        multicast(entry, e -> update.apply(e).map(d -> new ModifyNoteCommand(e, d)));
     }
 
     // Performs a side-effecting operation on the selected notes' entries, and all entries of notes in their groups.
@@ -103,7 +100,7 @@ public class NoteService {
     }
 
     public void delete(NoteEntry entry) {
-        multicast(entry, DeleteNoteCommand::new);
+        multicast(entry, e -> Optional.of(new DeleteNoteCommand(e)));
     }
 
     public NoteSelection getSelection() {
