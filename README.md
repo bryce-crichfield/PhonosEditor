@@ -2,19 +2,19 @@
 
 ## Overview
 
-Welcome to Phonos Editor! This application is designed to empower users in creating dynamic and expressive MIDI scores with unparalleled ease. Whether you're a seasoned composer or just starting your musical journey, Phonos provides a user-friendly platform for crafting intricate MIDI compositions.
+Welcome to Phonos Editor! Designed to give users the ability to create dynamic and expressive MIDI scores with unparalleled ease. Whether you're a seasoned composer or just starting your musical journey, Phonos provides a user-friendly platform for crafting intricate MIDI compositions.
 
 ## Features
 
-- **Intuitive Interface:** Our user-friendly interface makes MIDI editing accessible to all levels of musicians. You don't need to be a technical expert to create stunning musical scores.
+- **Intuitive Interface:** Our modern and minimal interface makes MIDI editing accessible to all levels of musicians. Comprising both essential and advanced features, Phonos provides a powerful toolset.
 
 - **Dynamic MIDI Creation:** Phonos allows you to unleash your creativity by offering a range of tools to create dynamic and expressive MIDI scores. Whether you're working on a simple melody or a complex orchestral arrangement, Phonos has you covered.
 
-- **Real-time Editing:** Experience real-time MIDI editing, enabling you to hear the changes as you make them. This feature provides instant feedback, allowing you to fine-tune your compositions with precision.
+- **Real-time Editing:** Experience real-time MIDI editing like never before.  Phonos's rich and lively UI inspires you to hear the changes as you make them. This feature provides instant feedback, allowing you to fine-tune your compositions with inspired precision.
 
 ## Planned Features
 
-- **VST Support:** Phonos will support VST plugins, allowing you to use your favorite instruments and effects.
+- **Virtual Instrument Support** Phonos will support virtual instruments, allowing you to hear your compositions with a variety of instruments.
 
 - **MIDI Import/Export:** Phonos will support MIDI import and export, allowing you to use your favorite MIDI files and share your compositions with others.
 
