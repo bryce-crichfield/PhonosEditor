@@ -12,12 +12,12 @@ import piano.*;
 
 
 public class TimelineView extends AnchorPane {
-    private final MidiEditorContext context;
+    private final EditorContext context;
     Rectangle background;
     Camera camera;
     Group world;
 
-    public TimelineView(MidiEditorContext context) {
+    public TimelineView(EditorContext context) {
         this.context = context;
 
         // Create a camera to view the 3D shapes
@@ -81,7 +81,7 @@ public class TimelineView extends AnchorPane {
 
     private static class PlayheadHandle extends Rectangle {
         private static final int HANDLE_WIDTH = 15;
-        private final MidiEditorContext context;
+        private final EditorContext context;
         private final StringProperty currentHandle = new SimpleStringProperty("None");
         private boolean isDragging = false;
 
@@ -91,7 +91,7 @@ public class TimelineView extends AnchorPane {
         private double lastX = 0;
         private double deltaX = 0;
 
-        public PlayheadHandle(MidiEditorContext context) {
+        public PlayheadHandle(EditorContext context) {
 
             this.setFill(Color.CYAN.deriveColor(1, 1, 1, 0.75));
             this.setTranslateZ(0);
@@ -250,7 +250,7 @@ public class TimelineView extends AnchorPane {
         Text text;
         int columnIndex;
 
-        TimelineMarker(int measure, MidiEditorContext context) {
+        TimelineMarker(int measure, EditorContext context) {
             this.columnIndex = measure;
 
             text = new Text(Integer.toString(measure + 1));

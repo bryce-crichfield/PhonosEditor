@@ -5,18 +5,18 @@ import javafx.scene.layout.*;
 import javafx.scene.shape.*;
 import piano.*;
 import piano.state.note.model.*;
-import piano.view.settings.*;
+import piano.view.zoom.*;
 
 import java.util.*;
 
 
 abstract class NoteViewHandle {
     protected final Pane pane;
-    protected final MidiEditorContext context;
+    protected final EditorContext context;
     protected final NoteEntry noteEntry;
     protected final Rectangle rectangle;
 
-    public NoteViewHandle(Pane pane, MidiEditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
+    public NoteViewHandle(Pane pane, EditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
         this.pane = pane;
         this.context = context;
         this.noteEntry = noteEntry;
@@ -51,7 +51,7 @@ abstract class NoteViewHandle {
     }
 
     static class Left extends NoteViewHandle {
-        public Left(Pane pane, MidiEditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
+        public Left(Pane pane, EditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
             super(pane, context, noteEntry, rectangle);
         }
 
@@ -89,7 +89,7 @@ abstract class NoteViewHandle {
     }
 
     static class Right extends NoteViewHandle {
-        public Right(Pane pane, MidiEditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
+        public Right(Pane pane, EditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
             super(pane, context, noteEntry, rectangle);
         }
 
@@ -127,7 +127,7 @@ abstract class NoteViewHandle {
     }
 
     static class Center extends NoteViewHandle {
-        public Center(Pane pane, MidiEditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
+        public Center(Pane pane, EditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
             super(pane, context, noteEntry, rectangle);
         }
 

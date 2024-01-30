@@ -6,14 +6,15 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
 import piano.*;
-import piano.view.settings.*;
+import piano.view.*;
+import piano.view.zoom.*;
 
 import java.io.*;
 import java.net.*;
 import java.util.function.*;
 
 public class PropertiesView extends AnchorPane {
-    private final MidiEditorContext context;
+    private final EditorContext context;
     @FXML
     private ComboBox<String> snapSize;
 
@@ -23,8 +24,8 @@ public class PropertiesView extends AnchorPane {
     @FXML
     private Button viewSettings;
 
-    public PropertiesView(MidiEditorContext context) {
-        URL fxml = getClass().getResource("/fxml/PropertiesView.fxml");
+    public PropertiesView(EditorContext context) {
+        URL fxml = getClass().getResource("/fxml/DisplaysPane.fxml");
         FXMLLoader loader = new FXMLLoader(fxml);
         loader.setRoot(this);
         loader.setController(this);
@@ -70,11 +71,11 @@ public class PropertiesView extends AnchorPane {
     }
 
     private void openViewSettings() {
-        // Load the ViewSettings.fxml file and create a new stage for the popup dialog
+        // Load the GraphicsPane.fxml file and create a new stage for the popup dialog
         FXMLLoader loader = new FXMLLoader();
         Stage stage = new Stage();
-        loader.setController(new ViewSettingsController(context));
-        loader.setLocation(MidiEditor.class.getResource("/fxml/ViewSettings.fxml"));
+        loader.setController(new GraphicsPaneController(context));
+        loader.setLocation(Editor.class.getResource("/fxml/GraphicsPane.fxml"));
         Parent root = null;
         try {
             root = loader.load();

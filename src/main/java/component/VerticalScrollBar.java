@@ -3,7 +3,7 @@ package component;
 import javafx.geometry.*;
 import javafx.scene.layout.*;
 import javafx.scene.shape.*;
-import piano.*;
+import util.*;
 
 public class VerticalScrollBar extends ScrollBar {
 
@@ -81,7 +81,7 @@ public class VerticalScrollBar extends ScrollBar {
             newY = track.getHeight() - handle.getHeight() - 1;
         }
 
-        newY = Util.clamp(newY, 0, track.getHeight() - handle.getHeight());
+        newY = MathUtil.clamp(newY, 0, track.getHeight() - handle.getHeight());
         handle.setY(newY);
         onScroll.accept(this);
     }
@@ -115,7 +115,7 @@ public class VerticalScrollBar extends ScrollBar {
         double totalScrollableLength = track.getHeight() - handle.getHeight();
         double relativeScrollableLength = totalScrollableLength / track.getHeight();
         double relativePosition = handle.getY() / track.getHeight();
-        return Util.map(relativePosition, 0, relativeScrollableLength, 0, 1);
+        return MathUtil.map(relativePosition, 0, relativeScrollableLength, 0, 1);
     }
 }
 

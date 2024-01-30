@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="piano.view.ToolPaneController"
+            prefHeight="400.0" prefWidth="600.0">
+    <fx:define>
+        <ToggleGroup fx:id="toolsGroup"/>
+    </fx:define>
+    <VBox fx:id="toolBarRoot">
+        <ToolBar>
+            <ToggleButton fx:id="toggleToolSelect" toggleGroup="$toolsGroup" onAction="#setSelectTool">
+                <graphic>
+                    <FontIcon iconLiteral="mdi-selection"/>
+                </graphic>
+            </ToggleButton>
+            <ToggleButton fx:id="toggleToolPencil" toggleGroup="$toolsGroup" onAction="#setPencilTool">
+                <graphic>
+                    <FontIcon iconLiteral="mdi-pencil"/>
+                </graphic>
+            </ToggleButton>
+            <ToggleButton fx:id="toggleToolSlice" toggleGroup="$toolsGroup" onAction="#setSliceTool">
+                <graphic>
+                    <FontIcon iconLiteral="mdi-box-cutter"/>
+                </graphic>
+            </ToggleButton>
+            <Separator orientation="VERTICAL"/>
+            <Button>
+                <graphic>
+                    <FontIcon iconLiteral="mdi-wrench"/>
+                </graphic>
+            </Button>
+            <Separator orientation="VERTICAL"/>
+            <Button onAction="#playlistPause">
+                <graphic>
+                    <FontIcon iconLiteral="mdi-pause"/>
+                </graphic>
+            </Button>
+            <Button onAction="#playlistPlay">
+                <graphic>
+                    <FontIcon iconLiteral="mdi-play"/>
+                </graphic>
+            </Button>
+            <Button onAction="#playlistStop">
+                <graphic>
+                    <FontIcon iconLiteral="mdi-stop"/>
+                </graphic>
+            </Button>
+        </ToolBar>
+    </VBox>
+</AnchorPane>

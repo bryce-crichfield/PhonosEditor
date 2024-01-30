@@ -7,8 +7,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.*;
 import piano.*;
 import piano.state.note.model.*;
-import piano.tool.*;
-import piano.util.*;
+import piano.state.tool.*;
+import util.*;
 
 import java.awt.*;
 import java.util.*;
@@ -16,7 +16,7 @@ import java.util.*;
 public class NoteViewFactory {
     public static final int MIN_LABEL_WIDTH = 32;
 
-    public static NoteView create(NoteEntry noteEntry, MidiEditorContext context,
+    public static NoteView create(NoteEntry noteEntry, EditorContext context,
             ObjectProperty<Optional<EditorTool>> currentTool
     ) {
         // Create view components with context and model bindings ------------------------------------------------------
@@ -125,13 +125,13 @@ public class NoteViewFactory {
         return root;
     }
 
-    private static Text createLabel(MidiEditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
+    private static Text createLabel(EditorContext context, NoteEntry noteEntry, Rectangle rectangle) {
         Text label = new Text();
         {
             label.setVisible(context.getViewSettings().showNoteLettersProperty().get());
             Color backgroundColor = context.getViewSettings().getPatternColor();
-            double whiteContrast = ColorUtils.contrast(backgroundColor, Color.WHITE);
-            double blackContrast = ColorUtils.contrast(backgroundColor, Color.BLACK);
+            double whiteContrast = ColorUtil.contrast(backgroundColor, Color.WHITE);
+            double blackContrast = ColorUtil.contrast(backgroundColor, Color.BLACK);
             Color fontColor = whiteContrast > blackContrast ?
                     Color.WHITE :
                     Color.BLACK;
@@ -145,8 +145,8 @@ public class NoteViewFactory {
 
         // { ViewSettings } -> { Label }
         context.getViewSettings().patternColorProperty().addListener(($0, $1, color) -> {
-            double whiteContrast = ColorUtils.contrast(color, Color.WHITE);
-            double blackContrast = ColorUtils.contrast(color, Color.BLACK);
+            double whiteContrast = ColorUtil.contrast(color, Color.WHITE);
+            double blackContrast = ColorUtil.contrast(color, Color.BLACK);
             Color fontColor = whiteContrast > blackContrast ?
                     Color.WHITE :
                     Color.BLACK;
@@ -203,7 +203,7 @@ public class NoteViewFactory {
         return label;
     }
 
-    private static Rectangle createRectangle(MidiEditorContext context, NoteEntry noteEntry) {
+    private static Rectangle createRectangle(EditorContext context, NoteEntry noteEntry) {
         Rectangle rectangle = new Rectangle();
         {
             NoteData data = noteEntry.get();
@@ -266,7 +266,7 @@ public class NoteViewFactory {
         return rectangle;
     }
 
-    public static void initPositionAndSize(MidiEditorContext context, Rectangle rectangle, Text text, NoteEntry entry) {
+    public static void initPositionAndSize(EditorContext context, Rectangle rectangle, Text text, NoteEntry entry) {
         NoteData data = entry.get();
         var grid = context.getViewSettings().gridInfoProperty().get();
         rectangle.setX(data.calcXPosOnGrid(grid));

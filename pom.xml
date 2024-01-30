@@ -95,7 +95,7 @@
             <artifactId>javafx-swing</artifactId>
             <version>12</version>
         </dependency>
-        <!-- Atlantafx piano.view.settings.Theme -->
+        <!-- Atlantafx config.Theme -->
         <dependency>
             <groupId>io.github.mkpaz</groupId>
             <artifactId>atlantafx-base</artifactId>

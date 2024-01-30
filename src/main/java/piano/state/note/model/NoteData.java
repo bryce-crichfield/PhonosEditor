@@ -1,8 +1,8 @@
 package piano.state.note.model;
 
 import lombok.*;
-import piano.*;
-import piano.view.settings.*;
+import piano.view.zoom.*;
+import util.*;
 
 @With
 @Getter
@@ -48,7 +48,7 @@ public class NoteData {
     }
 
     public double calcYPosOnGrid(GridInfo gridInfo) {
-        double mappedIndex = Util.reverse(pitch.getNoteIndex(), 1, 88);
+        double mappedIndex = MathUtil.reverse(pitch.getNoteIndex(), 1, 88);
         double y = (mappedIndex - 1) * gridInfo.getCellHeight();
         return gridInfo.snapToGridY(y);
     }

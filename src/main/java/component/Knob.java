@@ -3,6 +3,7 @@ package component;
 import javafx.fxml.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
+import util.*;
 
 import java.net.*;
 import java.util.*;
@@ -10,7 +11,7 @@ import java.util.*;
 public class Knob extends StackPane {
     private final KnobController controller;
     public Knob() {
-        FXMLLoader loader = Fxml.load("/fxml/Knob.fxml");
+        FXMLLoader loader = FxUtil.load("/fxml/Knob.fxml");
         loader.setRoot(this);
         loader.setController(new KnobController());
 

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.*?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            xmlns="http://javafx.com/javafx"
+            fx:id="root"
+            fx:controller="piano.Editor">
+    <BorderPane fx:id="rootBorderPane">
+        <top>
+            <VBox fx:id="toolBarRoot">
+                <ToolBar>
+                    <ToggleButton fx:id="toggleToolSelect">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-selection"/>
+                        </graphic>
+                    </ToggleButton>
+                    <ToggleButton fx:id="toggleToolPencil">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-pencil"/>
+                        </graphic>
+                    </ToggleButton>
+                    <ToggleButton fx:id="toggleToolSlice">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-box-cutter"/>
+                        </graphic>
+                    </ToggleButton>
+                    <Separator orientation="VERTICAL"/>
+                    <Button>
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-wrench"/>
+                        </graphic>
+                    </Button>
+                    <Separator orientation="VERTICAL"/>
+                    <Button onAction="#playlistPause">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-pause"/>
+                        </graphic>
+                    </Button>
+                    <Button onAction="#playlistPlay">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-play"/>
+                        </graphic>
+                    </Button>
+                    <Button onAction="#playlistStop">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-stop"/>
+                        </graphic>
+                    </Button>
+                </ToolBar>
+            </VBox>
+        </top>
+    </BorderPane>
+</AnchorPane>
