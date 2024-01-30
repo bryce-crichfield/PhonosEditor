@@ -1,0 +1,12 @@
+.header {
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: #30363d;
+    -fx-padding: 0 0 10 0;
+}
+
+.title {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-font-family: "White Rabbit";
+}

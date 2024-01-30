@@ -15,7 +15,7 @@ import piano.state.note.model.*;
 import piano.state.playback.*;
 import piano.tool.*;
 import piano.view.*;
-import piano.view.midi.*;
+import piano.view.note.*;
 import piano.view.parameter.*;
 import piano.view.piano.*;
 import piano.view.playlist.*;
@@ -38,7 +38,7 @@ public class MidiEditor {
     private SplitPane splitPane;
     private NoteEditorView noteViewEditor;
     private NoteParameterEditor noteParameterEditor;
-    private NoteEditorPianoView pianoView;
+    private PianoRoll pianoView;
     private MidiEditorContext context;
 
     private ScrollBar verticalScrollBar;
@@ -199,7 +199,7 @@ public class MidiEditor {
 
         // Initialize piano roll ---------------------------------------------------------------------------------------
         {
-            pianoView = new NoteEditorPianoView(context);
+            pianoView = new PianoRoll(context);
             noteViewEditor.heightProperty().addListener((observable, oldValue, newValue) -> {
                 pianoView.setPrefHeight(newValue.doubleValue());
             });

@@ -18,7 +18,6 @@
                             <FontIcon iconLiteral="mdi-selection"/>
                         </graphic>
                     </ToggleButton>
-
                     <ToggleButton fx:id="toggleToolPencil">
                         <graphic>
                             <FontIcon iconLiteral="mdi-pencil"/>

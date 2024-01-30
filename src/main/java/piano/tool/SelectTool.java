@@ -8,7 +8,7 @@ import javafx.scene.paint.*;
 import javafx.scene.shape.*;
 import piano.*;
 import piano.state.note.model.*;
-import piano.view.midi.*;
+import piano.view.note.*;
 
 import java.util.*;
 import java.util.stream.*;

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.paint.RadialGradient?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.paint.LinearGradient?>
+<fx:root xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            type="javafx.scene.layout.StackPane"
+         fx:id="self"
+>
+        <Circle radius="20">
+            <fill>
+                <RadialGradient>
+                    <stops>
+                        <Stop offset="0.0" color="white"/>
+                        <Stop offset="1.0" color="black"/>
+                    </stops>
+                </RadialGradient>
+            </fill>
+        </Circle>
+        <Line startX="0" endX="20">
+            <stroke>
+                <LinearGradient>
+                    <stops>
+                        <Stop offset="0.0" color="white"/>
+                        <Stop offset="1.0" color="black"/>
+                    </stops>
+                </LinearGradient>
+            </stroke>
+        </Line>
+</fx:root>

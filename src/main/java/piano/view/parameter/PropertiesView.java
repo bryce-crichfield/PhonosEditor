@@ -24,7 +24,7 @@ public class PropertiesView extends AnchorPane {
     private Button viewSettings;
 
     public PropertiesView(MidiEditorContext context) {
-        URL fxml = getClass().getResource("/PropertiesView.fxml");
+        URL fxml = getClass().getResource("/fxml/PropertiesView.fxml");
         FXMLLoader loader = new FXMLLoader(fxml);
         loader.setRoot(this);
         loader.setController(this);
@@ -73,8 +73,8 @@ public class PropertiesView extends AnchorPane {
         // Load the ViewSettings.fxml file and create a new stage for the popup dialog
         FXMLLoader loader = new FXMLLoader();
         Stage stage = new Stage();
-        loader.setController(new ViewSettingsController(context, stage));
-        loader.setLocation(MidiEditor.class.getResource("/ViewSettings.fxml"));
+        loader.setController(new ViewSettingsController(context));
+        loader.setLocation(MidiEditor.class.getResource("/fxml/ViewSettings.fxml"));
         Parent root = null;
         try {
             root = loader.load();
@@ -87,7 +87,7 @@ public class PropertiesView extends AnchorPane {
 
         // hide window buttons
         stage.initStyle(StageStyle.UNDECORATED);
-        stage.show();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
     }
-
 }

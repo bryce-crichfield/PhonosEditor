@@ -5,13 +5,13 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.*;
 import piano.*;
 
-public class NoteEditorPianoView extends AnchorPane {
+public class PianoRoll extends AnchorPane {
     private final MidiEditorContext context;
     private final Camera camera;
     private final SubScene subScene;
     private final Group world;
 
-    public NoteEditorPianoView(MidiEditorContext context) {
+    public PianoRoll(MidiEditorContext context) {
         this.context = context;
 
         // Create a camera to view the 3D shapes
@@ -34,7 +34,7 @@ public class NoteEditorPianoView extends AnchorPane {
         this.getChildren().add(subScene);
 
         for (int i = 0; i < 88; i++) {
-            var key = new NoteEditorPianoKeyView(i, context);
+            var key = new PianoKey(i, context);
             world.getChildren().add(key);
         }
 

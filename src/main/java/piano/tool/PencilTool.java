@@ -6,7 +6,7 @@ import javafx.scene.*;
 import javafx.scene.input.*;
 import piano.*;
 import piano.state.note.model.*;
-import piano.view.midi.*;
+import piano.view.note.*;
 import piano.view.settings.*;
 
 public class PencilTool implements EditorTool {

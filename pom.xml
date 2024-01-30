@@ -39,7 +39,7 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- Lombok -->
+                <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -173,7 +173,6 @@
             <artifactId>lwjgl</artifactId>
             <version>3.0.5</version>
         </dependency>
-
         <!-- Kotlin lib -->
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>

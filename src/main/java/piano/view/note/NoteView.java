@@ -1,4 +1,4 @@
-package piano.view.midi;
+package piano.view.note;
 
 import javafx.scene.layout.*;
 import lombok.*;

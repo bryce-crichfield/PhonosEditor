@@ -12,14 +12,13 @@ public class ViewSettingsController {
     public ToggleSwitch smoothScrollEnabled;
     public ToggleSwitch smoothZoomEnabled;
     public Spinner<Integer> patternLengthSpinner;
+    public Spinner<Integer> timeNumeratorSpinner;
+    public Spinner<Integer> timeDenominatorSpinner;
     public ColorPicker colorPicker;
-    public Button closeStageButton;
 
-    private final Stage stage;
 
-    public ViewSettingsController(MidiEditorContext context, Stage stage) {
+    public ViewSettingsController(MidiEditorContext context) {
         this.context = context;
-        this.stage = stage;
     }
 
     public void initialize() {
@@ -28,7 +27,7 @@ public class ViewSettingsController {
 
         showNoteLetters.selectedProperty().bindBidirectional(
                 context.getViewSettings().showNoteLettersProperty());
-//
+
         smoothZoomEnabled.selectedProperty().bindBidirectional(
                 context.getViewSettings().smoothZoomEnabled);
 
@@ -48,10 +47,30 @@ public class ViewSettingsController {
         colorPicker.setValue(context.getViewSettings().getPatternColor());
         context.getViewSettings().patternColorProperty().bind(colorPicker.valueProperty());
 
-        closeStageButton.setOnAction(event -> closeStage());
-    }
+        timeNumeratorSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 16));
+        timeNumeratorSpinner.getValueFactory().setValue(4);
+        timeNumeratorSpinner.setEditable(true);
+        context.getViewSettings().gridInfoProperty().addListener(($0, $1, grid) -> {
+            TimeSignature time = grid.getTime();
+            timeNumeratorSpinner.getValueFactory().setValue(time.getNumerator());
+        });
 
-    public void closeStage() {
-        stage.close();
+        timeNumeratorSpinner.valueProperty().addListener(($0, $1, grid) -> {
+            TimeSignature time = context.getViewSettings().getGridInfo().getTime();
+            context.getViewSettings().setGridInfo(context.getViewSettings().getGridInfo().withTime(time.withNumerator(grid)));
+        });
+
+        timeDenominatorSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 16));
+        timeDenominatorSpinner.getValueFactory().setValue(4);
+        timeDenominatorSpinner.setEditable(true);
+        context.getViewSettings().gridInfoProperty().addListener(($0, $1, grid) -> {
+            TimeSignature time = grid.getTime();
+            timeDenominatorSpinner.getValueFactory().setValue(time.getDenominator());
+        });
+
+        timeDenominatorSpinner.valueProperty().addListener(($0, $1, grid) -> {
+            TimeSignature time = context.getViewSettings().getGridInfo().getTime();
+            context.getViewSettings().setGridInfo(context.getViewSettings().getGridInfo().withTime(time.withDenominator(grid)));
+        });
     }
 }

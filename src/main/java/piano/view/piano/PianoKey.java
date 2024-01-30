@@ -10,10 +10,10 @@ import piano.state.note.model.*;
 import piano.view.settings.*;
 
 
-public class NoteEditorPianoKeyView extends StackPane {
+public class PianoKey extends StackPane {
     private String noteString;
 
-    public NoteEditorPianoKeyView(int index, MidiEditorContext context) {
+    public PianoKey(int index, MidiEditorContext context) {
         super();
         Label label = new Label();
         label.setAlignment(Pos.BASELINE_RIGHT);

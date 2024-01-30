@@ -3,6 +3,7 @@ package piano.view.settings;
 import lombok.*;
 
 @Data
+@With
 public class TimeSignature {
     // How many beats per minute
     private final int tempo;
