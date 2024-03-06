@@ -1,15 +1,19 @@
 package component;
 
-import javafx.fxml.*;
-import javafx.scene.input.*;
-import javafx.scene.layout.*;
-import util.*;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.input.MouseDragEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
+import util.FxUtil;
 
-import java.net.*;
-import java.util.*;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class Knob extends StackPane {
     private final KnobController controller;
+
     public Knob() {
         FXMLLoader loader = FxUtil.load("/fxml/Knob.fxml");
         loader.setRoot(this);

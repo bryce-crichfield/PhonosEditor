@@ -1,6 +1,6 @@
 package animation.particle;
 
-import animation.*;
+import animation.Animation;
 
 public abstract class ParticleComponent implements Animation {
     protected Particle base;

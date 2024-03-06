@@ -1,23 +1,25 @@
 package piano.view.note;
 
-import javafx.beans.property.*;
-import javafx.collections.*;
+import javafx.beans.property.ObjectProperty;
+import javafx.collections.ListChangeListener;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.*;
-import piano.*;
-import piano.state.note.model.*;
-import piano.state.tool.*;
-import util.*;
+import javafx.scene.text.Text;
+import piano.EditorContext;
+import piano.state.note.model.NoteData;
+import piano.state.note.model.NoteEntry;
+import piano.state.tool.EditorTool;
+import piano.state.tool.PencilTool;
+import util.ColorUtil;
 
 import java.awt.*;
-import java.util.*;
+import java.util.Optional;
 
 public class NoteViewFactory {
     public static final int MIN_LABEL_WIDTH = 32;
 
     public static NoteView create(NoteEntry noteEntry, EditorContext context,
-            ObjectProperty<Optional<EditorTool>> currentTool
+                                  ObjectProperty<Optional<EditorTool>> currentTool
     ) {
         // Create view components with context and model bindings ------------------------------------------------------
         var rectangle = createRectangle(context, noteEntry);
@@ -89,7 +91,7 @@ public class NoteViewFactory {
     }
 
     private static NoteView createRoot(NoteEntry entry, Rectangle rectangle, Text text,
-            ObjectProperty<Optional<EditorTool>> currentTool
+                                       ObjectProperty<Optional<EditorTool>> currentTool
     ) {
         NoteView root = new NoteView(entry);
         {

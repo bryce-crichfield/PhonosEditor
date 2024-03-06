@@ -53,6 +53,12 @@
                     <FontIcon iconLiteral="mdi-stop"/>
                 </graphic>
             </Button>
+            <Button onAction="#serializeNoteRegistry">
+                <graphic>
+                    <FontIcon iconLiteral="mdi-save"/>
+                </graphic>
+            </Button>
+
         </ToolBar>
     </VBox>
 </AnchorPane>

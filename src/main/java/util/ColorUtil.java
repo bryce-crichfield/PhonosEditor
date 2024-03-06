@@ -1,6 +1,6 @@
 package util;
 
-import javafx.scene.paint.*;
+import javafx.scene.paint.Color;
 
 public class ColorUtil {
     public static double luminance(Color color) {

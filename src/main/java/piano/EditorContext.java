@@ -1,8 +1,8 @@
 package piano;
 
-import config.*;
-import piano.state.note.*;
-import piano.state.playback.*;
+import config.ViewSettings;
+import piano.state.note.NoteService;
+import piano.state.playback.PlaybackService;
 
 public class EditorContext {
     private final PlaybackService playback;

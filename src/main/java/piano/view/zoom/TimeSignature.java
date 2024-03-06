@@ -1,6 +1,7 @@
 package piano.view.zoom;
 
-import lombok.*;
+import lombok.Data;
+import lombok.With;
 
 @Data
 @With

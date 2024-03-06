@@ -1,10 +1,11 @@
 package piano.view.zoom;
 
-import javafx.animation.*;
-import piano.*;
-import util.*;
+import javafx.animation.AnimationTimer;
+import piano.EditorContext;
+import util.MathUtil;
 
-import java.time.*;
+import java.time.Duration;
+import java.time.Instant;
 
 /*
     The SmoothZoomController modifies the ViewSettings of the MidiEditorContext

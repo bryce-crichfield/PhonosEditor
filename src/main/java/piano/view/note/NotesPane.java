@@ -1,17 +1,18 @@
 package piano.view.note;
 
-import config.*;
-import javafx.beans.property.*;
+import config.Configs;
+import config.Theme;
+import javafx.beans.property.ObjectProperty;
 import javafx.scene.*;
-import javafx.scene.layout.*;
-import javafx.scene.paint.*;
-import javafx.scene.shape.*;
-import piano.*;
-import piano.state.note.model.*;
-import piano.state.tool.*;
-import piano.view.playlist.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import piano.EditorContext;
+import piano.state.note.model.NotePitch;
+import piano.state.tool.EditorTool;
+import piano.view.playlist.PlaylistView;
 
-import java.util.*;
+import java.util.Optional;
 
 
 public class NotesPane extends AnchorPane {
@@ -86,8 +87,8 @@ public class NotesPane extends AnchorPane {
         for (int key = 0; key < rows; key++) {
             NotePitch pitch = NotePitch.from(key + 1);
             Color color = pitch.getNoteName().contains("#") ?
-                    Theme.GRAY_0 :
-                    Theme.GRAY_1;
+                    Configs.get(Theme.class).defaultColor :
+                    Configs.get(Theme.class).defaultColor;
 
             Rectangle rect = new Rectangle();
             grid.getChildren().add(rect);
@@ -103,7 +104,7 @@ public class NotesPane extends AnchorPane {
             });
 
             // Add a border to each rectangle
-            rect.setStroke(Theme.GRAY_2);
+            rect.setStroke(Configs.get(Theme.class).defaultColor);
             rect.setStrokeWidth(1);
         }
 
@@ -123,11 +124,11 @@ public class NotesPane extends AnchorPane {
 
                 rect.setDisable(true);
 
-                Color color = Theme.GRAY_3;
+                Color color = Configs.get(Theme.class).defaultColor;
                 if (step % newGi.getSnapSize() == 0)
-                    color = Theme.GRAY_4;
+                    color = Configs.get(Theme.class).defaultColor;
                 if (step % (newGi.getSnapSize() * newGi.getTime().getNumerator()) == 0)
-                    color = Theme.GRAY_5;
+                    color = Configs.get(Theme.class).defaultColor;
                 rect.setFill(color);
 
                 verticalLines.getChildren().add(rect);

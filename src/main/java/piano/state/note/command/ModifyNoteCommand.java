@@ -1,8 +1,10 @@
 package piano.state.note.command;
 
-import piano.state.note.model.*;
+import piano.state.note.model.NoteData;
+import piano.state.note.model.NoteEntry;
+import piano.state.note.model.NoteRegistry;
 
-import java.util.*;
+import java.util.Optional;
 
 public class ModifyNoteCommand implements NoteCommand {
     private final NoteEntry entry;

@@ -1,28 +1,56 @@
 package piano;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import component.HorizontalScrollBar;
 import component.ScrollBar;
-import component.*;
-import config.*;
-import javafx.beans.property.*;
-import javafx.event.*;
-import javafx.geometry.*;
-import javafx.scene.control.*;
-import javafx.scene.input.*;
+import component.VerticalScrollBar;
+import config.Configs;
+import config.Keybindings;
+import config.ViewSettings;
+import encoding.deserialize.NoteDeserializer;
+import encoding.serialize.NoteSerializer;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Orientation;
+import javafx.scene.Scene;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
-import javafx.scene.paint.*;
-import javafx.scene.shape.*;
-import piano.state.note.*;
-import piano.state.note.model.*;
-import piano.state.playback.*;
-import piano.state.tool.*;
-import piano.view.note.*;
-import piano.view.parameter.*;
-import piano.view.piano.*;
-import piano.view.playlist.*;
-import piano.view.zoom.*;
-import util.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
+import piano.state.note.NoteService;
+import piano.state.note.model.NoteData;
+import piano.state.note.model.NoteEntry;
+import piano.state.note.model.NoteGroup;
+import piano.state.playback.BasePlaybackService;
+import piano.state.playback.PlaybackState;
+import piano.state.tool.EditorTool;
+import piano.state.tool.PencilTool;
+import piano.state.tool.SelectTool;
+import piano.state.tool.SliceTool;
+import piano.view.note.NotesPane;
+import piano.view.parameter.ParametersPane;
+import piano.view.piano.KeysPane;
+import piano.view.playlist.TimelineView;
+import piano.view.zoom.GridInfo;
+import piano.view.zoom.SmoothZoomController;
+import util.DialogUtil;
+import util.FileUtil;
+import util.MathUtil;
 
-import java.util.*;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public class Editor {
     private final ObjectProperty<Optional<EditorTool>> currentTool = new SimpleObjectProperty<>(Optional.empty());
@@ -44,6 +72,7 @@ public class Editor {
 
     private ScrollBar verticalScrollBar;
     private ScrollBar horizontalScrollBar;
+    private Optional<String> currentPath = Optional.empty();
 
 
     public Editor() {
@@ -248,6 +277,20 @@ public class Editor {
         var oldGi = context.getViewSettings().getGridInfo();
         context.getViewSettings().gridInfoProperty().set(oldGi.withRows(0));
         context.getViewSettings().gridInfoProperty().set(oldGi);
+
+    }
+
+    public void initializeKeyBindings() {
+        var accelerators = root.getScene().getAccelerators();
+        BiConsumer<KeyCombination, Runnable> define = (keyCombination, action) -> {
+            if (keyCombination == null || action == null) return;
+            accelerators.put(keyCombination, action);
+        };
+
+        var keybindings = Configs.get(Keybindings.class);
+        define.accept(keybindings.setToolToSelect, () -> toggleToolSelect.fire());
+        define.accept(keybindings.setToolToPencil, () -> toggleToolPencil.fire());
+        define.accept(keybindings.setToolToSlice, () -> toggleToolSlice.fire());
     }
 
     private void initHorizontalScrollBar() {
@@ -264,7 +307,7 @@ public class Editor {
             double newTranslateX = scroll.getRelativePosition() * grid.getTotalWidth();
             if (grid.getTotalWidth() > noteViewEditor.getWidth()) {
                 newTranslateX = MathUtil.map(newTranslateX, 0, grid.getTotalWidth(), 0,
-                                             grid.getTotalWidth() - noteViewEditor.getWidth()
+                        grid.getTotalWidth() - noteViewEditor.getWidth()
                 );
 
                 noteViewEditor.scrollToX(-newTranslateX);
@@ -299,7 +342,7 @@ public class Editor {
         verticalScrollBar.setOnHandleScroll(scroll -> {
             double newTranslateY = scroll.getRelativePosition() * noteViewEditor.getBackgroundSurface().getHeight();
             newTranslateY = MathUtil.map(newTranslateY, 0, noteViewEditor.getBackgroundSurface().getHeight(), 0,
-                                         noteViewEditor.getBackgroundSurface().getHeight() - noteViewEditor.getHeight()
+                    noteViewEditor.getBackgroundSurface().getHeight() - noteViewEditor.getHeight()
             );
             noteViewEditor.scrollToY(-newTranslateY);
             pianoView.scrollY(-newTranslateY);
@@ -325,5 +368,64 @@ public class Editor {
 
     public void playlistStop(ActionEvent actionEvent) {
         context.getPlayback().stop();
+    }
+
+    public void saveAs(ActionEvent actionEvent) {
+        Optional<Path> path = DialogUtil.file();
+        if (path.isEmpty()) {
+            return;
+        }
+        currentPath = Optional.of(path.get().toAbsolutePath().toString());
+        var registry = context.getNoteService().getRegistry();
+        var serializer = new NoteSerializer();
+        var mapper = serializer.getMapper();
+        try {
+            String json = mapper.writeValueAsString(registry);
+            FileUtil.write(currentPath.get(), json);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void load(ActionEvent actionEvent) {
+        DialogUtil.warn("Loading will overwrite the current state");
+        Optional<Path> path = DialogUtil.file();
+        if (path.isEmpty()) {
+            return;
+        }
+        String absolutePath = path.get().toAbsolutePath().toString();
+        var registry = context.getNoteService().getRegistry();
+        var noteDeserializer = new NoteDeserializer();
+        var mapper = noteDeserializer.getMapper();
+
+        try {
+            Optional<String> json = FileUtil.read(absolutePath);
+            if (json.isEmpty()) {
+                System.out.println("No file found");
+                return;
+            }
+            NoteData[] notes = mapper.readValue(json.get(), NoteData[].class);
+            for (NoteData note : notes) {
+                registry.register(note);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void save(ActionEvent actionEvent) {
+        if (currentPath.isEmpty()) {
+            saveAs(actionEvent);
+            return;
+        }
+        var registry = context.getNoteService().getRegistry();
+        var serializer = new NoteSerializer();
+        var mapper = serializer.getMapper();
+        try {
+            String json = mapper.writeValueAsString(registry);
+            FileUtil.write(currentPath.get(), json);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -1,21 +1,20 @@
 package piano.view;
 
-import javafx.event.*;
-import javafx.fxml.*;
-import javafx.scene.control.*;
-import piano.*;
-import util.*;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
+import javafx.scene.control.ToggleButton;
+import piano.EditorContext;
+import util.FxUtil;
 
 public class ToolPaneController {
-    EditorContext context;
-
     public ToggleButton toggleSelectTool;
     public ToggleButton togglePencilTool;
     public ToggleButton toggleSliceTool;
-
     public Button playlistPause;
     public Button playlistPlay;
     public Button playlistStop;
+    EditorContext context;
 
     public ToolPaneController(EditorContext context) {
         this.context = context;
@@ -51,5 +50,8 @@ public class ToolPaneController {
     }
 
     public void playlistStop(ActionEvent actionEvent) {
+    }
+
+    public void serializeNoteRegistry(ActionEvent actionEvent) {
     }
 }

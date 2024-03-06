@@ -1,24 +1,25 @@
 package component;
 
-import javafx.beans.*;
-import javafx.fxml.*;
-import javafx.scene.control.*;
+import javafx.beans.NamedArg;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.*;
-import javafx.stage.*;
+import javafx.scene.control.TitledPane;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 
-import java.net.*;
-import java.util.*;
+import java.net.URL;
+import java.util.Optional;
 
 public class WindowPane extends TitledPane {
+    Optional<String> titleText;
     @FXML
     private BorderPane header;
     @FXML
     private Button closeButton;
     @FXML
     private Label titleLabel;
-    Optional<String> titleText;
-
     private double lastX;
     private double lastY;
 

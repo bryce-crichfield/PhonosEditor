@@ -1,17 +1,20 @@
 package piano.state.tool;
 
-import javafx.geometry.*;
+import javafx.geometry.Point3D;
+import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.*;
-import javafx.scene.input.*;
-import javafx.scene.paint.*;
-import javafx.scene.shape.*;
-import piano.*;
-import piano.state.note.model.*;
-import piano.view.note.*;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.PickResult;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import piano.EditorContext;
+import piano.state.note.model.NoteData;
+import piano.state.note.model.NoteEntry;
+import piano.view.note.NotesPane;
 
-import java.util.*;
-import java.util.stream.*;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class SelectTool implements EditorTool {
     // Two Modes:

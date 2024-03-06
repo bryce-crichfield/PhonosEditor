@@ -1,14 +1,17 @@
 package piano.view.playlist;
 
-import component.*;
-import javafx.beans.property.*;
+import component.ScrollBar;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.*;
-import javafx.scene.input.*;
-import javafx.scene.layout.*;
-import javafx.scene.paint.*;
-import javafx.scene.shape.*;
-import javafx.scene.text.*;
-import piano.*;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+import piano.EditorContext;
 
 
 public class TimelineView extends AnchorPane {
@@ -55,7 +58,7 @@ public class TimelineView extends AnchorPane {
 
         // generate the timeline markers and add them to the world
         int measures = context.getViewSettings().getGridInfo().getMeasures();
-        for (int i = 0; i < measures; i ++) {
+        for (int i = 0; i < measures; i++) {
             TimelineMarker marker = new TimelineMarker(i, context);
             var gi = context.getViewSettings().getGridInfo();
             double x = i * gi.getTotalWidth() / measures;

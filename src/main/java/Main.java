@@ -1,10 +1,14 @@
-import config.Theme;
-import javafx.application.*;
-import javafx.fxml.*;
-import javafx.scene.*;
-import javafx.stage.*;
-import piano.*;
-import util.*;
+import config.*;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import piano.Editor;
+import util.FxUtil;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Main {
     public static void main(String[] args) {
@@ -14,7 +18,11 @@ public class Main {
     public static class App extends Application {
         @Override
         public void start(Stage stage) throws Exception {
-            Theme.load();
+            var loaders = Configs.createLoaders();
+            loaders.put(Theme.class, Theme.getFactory());
+            loaders.put(Keybindings.class, Keybindings.getFactory());
+            Configs.load(loaders);
+            System.out.println(Configs.get(Theme.class).background);
 
             FXMLLoader loader = FxUtil.load("/fxml/Editor.fxml");
             Parent root = loader.load();
@@ -23,6 +31,7 @@ public class Main {
             stage.setScene(scene);
             stage.setHeight(1200);
             stage.setWidth(800);
+            editor.initializeKeyBindings();
             stage.show();
         }
     }

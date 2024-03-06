@@ -1,14 +1,16 @@
 package component;
 
-import javafx.geometry.*;
-import javafx.scene.*;
-import javafx.scene.control.*;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.layout.*;
-import javafx.scene.paint.*;
-import javafx.scene.shape.*;
-import javafx.scene.transform.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Scale;
+import javafx.scene.transform.Transform;
 
-import java.util.function.*;
+import java.util.function.Consumer;
 
 public abstract class ScrollBar extends AnchorPane {
     public static final int SIZE = 15;
@@ -24,20 +26,6 @@ public abstract class ScrollBar extends AnchorPane {
 
     protected Consumer<ScrollBar> onScroll = (scrollBar) -> {
     };
-
-    public void setOnHandleScroll(Consumer<ScrollBar> callback) {
-        onScroll = callback;
-    }
-
-    public abstract void scrollBy(double delta);
-
-    public abstract void scrollTo(double position);
-
-    public abstract double getScrollableLength();
-
-    public abstract double getAbsolutePosition();
-
-    public abstract double getRelativePosition();
 
     static Node createButton(Polygon icon, double size) {
         Transform scale = new Scale(0.5, 0.5);
@@ -68,6 +56,20 @@ public abstract class ScrollBar extends AnchorPane {
 
         return button;
     }
+
+    public void setOnHandleScroll(Consumer<ScrollBar> callback) {
+        onScroll = callback;
+    }
+
+    public abstract void scrollBy(double delta);
+
+    public abstract void scrollTo(double position);
+
+    public abstract double getScrollableLength();
+
+    public abstract double getAbsolutePosition();
+
+    public abstract double getRelativePosition();
 
     protected static class Handle extends Rectangle {
         boolean isPressed = false;

@@ -1,0 +1,6 @@
+{
+  "setToolToSelect": "ctrl + s",
+  "setToolToPencil": "ctrl + p",
+  "setToolToSlice": "ctrl + e",
+  "setToolToError": "ctrl + r"
+}

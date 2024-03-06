@@ -1,22 +1,25 @@
 package config;
 
-import javafx.beans.property.*;
-import javafx.scene.paint.*;
-import piano.view.zoom.*;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.paint.Color;
+import piano.view.zoom.GridInfo;
 
 public class ViewSettings {
+    public final ObjectProperty<Boolean> smoothScrollEnabled = new SimpleObjectProperty<>(true);
+    public final ObjectProperty<Boolean> smoothZoomEnabled = new SimpleObjectProperty<>(true);
     private final ObjectProperty<GridInfo> gridInfo;
     private final BooleanProperty showPianoRollNoteLetters;
     private final BooleanProperty showNoteLetters;
     private final ObjectProperty<Color> patternColor;
-    public final ObjectProperty<Boolean> smoothScrollEnabled = new SimpleObjectProperty<>(true);
-    public final ObjectProperty<Boolean> smoothZoomEnabled = new SimpleObjectProperty<>(true);
 
     public ViewSettings(GridInfo gridInfo, boolean showPianoRollNoteLetters) {
         this.gridInfo = new SimpleObjectProperty<>(gridInfo);
         this.showPianoRollNoteLetters = new SimpleBooleanProperty(showPianoRollNoteLetters);
         this.showNoteLetters = new SimpleBooleanProperty(true);
-        this.patternColor = new SimpleObjectProperty<>(Theme.ORANGE);
+        this.patternColor = new SimpleObjectProperty<>(Configs.get(Theme.class).defaultColor);
     }
 
     public GridInfo getGridInfo() {

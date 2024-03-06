@@ -1,9 +1,9 @@
 package component;
 
-import javafx.geometry.*;
+import javafx.geometry.Insets;
 import javafx.scene.layout.*;
-import javafx.scene.shape.*;
-import util.*;
+import javafx.scene.shape.Polygon;
+import util.MathUtil;
 
 public class VerticalScrollBar extends ScrollBar {
 

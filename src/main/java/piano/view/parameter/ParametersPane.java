@@ -1,14 +1,18 @@
 package piano.view.parameter;
 
-import config.*;
+import config.Configs;
+import config.Theme;
 import javafx.scene.*;
-import javafx.scene.layout.*;
-import javafx.scene.paint.*;
-import javafx.scene.shape.*;
-import piano.*;
-import piano.state.note.model.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import piano.EditorContext;
+import piano.state.note.model.NoteData;
+import piano.state.note.model.NoteEntry;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class ParametersPane extends AnchorPane {
@@ -29,7 +33,7 @@ public class ParametersPane extends AnchorPane {
         setHeight(100);
         var gridInfo = context.getViewSettings().gridInfoProperty();
         background = gridInfo.get().createRectangle();
-        background.setFill(Theme.BACKGROUND);
+        background.setFill(Configs.get(Theme.class).defaultColor);
         gridInfo.addListener((observable, oldValue, newValue) -> {
             background.setWidth(newValue.getMeasures() * newValue.getBeatDisplayWidth());
             background.setHeight(newValue.getRows() * newValue.getCellHeight());
@@ -125,11 +129,11 @@ public class ParametersPane extends AnchorPane {
 
                 rect.setDisable(true);
 
-                Color color = Theme.GRAY_3;
+                Color color = Configs.get(Theme.class).defaultColor;
                 if (step % newGi.getSnapSize() == 0)
-                    color = Theme.GRAY_4;
+                    color = Configs.get(Theme.class).defaultColor;
                 if (step % (newGi.getSnapSize() * newGi.getTime().getNumerator()) == 0)
-                    color = Theme.GRAY_5;
+                    color = Configs.get(Theme.class).defaultColor;
                 rect.setFill(color);
 
                 verticalLines.getChildren().add(rect);

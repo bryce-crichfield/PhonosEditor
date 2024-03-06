@@ -1,6 +1,7 @@
 package piano.state.note.command;
 
-import piano.state.note.model.*;
+import piano.state.note.model.NoteRegistry;
+import piano.state.note.model.NoteSelection;
 
 public class NoteCommands {
     private final NoteRegistry registry;

@@ -50,6 +50,21 @@
                             <FontIcon iconLiteral="mdi-stop"/>
                         </graphic>
                     </Button>
+                    <Button onAction="#save">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-content-save"/>
+                        </graphic>
+                    </Button>
+                    <Button onAction="#saveAs">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-content-save-settings"/>
+                        </graphic>
+                    </Button>
+                    <Button onAction="#load">
+                        <graphic>
+                            <FontIcon iconLiteral="mdi-open-in-app"/>
+                        </graphic>
+                    </Button>
                 </ToolBar>
             </VBox>
         </top>

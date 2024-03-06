@@ -1,11 +1,16 @@
 package piano.state.note;
 
 import piano.state.note.command.*;
-import piano.state.note.model.*;
+import piano.state.note.model.NoteData;
+import piano.state.note.model.NoteEntry;
+import piano.state.note.model.NoteRegistry;
+import piano.state.note.model.NoteSelection;
 
 import java.util.*;
-import java.util.function.*;
-import java.util.stream.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class NoteService {
     private final NoteRegistry registry;

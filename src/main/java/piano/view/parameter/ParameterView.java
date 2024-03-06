@@ -1,14 +1,16 @@
 package piano.view.parameter;
 
-import javafx.scene.layout.*;
-import javafx.scene.paint.*;
-import javafx.scene.shape.*;
-import piano.*;
-import piano.state.note.model.*;
-import util.*;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import piano.EditorContext;
+import piano.state.note.model.NoteData;
+import piano.state.note.model.NoteEntry;
+import util.AnimationUtil;
+import util.MathUtil;
 
-import java.util.*;
-import java.util.concurrent.atomic.*;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 class ParameterView extends Rectangle {
     private final EditorContext context;

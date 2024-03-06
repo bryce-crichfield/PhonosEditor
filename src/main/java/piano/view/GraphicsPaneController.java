@@ -1,10 +1,11 @@
 package piano.view;
 
-import atlantafx.base.controls.*;
-import javafx.scene.control.*;
-import javafx.stage.*;
-import piano.*;
-import piano.view.zoom.*;
+import atlantafx.base.controls.ToggleSwitch;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
+import piano.EditorContext;
+import piano.view.zoom.TimeSignature;
 
 public class GraphicsPaneController {
     private final EditorContext context;

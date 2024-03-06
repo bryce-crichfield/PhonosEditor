@@ -1,9 +1,10 @@
 package util;
 
-import javafx.fxml.*;
-import javafx.stage.*;
+import javafx.fxml.FXMLLoader;
+import javafx.stage.Stage;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FxUtil {
     private static final FxUtil INSTANCE = new FxUtil();

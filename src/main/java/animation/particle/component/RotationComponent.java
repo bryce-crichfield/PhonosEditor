@@ -1,8 +1,8 @@
 package animation.particle.component;
 
-import animation.particle.*;
+import animation.particle.ParticleComponent;
 
-import java.time.*;
+import java.time.Duration;
 
 public class RotationComponent extends ParticleComponent {
     private final double velocity;

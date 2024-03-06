@@ -1,17 +1,23 @@
 package piano.view.parameter;
 
-import javafx.fxml.*;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.stage.*;
-import piano.*;
-import piano.view.*;
-import piano.view.zoom.*;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import piano.Editor;
+import piano.EditorContext;
+import piano.view.GraphicsPaneController;
+import piano.view.zoom.GridInfo;
 
-import java.io.*;
-import java.net.*;
-import java.util.function.*;
+import java.io.IOException;
+import java.net.URL;
+import java.util.function.Consumer;
 
 public class PropertiesView extends AnchorPane {
     private final EditorContext context;

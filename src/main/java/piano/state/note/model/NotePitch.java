@@ -1,6 +1,6 @@
 package piano.state.note.model;
 
-import lombok.*;
+import lombok.Data;
 
 @Data
 public class NotePitch {
@@ -10,14 +10,6 @@ public class NotePitch {
     public NotePitch(String noteName, int noteIndex) {
         this.noteName = noteName;
         this.noteIndex = noteIndex;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof NotePitch other) {
-            return noteIndex == other.noteIndex;
-        }
-        return false;
     }
 
     public static NotePitch from(String noteName) {
@@ -75,5 +67,13 @@ public class NotePitch {
         int noteIndex = note % 12;
         int octave = note <= 2 ? 0 : (int) Math.ceil((note - 2) / 12.0);
         return notes[noteIndex] + octave;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof NotePitch other) {
+            return noteIndex == other.noteIndex;
+        }
+        return false;
     }
 }

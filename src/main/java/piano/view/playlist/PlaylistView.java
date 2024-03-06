@@ -1,14 +1,15 @@
 package piano.view.playlist;
 
-import javafx.beans.property.*;
-import javafx.scene.*;
-import javafx.scene.paint.*;
-import javafx.scene.shape.*;
-import piano.*;
-import piano.state.tool.*;
-import piano.view.zoom.*;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.scene.Group;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import piano.EditorContext;
+import piano.state.tool.EditorTool;
+import piano.view.zoom.GridInfo;
 
-import java.util.*;
+import java.util.Optional;
 
 public class PlaylistView {
     private final Rectangle rectangle;
@@ -16,7 +17,7 @@ public class PlaylistView {
     private final EditorContext context;
 
     public PlaylistView(EditorContext context, Group group, DoubleProperty heightProp,
-            ObjectProperty<Optional<EditorTool>> currentTool
+                        ObjectProperty<Optional<EditorTool>> currentTool
     ) {
         this.context = context;
 

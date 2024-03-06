@@ -1,9 +1,9 @@
 package piano.view.piano;
 
 import javafx.scene.*;
-import javafx.scene.layout.*;
-import javafx.scene.paint.*;
-import piano.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
+import piano.EditorContext;
 
 public class KeysPane extends AnchorPane {
     private final EditorContext context;

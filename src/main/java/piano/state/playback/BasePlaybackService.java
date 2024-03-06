@@ -1,10 +1,11 @@
 package piano.state.playback;
 
-import javafx.animation.*;
-import javafx.beans.property.*;
+import javafx.animation.AnimationTimer;
+import javafx.beans.property.ObjectProperty;
 
-import java.time.*;
-import java.util.*;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BasePlaybackService implements PlaybackService {
     private final ObjectProperty<PlaybackState> playbackState;

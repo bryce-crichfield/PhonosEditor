@@ -1,8 +1,12 @@
 package piano.state.note.command;
 
-import piano.state.note.model.*;
+import piano.state.note.model.NoteData;
+import piano.state.note.model.NoteEntry;
+import piano.state.note.model.NoteRegistry;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class CreateNoteCommand implements NoteCommand {
     private final List<NoteData> data = new ArrayList<>();

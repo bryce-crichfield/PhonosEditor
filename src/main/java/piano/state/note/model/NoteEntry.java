@@ -1,16 +1,24 @@
 package piano.state.note.model;
 
-import javafx.beans.property.*;
-import piano.state.note.*;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import piano.state.note.NoteService;
 
-import java.util.*;
-import java.util.function.*;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class NoteEntry extends SimpleObjectProperty<NoteData> {
     private final NoteService service;
-
-    private double unsnappedX;
     private final BooleanProperty highlightedProperty = new SimpleBooleanProperty(false);
+    private double unsnappedX;
+    private Optional<NoteGroup> group = Optional.empty();
+
+    public NoteEntry(NoteData note, NoteService service) {
+        super(note);
+        this.service = service;
+    }
 
     public BooleanProperty highlightedProperty() {
         return highlightedProperty;
@@ -22,13 +30,6 @@ public class NoteEntry extends SimpleObjectProperty<NoteData> {
 
     public void setUnsnappedX(double unsnappedX) {
         this.unsnappedX = unsnappedX;
-    }
-
-    private Optional<NoteGroup> group = Optional.empty();
-
-    public NoteEntry(NoteData note, NoteService service) {
-        super(note);
-        this.service = service;
     }
 
     public Optional<NoteGroup> getGroup() {

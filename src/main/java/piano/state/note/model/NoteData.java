@@ -1,8 +1,9 @@
 package piano.state.note.model;
 
-import lombok.*;
-import piano.view.zoom.*;
-import util.*;
+import lombok.Getter;
+import lombok.With;
+import piano.view.zoom.GridInfo;
+import util.MathUtil;
 
 @With
 @Getter
@@ -43,6 +44,14 @@ public class NoteData {
         this.velocity = velocity;
     }
 
+    public static NoteData from(double x, double y, double width, double height, GridInfo gridInfo) {
+        int colStart = (int) Math.floor(x / gridInfo.getBeatDisplayWidth());
+        int colEnd = (int) Math.floor((x + width) / gridInfo.getBeatDisplayWidth());
+        int rowStart = (int) Math.floor(y / gridInfo.getCellHeight());
+        NotePitch pitch = NotePitch.from(rowStart);
+        return new NoteData(pitch, colStart, colEnd, 100);
+    }
+
     public double calcXPosOnGrid(GridInfo gridInfo) {
         return startStep * gridInfo.getStepDisplayWidth();
     }
@@ -71,14 +80,6 @@ public class NoteData {
 
     public double getDurationInSteps() {
         return endStep - startStep;
-    }
-
-    public static NoteData from(double x, double y, double width, double height, GridInfo gridInfo) {
-        int colStart = (int) Math.floor(x / gridInfo.getBeatDisplayWidth());
-        int colEnd = (int) Math.floor((x + width) / gridInfo.getBeatDisplayWidth());
-        int rowStart = (int) Math.floor(y / gridInfo.getCellHeight());
-        NotePitch pitch = NotePitch.from(rowStart);
-        return new NoteData(pitch, colStart, colEnd, 100);
     }
 
     public double calculateDisplayWidth(GridInfo gridInfo) {

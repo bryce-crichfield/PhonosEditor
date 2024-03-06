@@ -1,9 +1,13 @@
 package piano.state.note.model;
 
-import javafx.collections.*;
-import piano.state.note.*;
+import javafx.collections.FXCollections;
+import piano.state.note.NoteObserver;
+import piano.state.note.NoteService;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class NoteRegistry {
     private final NoteService service;
@@ -19,6 +23,17 @@ public class NoteRegistry {
         onCreatedObservers = FXCollections.observableArrayList();
         onDeletedObservers = FXCollections.observableArrayList();
         onModifiedObservers = FXCollections.observableArrayList();
+    }
+
+    public NoteRegistry(NoteService service, Collection<NoteData> notes) {
+        this.service = service;
+
+        onCreatedObservers = FXCollections.observableArrayList();
+        onDeletedObservers = FXCollections.observableArrayList();
+        onModifiedObservers = FXCollections.observableArrayList();
+
+        var entries = notes.stream().map(this::register).toList();
+        this.notes = new HashSet<>(entries);
     }
 
     public NoteEntry register(NoteData note) {

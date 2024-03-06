@@ -1,8 +1,9 @@
 package piano.view.zoom;
 
-import javafx.scene.shape.*;
-import lombok.*;
-import util.*;
+import javafx.scene.shape.Rectangle;
+import lombok.Getter;
+import lombok.With;
+import util.MathUtil;
 
 @With
 @Getter

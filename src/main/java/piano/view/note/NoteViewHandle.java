@@ -1,13 +1,15 @@
 package piano.view.note;
 
-import javafx.scene.*;
-import javafx.scene.layout.*;
-import javafx.scene.shape.*;
-import piano.*;
-import piano.state.note.model.*;
-import piano.view.zoom.*;
+import javafx.scene.Cursor;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Rectangle;
+import piano.EditorContext;
+import piano.state.note.model.NoteData;
+import piano.state.note.model.NoteEntry;
+import piano.state.note.model.NotePitch;
+import piano.view.zoom.GridInfo;
 
-import java.util.*;
+import java.util.Optional;
 
 
 abstract class NoteViewHandle {
@@ -24,6 +26,7 @@ abstract class NoteViewHandle {
     }
 
     public abstract void onDragEntered();
+
     public abstract void onDragged(double deltaX, double cellsY);
 
     public abstract Cursor getCursor();
@@ -100,7 +103,7 @@ abstract class NoteViewHandle {
                 var noteData = entry.get();
 
                 entry.setUnsnappedX(entry.getUnsnappedX() + deltaX);
-                double endStep = grid.snapWorldXToNearestStep(entry.getUnsnappedX() );
+                double endStep = grid.snapWorldXToNearestStep(entry.getUnsnappedX());
                 NoteData newNoteData = noteData.withEndStep((int) ((int) endStep + grid.getStepsPerSnap()));
                 return validate(noteData, newNoteData);
             });

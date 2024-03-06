@@ -2,8 +2,6 @@ package animation;
 
 @FunctionalInterface
 public interface Interpolator {
-    double interpolate(double start, double current, double end, double t);
-
     static Interpolator linear() {
         return (start, current, end, t) -> {
             return start + (end - start) * t;
@@ -33,5 +31,7 @@ public interface Interpolator {
             return start + (end - start) * (t3 - 3 * t2 + 3 * t);
         };
     }
+
+    double interpolate(double start, double current, double end, double t);
 
 }

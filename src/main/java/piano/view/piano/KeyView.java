@@ -1,14 +1,14 @@
 package piano.view.piano;
 
-import javafx.geometry.*;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.scene.paint.*;
-import javafx.scene.shape.*;
-import piano.*;
-import piano.state.note.model.*;
-import piano.view.zoom.*;
-import util.*;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import piano.EditorContext;
+import piano.state.note.model.NotePitch;
+import piano.view.zoom.GridInfo;
+import util.MathUtil;
 
 
 public class KeyView extends StackPane {

@@ -1,38 +1,30 @@
 package config;
 
-import atlantafx.base.theme.*;
-import javafx.application.*;
-import javafx.scene.paint.*;
-import javafx.scene.text.*;
+import atlantafx.base.theme.PrimerDark;
+import encoding.deserialize.ColorDeserializer;
+import javafx.application.Application;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
-public class Theme {
+public class Theme implements Config {
+    public static ConfigFactory<Theme> getFactory() {
+        var loader = new ConfigFactory<>(Theme.class, "theme.json");
+        loader.addDeserializer(Color.class, new ColorDeserializer());
 
-    public static final Color GRAY_0 = Color.web("#282828").darker().darker();
-    public static final Color GRAY_1 = Color.web("#282828").darker();
-    public static final Color GRAY_2 = Color.web("#282828");
-    public static final Color GRAY_3 = Color.web("#282828").brighter();
-    public static final Color GRAY_4 = Color.web("#282828").brighter().brighter();
-    public static final Color GRAY_5 = Color.web("#282828").brighter().brighter().brighter();
+        loader.addInitializer(theme -> {
+            Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
+            Font.loadFont(Theme.class.getResourceAsStream("/fonts/WhiteRabbit.ttf"), 10);
+        });
 
-
-    public static final Color BACKGROUND = Color.web("#282828").darker();
-    public static final Color FOREGROUND = Color.web("#ebdbb2");
-    public static final Color COMMENT = Color.web("#928374");
-    public static final Color RED = Color.web("#cc241d");
-    public static final Color GREEN = Color.web("#98971a");
-    public static final Color YELLOW = Color.web("#d79921");
-    public static final Color BLUE = Color.web("#458588");
-    public static final Color PURPLE = Color.web("#b16286");
-    public static final Color AQUA = Color.web("#689d6a");
-    public static final Color ORANGE = Color.web("#d65d0e");
-    public static final Color GRAY = Color.web("#a89984");
-    public static final Color BRIGHT_RED = Color.web("#fb4934");
-    public static final Color BRIGHT_GREEN = Color.web("#b8bb26");
-    public static final Color BRIGHT_YELLOW = Color.web("#fabd2f");
-    public static final Color BRIGHT_BLUE = Color.web("#83a598");
-
-    public static void load() {
-        Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
-        Font.loadFont(Theme.class.getResourceAsStream("/fonts/WhiteRabbit.ttf"), 10);
+        return loader;
     }
+
+    public final Color defaultColor = Color.WHITE;
+    public final Color gray0 = Color.WHITE;
+    public final Color gray1 = Color.WHITE;
+    public final Color gray2 = Color.WHITE;
+    public final Color gray3 = Color.WHITE;
+    public final Color gray4 = Color.WHITE;
+    public final Color gray5 = Color.WHITE;
+    public final Color background = Color.WHITE;
 }
