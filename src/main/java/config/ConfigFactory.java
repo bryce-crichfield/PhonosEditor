@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import encoding.deserialize.ReflectionDeserializer;
 import encoding.serialize.ReflectionSerializer;
 import util.FileUtil;
 
@@ -14,22 +13,23 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Consumer;
 
-// Loads a json file into a class instance
-// By default, the json file is expected to be in the resources/config directory
+// Loads a Json File into a Config object instance by setting all object properties to the values in the json file
 public final class ConfigFactory<T extends Config> {
     private final Path absolutePath;
     private final Class<T> clazz;
     private final SimpleModule module = new SimpleModule();
     private final ObjectMapper mapper = new ObjectMapper();
     private final List<Consumer<T>> initializers = new ArrayList<>();
+    private final T instance;
 
     // @param clazz: The class type of the config object to be loaded
     // @param relativePath: The relative path to the json file that contains the config object
-    public ConfigFactory(Class<T> clazz, String relativePath) {
-        this(clazz, relativePath, new ReflectionSerializer<>(clazz), new ReflectionDeserializer<>(clazz));
+    public ConfigFactory(Class<T> clazz, T instance, String relativePath) {
+        this(clazz, instance, relativePath, new ReflectionSerializer<>(clazz), new ReflectionObjectPropertyDeserialier<>(clazz, instance));
     }
-    private ConfigFactory(Class<T> clazz, String relativePath, JsonSerializer<T> serializer, JsonDeserializer<T> deserializer) {
+    private ConfigFactory(Class<T> clazz, T instance, String relativePath, JsonSerializer<T> serializer, JsonDeserializer<T> deserializer) {
         this.clazz = clazz;
+        this.instance = instance;
         Path rootPath = Paths.get("src/main/resources/config");
         absolutePath = rootPath.resolve(relativePath);
         module.addSerializer(serializer);
@@ -48,22 +48,33 @@ public final class ConfigFactory<T extends Config> {
         initializers.add(initializer);
     }
 
-    public Optional<T> loadInstance() {
+    public Optional<T> load(boolean shouldInitialize) {
         Optional<String> jsonString = FileUtil.read(absolutePath.toAbsolutePath().toString());
 
         if (jsonString.isEmpty()) {
+            System.out.println("[ConfigFactory] Failed to read file: " + absolutePath.toAbsolutePath().toString());
             return Optional.empty();
         }
 
         try {
             mapper.registerModule(module);
-            T instance = mapper.readValue(jsonString.get(), clazz);
-            initializers.forEach(init -> init.accept(instance));
-            return Optional.of(instance);
+            T mappedInstance = mapper.readValue(jsonString.get(), clazz);
+            // Ensure that mappedInstance and instance are the same object reference
+            if (mappedInstance != instance) {
+                System.out.println("[ConfigFactory] Mapped instance and instance are not the same object reference");
+                return Optional.empty();
+            }
+            if (shouldInitialize)
+                initializers.forEach(init -> init.accept(instance));
         } catch (JsonProcessingException e) {
             e.printStackTrace();
+            return Optional.empty();
         }
 
-        return Optional.empty();
+        return Optional.of(instance);
+    }
+
+    public Path getAbsolutePath() {
+        return absolutePath;
     }
 }

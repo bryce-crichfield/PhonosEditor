@@ -86,15 +86,20 @@ public class NotesPane extends AnchorPane {
         // Draw the background grid ------------------------------------------------------------------------------------
         for (int key = 0; key < rows; key++) {
             NotePitch pitch = NotePitch.from(key + 1);
-            Color color = pitch.getNoteName().contains("#") ?
-                    Configs.get(Theme.class).defaultColor :
-                    Configs.get(Theme.class).defaultColor;
+//
+            ObjectProperty<Color> colorProp = pitch.getNoteName().contains("#") ?
+                    Configs.get(Theme.class).textLight :
+                    Configs.get(Theme.class).textDark;
 
             Rectangle rect = new Rectangle();
             grid.getChildren().add(rect);
 
             rect.setDisable(true);
-            rect.setFill(color);
+            colorProp.addListener((observable, oldValue, newValue) -> {
+                System.out.println("Color changed to " + newValue);
+                rect.setFill(newValue);
+            });
+//            rect.fillProperty().bind(colorProp);
 
             int finalKey = key;
             gi.addListener((observable, oldValue, newGi) -> {
@@ -124,13 +129,12 @@ public class NotesPane extends AnchorPane {
 
                 rect.setDisable(true);
 
-                Color color = Configs.get(Theme.class).defaultColor;
+                ObjectProperty<Color> colorProp = Theme.defaultColorProperty();
                 if (step % newGi.getSnapSize() == 0)
-                    color = Configs.get(Theme.class).defaultColor;
+                    colorProp = Configs.get(Theme.class).backgroundGridDark;
                 if (step % (newGi.getSnapSize() * newGi.getTime().getNumerator()) == 0)
-                    color = Configs.get(Theme.class).defaultColor;
-                rect.setFill(color);
-
+                    colorProp = Configs.get(Theme.class).backgroundGridLight;
+                rect.fillProperty().bind(colorProp);
                 verticalLines.getChildren().add(rect);
             }
         });

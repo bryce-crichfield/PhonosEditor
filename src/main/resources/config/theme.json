@@ -6,5 +6,12 @@
   "gray4": "#0a0a0a",
   "gray5": "#0d0d0d",
   "background": "#0f0f0f",
-  "orange": "#ff5f00"
+  "orange": "#ff5f00",
+
+  "textDark": "#111111",
+  "textLight": "#212121",
+  "backgroundGridDark": "#313131",
+  "backgroundGridLight": "#aaaaaa",
+  "backgroundGridLineDark": "#2a2a2a",
+  "backgroundGridLineLight": "#3a3a3a"
 }

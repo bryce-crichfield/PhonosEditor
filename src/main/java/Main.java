@@ -7,9 +7,6 @@ import javafx.stage.Stage;
 import piano.Editor;
 import util.FxUtil;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class Main {
     public static void main(String[] args) {
         Application.launch(App.class, args);
@@ -18,11 +15,12 @@ public class Main {
     public static class App extends Application {
         @Override
         public void start(Stage stage) throws Exception {
-            var loaders = Configs.createLoaders();
-            loaders.put(Theme.class, Theme.getFactory());
-            loaders.put(Keybindings.class, Keybindings.getFactory());
-            Configs.load(loaders);
-            System.out.println(Configs.get(Theme.class).background);
+            var builder = Configs.builder()
+                            .addFactory(Theme.class, Theme.getFactory())
+                            .addFactory(Keybindings.class, Keybindings.getFactory())
+                    ;
+            Configs.load(builder);
+
 
             FXMLLoader loader = FxUtil.load("/fxml/Editor.fxml");
             Parent root = loader.load();
